@@ -1,0 +1,58 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+replmon is a TUI application for monitoring PostgreSQL logical replication, with first-class support for pglogical bidirectional replication. Built with TypeScript, React, Ink, and Yoga (same stack as Claude Code).
+
+## Technology Stack
+
+- **Runtime**: Bun (preferred) or Node.js 18+
+- **UI**: Ink 5.x + React 18.x (functional components only)
+- **State**: Zustand with subscribeWithSelector middleware
+- **Database**: pg + pg-pool (no ORMs)
+- **CLI**: meow for argument parsing
+- **Config**: YAML with environment variable interpolation
+
+## Architecture
+
+```
+src/
+├── components/
+│   ├── atoms/          # StatusDot, Badge, ProgressBar, Spinner
+│   ├── layout/         # Panel, Modal, SplitView, MainLayout
+│   ├── panels/         # TopologyPanel, SubscriptionsPanel, SlotsPanel, ConflictsPanel
+│   ├── charts/         # Sparkline, TopologyGraph
+│   └── modals/         # OperationsModal, HelpModal
+├── hooks/              # usePolling, useKeyboardNavigation, useSubscriptions
+├── services/           # ConnectionManager, PollingService, queries
+├── store/              # Zustand store with selectors
+├── theme/              # Color schemes and theming
+└── types/              # TypeScript interfaces
+```
+
+## Constitution (Non-Negotiable Rules)
+
+1. **Type Safety**: TypeScript strict mode. No `any` types except at FFI boundaries with justification.
+2. **Component-First**: Container components for logic, presentational for rendering. No inline styles.
+3. **Reactive State**: All UI derives from Zustand store. No local state for shared data.
+4. **Keyboard-First**: Full functionality via keyboard. Mouse optional.
+5. **PostgreSQL Compatibility**: Support native replication (v10+) and pglogical. Graceful degradation.
+6. **Fail-Safe**: Dangerous ops require confirmation. Errors surfaced, never swallowed.
+
+## Speckit Workflow
+
+Use `/speckit.*` commands for feature development:
+- `/speckit.specify` - Create feature specification
+- `/speckit.plan` - Generate implementation plan
+- `/speckit.tasks` - Generate task list
+- `/speckit.implement` - Execute implementation
+
+Feature prompts are in `docs/features/`. Implementation order in `docs/features/IMPLEMENTATION_ORDER.md`.
+
+## Key Patterns
+
+- **Polling**: PollingService emits data events at 1s intervals; components subscribe via Zustand
+- **Multi-node**: ConnectionManager maintains pg-pool per node; queries run in parallel
+- **Keyboard shortcuts**: t/s/l/c/o/q for panel focus, Tab for cycling, j/k for lists
