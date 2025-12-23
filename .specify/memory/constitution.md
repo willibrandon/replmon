@@ -1,22 +1,15 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 0.0.0 → 1.0.0 (initial ratification)
+Version change: 1.0.0 → 1.1.0 (new principle added)
 Added principles:
-  - I. Component-First Architecture
-  - II. Type Safety (NON-NEGOTIABLE)
-  - III. Real-Time Reactive State
-  - IV. Keyboard-First UX
-  - V. PostgreSQL Compatibility
-  - VI. Fail-Safe Operations
-Added sections:
-  - Technology Constraints
-  - Development Workflow
-  - Governance
+  - VII. Complete Implementation (NON-NEGOTIABLE)
+Modified principles: None
+Removed principles: None
 Templates reviewed:
   ✅ plan-template.md - Constitution Check section compatible
   ✅ spec-template.md - Requirements structure compatible
-  ✅ tasks-template.md - Phase structure aligns with workflow
+  ✅ tasks-template.md - Phase structure aligns with new principle (task completion enforcement)
 Follow-up TODOs: None
 -->
 
@@ -78,6 +71,35 @@ Destructive operations require explicit user confirmation.
 - Connection failures MUST be isolated per-node—one unhealthy node does not crash the app
 - All errors MUST be surfaced in UI, never swallowed silently
 
+### VII. Complete Implementation (NON-NEGOTIABLE)
+
+Every task produces working, runnable code. Partial implementations are prohibited.
+
+**Banned Patterns**:
+
+- TODO/FIXME/HACK comments deferring work
+- Placeholder functions (throw "not implemented", pass, empty bodies)
+- Ellipsis or "..." indicating omitted code
+- "For brevity..." or "you could extend this..." suggestions
+- Skeleton/stub implementations without actual logic
+- Partial implementations with "and so on" or "etc."
+- Comments describing what code SHOULD do instead of code that DOES it
+
+**Completion Criteria**:
+
+- All functions have complete implementations
+- All error paths handled (not just happy path)
+- All edge cases from the spec addressed
+- All imports/dependencies included
+- Code compiles/runs without modification
+- Tests execute and pass (when spec requires tests)
+
+**Scope Management**:
+
+- If a task is too large, it MUST be split into smaller specs BEFORE implementation
+- Each spec MUST be fully implementable in one session
+- "Phase 2" or "future work" items belong in separate specs, not inline comments
+
 ## Technology Constraints
 
 | Category | Requirement |
@@ -106,4 +128,4 @@ Destructive operations require explicit user confirmation.
 - Version follows semver: breaking principle changes = major bump
 - All PRs MUST cite which principles apply to changes
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-23 | **Last Amended**: 2025-12-23
+**Version**: 1.1.0 | **Ratified**: 2025-12-23 | **Last Amended**: 2025-12-23

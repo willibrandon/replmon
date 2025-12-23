@@ -40,6 +40,7 @@ src/
 4. **Keyboard-First**: Full functionality via keyboard. Mouse optional.
 5. **PostgreSQL Compatibility**: Support native replication (v10+) and pglogical. Graceful degradation.
 6. **Fail-Safe**: Dangerous ops require confirmation. Errors surfaced, never swallowed.
+7. **Complete Implementation**: Every task produces working, runnable code. No TODOs, placeholders, stubs, or partial implementations. All error paths handled, all edge cases addressed, code compiles/runs without modification.
 
 ## Speckit Workflow
 
@@ -56,3 +57,10 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - **Polling**: PollingService emits data events at 1s intervals; components subscribe via Zustand
 - **Multi-node**: ConnectionManager maintains pg-pool per node; queries run in parallel
 - **Keyboard shortcuts**: t/s/l/c/o/q for panel focus, Tab for cycling, j/k for lists
+
+## Active Technologies
+- TypeScript 5.x (strict mode) on Bun 1.x (Node.js 18+ fallback) + React 18.x, Ink 5.x, meow 13.x, js-yaml, Zustand (001-project-setup-cli)
+- YAML configuration files (no database for this feature) (001-project-setup-cli)
+
+## Recent Changes
+- 001-project-setup-cli: Added TypeScript 5.x (strict mode) on Bun 1.x (Node.js 18+ fallback) + React 18.x, Ink 5.x, meow 13.x, js-yaml, Zustand
