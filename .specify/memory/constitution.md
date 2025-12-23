@@ -1,50 +1,109 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+==================
+Version change: 0.0.0 → 1.0.0 (initial ratification)
+Added principles:
+  - I. Component-First Architecture
+  - II. Type Safety (NON-NEGOTIABLE)
+  - III. Real-Time Reactive State
+  - IV. Keyboard-First UX
+  - V. PostgreSQL Compatibility
+  - VI. Fail-Safe Operations
+Added sections:
+  - Technology Constraints
+  - Development Workflow
+  - Governance
+Templates reviewed:
+  ✅ plan-template.md - Constitution Check section compatible
+  ✅ spec-template.md - Requirements structure compatible
+  ✅ tasks-template.md - Phase structure aligns with workflow
+Follow-up TODOs: None
+-->
+
+# replmon Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Component-First Architecture
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+React components are the atomic unit of UI. Every visual element MUST be a composable, reusable component.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+- Container components handle data fetching and business logic
+- Presentational components handle rendering only
+- No inline styles or ad-hoc DOM manipulation
+- All UI built with Ink primitives (Box, Text, etc.)
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. Type Safety (NON-NEGOTIABLE)
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+TypeScript strict mode is mandatory. Type violations block merges.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+- No `any` types except at FFI boundaries with explicit justification comment
+- All PostgreSQL query results MUST have typed interfaces
+- Zustand stores MUST be fully typed with generics
+- Runtime validation MUST occur at system boundaries (config parsing, database responses)
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### III. Real-Time Reactive State
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Polling-based live updates are the default behavior.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- Default polling interval: 1 second
+- All UI MUST derive from Zustand store—no local component state for shared data
+- State changes trigger re-renders automatically via Zustand subscriptions
+- Lag history MUST maintain rolling 5-minute window (300 samples at 1s intervals)
+
+### IV. Keyboard-First UX
+
+Full application functionality MUST be accessible via keyboard alone.
+
+- Tab/Shift+Tab for panel navigation
+- Single-key shortcuts for common actions: t (topology), s (subscriptions), l (lag), c (conflicts), o (operations), q (quit)
+- Vim-style j/k navigation in lists
+- Mouse support is optional enhancement, never required
+
+### V. PostgreSQL Compatibility
+
+Support both native logical replication (PostgreSQL 10+) and pglogical extension.
+
+- Graceful degradation when pglogical is not installed
+- Queries MUST handle PostgreSQL version differences
+- Connection pooling is mandatory for multi-node setups
+- All queries MUST be parameterized to prevent SQL injection
+
+### VI. Fail-Safe Operations
+
+Destructive operations require explicit user confirmation.
+
+- Dangerous operations (drop slot, clear conflicts) MUST show confirmation dialog
+- Read operations MUST NOT modify database state
+- Connection failures MUST be isolated per-node—one unhealthy node does not crash the app
+- All errors MUST be surfaced in UI, never swallowed silently
+
+## Technology Constraints
+
+| Category | Requirement |
+|----------|-------------|
+| Runtime | Node.js 18+ or Bun |
+| UI Framework | Ink 5.x + React 18.x (functional components only) |
+| Layout | Yoga flexbox via Ink |
+| State | Zustand with subscribeWithSelector middleware |
+| Database | pg + pg-pool (no ORMs) |
+| Config | YAML with environment variable interpolation |
+| CLI | meow for argument parsing |
+| Build | Bun preferred; fallback to tsc + esbuild |
+
+## Development Workflow
+
+- Phase-based implementation: Foundation → UI Core → Panels → Advanced
+- Each feature spec MUST be independently buildable and testable
+- Integration tests MUST cover ConnectionManager and PollingService
+- Component tests use ink-testing-library
+- Manual QA against real PostgreSQL cluster required before release
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- This constitution supersedes ad-hoc decisions
+- Amendments require updating docs/design.md and all affected specs
+- Version follows semver: breaking principle changes = major bump
+- All PRs MUST cite which principles apply to changes
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-12-23 | **Last Amended**: 2025-12-23
