@@ -26,8 +26,8 @@
 
 **Purpose**: Project initialization and dependencies
 
-- [ ] T001 Install pg and pg-pool dependencies: `bun add pg && bun add -D @types/pg`
-- [ ] T002 Create connection-manager service directory structure at src/services/connection-manager/
+- [x] T001 Install pg and pg-pool dependencies: `bun add pg && bun add -D @types/pg`
+- [x] T002 Create connection-manager service directory structure at src/services/connection-manager/
 
 ---
 
@@ -37,10 +37,10 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Create types module with all entity interfaces from contracts in src/services/connection-manager/types.ts (HealthStatusEnum, SSLConfig, PoolConfig, NodeConnectionConfig, HealthStatus, PoolStats, NodeQueryResult, ManagedNode, ConnectionManagerEvents, ConnectionManagerConfig)
-- [ ] T004 Create typed EventEmitter wrapper for connection events in src/services/connection-manager/events.ts
-- [ ] T005 [P] Extend src/types/connection.ts with SSLConfig export and re-export from connection-manager types
-- [ ] T006 [P] Create pool-factory module with createPool function and SSL config transformation in src/services/connection-manager/pool-factory.ts
+- [x] T003 Create types module with all entity interfaces from contracts in src/services/connection-manager/types.ts (HealthStatusEnum, SSLConfig, PoolConfig, NodeConnectionConfig, HealthStatus, PoolStats, NodeQueryResult, ManagedNode, ConnectionManagerEvents, ConnectionManagerConfig)
+- [x] T004 Create typed EventEmitter wrapper for connection events in src/services/connection-manager/events.ts
+- [x] T005 [P] Extend src/types/connection.ts with SSLConfig export and re-export from connection-manager types
+- [x] T006 [P] Create pool-factory module with createPool function and SSL config transformation in src/services/connection-manager/pool-factory.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -54,14 +54,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Create InternalNode type (ManagedNode + Pool instance) in src/services/connection-manager/types.ts for internal use only; ManagedNode is the public interface
-- [ ] T008 [US1] Implement ConnectionManager class skeleton with constructor and node Map in src/services/connection-manager/index.ts
-- [ ] T009 [US1] Implement addNode method: create pool via pool-factory, store in nodes Map, emit node:added event in src/services/connection-manager/index.ts
-- [ ] T010 [US1] Implement initialize method: call addNode for each node config in parallel, await all in src/services/connection-manager/index.ts
-- [ ] T011 [US1] Implement getNode, getAllNodes, hasNode methods in src/services/connection-manager/index.ts
-- [ ] T012 [US1] Implement single-node query method with pool.query in src/services/connection-manager/index.ts
-- [ ] T013 [US1] Add SSL connection support in pool-factory: transform SSLConfig to pg ssl options in src/services/connection-manager/pool-factory.ts
-- [ ] T014 [US1] Export ConnectionManager class and all types from src/services/connection-manager/index.ts
+- [x] T007 [US1] Create InternalNode type (ManagedNode + Pool instance) in src/services/connection-manager/types.ts for internal use only; ManagedNode is the public interface
+- [x] T008 [US1] Implement ConnectionManager class skeleton with constructor and node Map in src/services/connection-manager/index.ts
+- [x] T009 [US1] Implement addNode method: create pool via pool-factory, store in nodes Map, emit node:added event in src/services/connection-manager/index.ts
+- [x] T010 [US1] Implement initialize method: call addNode for each node config in parallel, await all in src/services/connection-manager/index.ts
+- [x] T011 [US1] Implement getNode, getAllNodes, hasNode methods in src/services/connection-manager/index.ts
+- [x] T012 [US1] Implement single-node query method with pool.query in src/services/connection-manager/index.ts
+- [x] T013 [US1] Add SSL connection support in pool-factory: transform SSLConfig to pg ssl options in src/services/connection-manager/pool-factory.ts
+- [x] T014 [US1] Export ConnectionManager class and all types from src/services/connection-manager/index.ts
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - can connect to multiple nodes and query each
 

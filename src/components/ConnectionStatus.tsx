@@ -2,7 +2,15 @@ import React from 'react';
 import { Box, Text, useInput } from 'ink';
 import { useConnectionStore } from '../store/connection.js';
 import { exitApp } from '../index.js';
+import { ConnectionManager } from '../services/connection-manager/index.js';
 import type { Configuration } from '../types/config.js';
+
+// Module-level manager instance for the app
+let connectionManager: ConnectionManager | null = null;
+
+export function getConnectionManager(): ConnectionManager | null {
+  return connectionManager;
+}
 
 interface ConnectionStatusProps {
   config: Configuration;
@@ -17,13 +25,101 @@ export function ConnectionStatus({
   config,
   onRetry,
 }: ConnectionStatusProps): React.ReactElement {
+  const setNodeStatus = useConnectionStore((s) => s.setNodeStatus);
+  const setConnectionError = useConnectionStore((s) => s.setConnectionError);
+  const setCurrentScreen = useConnectionStore((s) => s.setCurrentScreen);
+  const [connectionAttempt, setConnectionAttempt] = React.useState(0);
+
+  // Attempt connections when component mounts or retry is triggered
+  React.useEffect(() => {
+    let cancelled = false;
+
+    async function connect() {
+      // Shutdown existing manager if any
+      if (connectionManager) {
+        await connectionManager.shutdown();
+        connectionManager = null;
+      }
+
+      // Create new manager
+      connectionManager = new ConnectionManager({
+        healthCheckIntervalMs: 5000,
+        unhealthyThreshold: 3,
+        queryTimeoutMs: 30000,
+      });
+
+      const nodeIds = Object.keys(config.nodes);
+      const results: Array<{ nodeId: string; success: boolean; error?: string }> = [];
+
+      // Try to connect to each node
+      for (const nodeId of nodeIds) {
+        if (cancelled) return;
+
+        const nodeConfig = config.nodes[nodeId];
+        if (!nodeConfig) {
+          setNodeStatus(nodeId, 'failed');
+          setConnectionError(nodeId, 'Node configuration not found');
+          results.push({ nodeId, success: false, error: 'Node configuration not found' });
+          continue;
+        }
+
+        try {
+          await connectionManager.addNode(nodeId, {
+            host: nodeConfig.host,
+            port: nodeConfig.port,
+            database: nodeConfig.database,
+            user: nodeConfig.user,
+            ...(nodeConfig.password !== undefined && { password: nodeConfig.password }),
+            ...(nodeConfig.name !== undefined && { name: nodeConfig.name }),
+          });
+
+          // Test the connection with a simple query
+          await connectionManager.query(nodeId, 'SELECT 1');
+
+          if (!cancelled) {
+            setNodeStatus(nodeId, 'connected');
+            results.push({ nodeId, success: true });
+          }
+        } catch (err) {
+          if (!cancelled) {
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            setNodeStatus(nodeId, 'failed');
+            setConnectionError(nodeId, errorMessage);
+            results.push({ nodeId, success: false, error: errorMessage });
+          }
+        }
+      }
+
+      // If all nodes connected successfully, transition to dashboard
+      if (!cancelled) {
+        const allConnected = results.every((r) => r.success);
+        if (allConnected && results.length > 0) {
+          setCurrentScreen('dashboard');
+        }
+      }
+    }
+
+    connect();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [config, connectionAttempt, setNodeStatus, setConnectionError, setCurrentScreen]);
+
   // Handle keyboard input
   useInput((input, key) => {
     if (input === 'q' || (key.ctrl && input === 'c')) {
-      exitApp(0);
+      // Cleanup before exit
+      if (connectionManager) {
+        connectionManager.shutdown().finally(() => exitApp(0));
+      } else {
+        exitApp(0);
+      }
+      return;
     }
     if (input === 'r') {
       onRetry();
+      setConnectionAttempt((prev) => prev + 1);
     }
   });
 

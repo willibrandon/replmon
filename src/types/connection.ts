@@ -20,3 +20,10 @@ export interface ConnectionConfig {
   /** Node display name (derived from config key if not set) */
   name?: string;
 }
+
+// Re-export SSL types from connection-manager for convenience
+export type {
+  SSLConfig,
+  PoolConfig,
+  NodeConnectionConfig,
+} from '../services/connection-manager/types.js';
