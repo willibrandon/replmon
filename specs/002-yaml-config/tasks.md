@@ -110,12 +110,12 @@
 
 ### Implementation for User Story 4
 
-- [ ] T029 [P] [US4] Create src/theme/index.ts with theme resolution and color merging logic
-- [ ] T030 [US4] Add theme schema validation in src/config/schemas.ts (name: dark|light, colors object)
-- [ ] T031 [US4] Implement resolveTheme() in src/theme/index.ts merging custom colors over base theme
-- [ ] T032 [US4] Extend src/config/parser.ts to call resolveTheme() and include in Configuration
-- [ ] T033 [US4] Validate hex color format in src/config/validator.ts for custom color overrides
-- [ ] T034 [US4] Add warning log for invalid theme name fallback to default in src/theme/index.ts
+- [x] T029 [P] [US4] Create src/theme/index.ts with theme resolution and color merging logic
+- [x] T030 [US4] Add theme schema validation in src/config/schemas.ts (name: dark|light, colors object)
+- [x] T031 [US4] Implement resolveTheme() in src/theme/index.ts merging custom colors over base theme
+- [x] T032 [US4] Extend src/config/parser.ts to call resolveTheme() and include in Configuration
+- [x] T033 [US4] Validate hex color format in src/config/validator.ts for custom color overrides
+- [x] T034 [US4] Add warning log for invalid theme name fallback to default in src/theme/index.ts
 
 **Checkpoint**: User Story 4 complete - themes load, custom colors merge, invalid names warn
 

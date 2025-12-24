@@ -10,6 +10,8 @@ import {
   resolveCluster,
   transformClusters,
   filterNodesToCluster,
+  validateHexColor,
+  validateThemeColors,
 } from './validator.js';
 import {
   ConfigFileNotFoundError,
@@ -430,5 +432,181 @@ describe('formatConfigError with cluster errors', () => {
     expect(message).toStartWith('Error:');
     expect(message).toContain('invalid');
     expect(message.length).toBeLessThanOrEqual(100);
+  });
+});
+
+describe('validateHexColor', () => {
+  test('validates 6-digit hex color', () => {
+    const result = validateHexColor('#FF0000', 'primary');
+    expect(result.valid).toBe(true);
+    expect(result.error).toBeUndefined();
+  });
+
+  test('validates 3-digit hex color', () => {
+    const result = validateHexColor('#F00', 'primary');
+    expect(result.valid).toBe(true);
+  });
+
+  test('validates lowercase hex color', () => {
+    const result = validateHexColor('#ff0000', 'primary');
+    expect(result.valid).toBe(true);
+  });
+
+  test('rejects color without hash', () => {
+    const result = validateHexColor('FF0000', 'primary');
+    expect(result.valid).toBe(false);
+    expect(result.error).toContain('primary');
+    expect(result.error).toContain('#RGB or #RRGGBB');
+  });
+
+  test('rejects invalid hex characters', () => {
+    const result = validateHexColor('#GGHHII', 'primary');
+    expect(result.valid).toBe(false);
+  });
+
+  test('rejects wrong length hex', () => {
+    const result = validateHexColor('#FF00', 'primary');
+    expect(result.valid).toBe(false);
+  });
+});
+
+describe('validateThemeColors', () => {
+  test('returns empty array for valid colors', () => {
+    const errors = validateThemeColors({
+      primary: '#FF0000',
+      secondary: '#00FF00',
+    });
+    expect(errors).toEqual([]);
+  });
+
+  test('returns empty array for empty object', () => {
+    const errors = validateThemeColors({});
+    expect(errors).toEqual([]);
+  });
+
+  test('returns error for invalid color', () => {
+    const errors = validateThemeColors({ primary: 'red' });
+    expect(errors.length).toBe(1);
+    expect(errors[0]).toContain('primary');
+  });
+
+  test('returns multiple errors for multiple invalid colors', () => {
+    const errors = validateThemeColors({
+      primary: 'red',
+      secondary: 'blue',
+      warning: '#FFF', // valid
+    });
+    expect(errors.length).toBe(2);
+    expect(errors.some((e) => e.includes('primary'))).toBe(true);
+    expect(errors.some((e) => e.includes('secondary'))).toBe(true);
+  });
+
+  test('validates all color fields', () => {
+    const validColors = {
+      background: '#000000',
+      foreground: '#FFFFFF',
+      primary: '#0000FF',
+      secondary: '#FF00FF',
+      success: '#00FF00',
+      warning: '#FFFF00',
+      critical: '#FF0000',
+      muted: '#808080',
+    };
+    const errors = validateThemeColors(validColors);
+    expect(errors).toEqual([]);
+  });
+});
+
+describe('transformToConfiguration with theme', () => {
+  test('resolves dark theme from string', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      theme: 'dark',
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.theme.name).toBe('dark');
+  });
+
+  test('resolves light theme from string', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      theme: 'light',
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.theme.name).toBe('light');
+  });
+
+  test('resolves theme from object config', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      theme: { name: 'light' },
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.theme.name).toBe('light');
+  });
+
+  test('resolves custom theme with color overrides', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      theme: {
+        name: 'dark',
+        colors: { primary: '#FF0000' },
+      },
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.theme.name).toBe('custom');
+    expect(config.theme.colors.primary).toBe('#FF0000');
+  });
+
+  test('falls back to dark theme for invalid name with warning', () => {
+    const warnings: string[] = [];
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      theme: 'invalid',
+    };
+    const config = transformToConfiguration(
+      yamlConfig,
+      '/path/to/config.yaml',
+      undefined,
+      (msg) => warnings.push(msg)
+    );
+    expect(config.theme.name).toBe('dark');
+    expect(warnings.length).toBe(1);
+    expect(warnings[0]).toContain('invalid');
+  });
+
+  test('throws ConfigValidationError for invalid hex color', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      theme: {
+        name: 'dark',
+        colors: { primary: 'not-a-color' },
+      },
+    };
+    expect(() =>
+      transformToConfiguration(yamlConfig, '/path/to/config.yaml')
+    ).toThrow(ConfigValidationError);
+  });
+
+  test('uses default theme when no theme specified', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.theme.name).toBe('dark');
   });
 });

@@ -7,6 +7,18 @@ import { loadConfigFile, tryLoadDefaultConfig } from './loader.js';
 import { transformToConfiguration } from './validator.js';
 import { DEFAULT_THEME, DEFAULT_THRESHOLDS } from './defaults.js';
 
+// =============================================================================
+// Warning Logging
+// =============================================================================
+
+/**
+ * Log a configuration warning to stderr.
+ * Used for non-fatal issues like invalid theme name fallback.
+ */
+function logConfigWarning(message: string): void {
+  console.warn(`[config] Warning: ${message}`);
+}
+
 // Re-export for backwards compatibility
 export { InsufficientArgumentsError };
 
@@ -190,7 +202,12 @@ export function parseConfiguration(args: CLIArguments): Configuration {
   // Check for explicit config file first
   if (args.config !== undefined) {
     const yamlConfig = loadConfigFile(args.config);
-    const fileConfig = transformToConfiguration(yamlConfig, args.config, args.cluster);
+    const fileConfig = transformToConfiguration(
+      yamlConfig,
+      args.config,
+      args.cluster,
+      logConfigWarning
+    );
 
     // Check if we need to merge CLI overrides
     const hasInlineArgs =
@@ -205,10 +222,9 @@ export function parseConfiguration(args: CLIArguments): Configuration {
       return mergeConfigWithCLI(fileConfig, args);
     }
 
-    // Ensure defaults are applied
+    // Theme is already resolved by transformToConfiguration, just ensure thresholds have defaults
     return {
       ...fileConfig,
-      theme: fileConfig.theme ?? DEFAULT_THEME,
       thresholds: fileConfig.thresholds ?? DEFAULT_THRESHOLDS,
     };
   }
@@ -221,7 +237,12 @@ export function parseConfiguration(args: CLIArguments): Configuration {
 
   // Case 2: Default config exists and was loaded
   if (defaultResult.found && defaultResult.config !== undefined) {
-    const fileConfig = transformToConfiguration(defaultResult.config, defaultResult.path, args.cluster);
+    const fileConfig = transformToConfiguration(
+      defaultResult.config,
+      defaultResult.path,
+      args.cluster,
+      logConfigWarning
+    );
 
     // Check if we need to merge CLI overrides
     const hasInlineArgs =
@@ -236,10 +257,9 @@ export function parseConfiguration(args: CLIArguments): Configuration {
       return mergeConfigWithCLI(fileConfig, args);
     }
 
-    // Ensure defaults are applied
+    // Theme is already resolved by transformToConfiguration, just ensure thresholds have defaults
     return {
       ...fileConfig,
-      theme: fileConfig.theme ?? DEFAULT_THEME,
       thresholds: fileConfig.thresholds ?? DEFAULT_THRESHOLDS,
     };
   }

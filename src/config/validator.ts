@@ -1,7 +1,7 @@
 import os from 'os';
 import { z } from 'zod';
-import { YAMLConfigFileSchema } from './schemas.js';
-import type { YAMLConfigFile } from '../types/yaml-config.js';
+import { YAMLConfigFileSchema, HexColorSchema } from './schemas.js';
+import type { YAMLConfigFile, YAMLColorOverrides } from '../types/yaml-config.js';
 import type { Configuration } from '../types/config.js';
 import type { ConnectionConfig } from '../types/connection.js';
 import {
@@ -10,12 +10,33 @@ import {
   ClusterNodeReferenceError,
   ClusterNotFoundError,
 } from '../types/errors.js';
-import { DEFAULT_THEME, DEFAULT_THRESHOLDS } from './defaults.js';
+import { DEFAULT_THRESHOLDS } from './defaults.js';
+import { resolveTheme } from '../theme/index.js';
 import type { YAMLClusterConfig } from '../types/yaml-config.js';
 import type { ClusterConfig } from '../types/config.js';
 
 // Re-export for backwards compatibility
 export { ConfigValidationError, ClusterNodeReferenceError, ClusterNotFoundError };
+
+// =============================================================================
+// Warning Collection
+// =============================================================================
+
+/**
+ * Collected warnings during configuration transformation.
+ * These are non-fatal issues that don't prevent config from loading.
+ */
+export interface ConfigWarnings {
+  /** Theme-related warnings (e.g., invalid theme name fallback) */
+  theme: string[];
+}
+
+/**
+ * Create an empty warnings collector.
+ */
+export function createWarningsCollector(): ConfigWarnings {
+  return { theme: [] };
+}
 
 /**
  * Format a Zod error into a human-readable message.
@@ -63,6 +84,64 @@ export function formatConfigError(error: unknown): string {
   }
 
   return `Error: ${truncateMessage(String(error))}`;
+}
+
+// =============================================================================
+// Hex Color Validation
+// =============================================================================
+
+/**
+ * Validate a single hex color value.
+ *
+ * @param color - Color string to validate (should be #RGB or #RRGGBB format)
+ * @param fieldName - Name of the field for error messages
+ * @returns Validation result with success flag and optional error message
+ */
+export function validateHexColor(
+  color: string,
+  fieldName: string
+): { valid: boolean; error?: string } {
+  const result = HexColorSchema.safeParse(color);
+  if (result.success) {
+    return { valid: true };
+  }
+  return {
+    valid: false,
+    error: `${fieldName}: Invalid hex color "${color}" (use #RGB or #RRGGBB)`,
+  };
+}
+
+/**
+ * Validate all custom color overrides in a theme configuration.
+ * Returns an array of validation errors (empty if all valid).
+ *
+ * @param colors - Partial color overrides from YAML
+ * @returns Array of validation error messages
+ */
+export function validateThemeColors(colors: Partial<YAMLColorOverrides>): string[] {
+  const errors: string[] = [];
+  const colorFields: (keyof YAMLColorOverrides)[] = [
+    'background',
+    'foreground',
+    'primary',
+    'secondary',
+    'success',
+    'warning',
+    'critical',
+    'muted',
+  ];
+
+  for (const field of colorFields) {
+    const value = colors[field];
+    if (value !== undefined) {
+      const result = validateHexColor(value, `theme.colors.${field}`);
+      if (!result.valid && result.error) {
+        errors.push(result.error);
+      }
+    }
+  }
+
+  return errors;
 }
 
 /**
@@ -174,14 +253,32 @@ export function filterNodesToCluster(
 }
 
 /**
+ * Result of configuration transformation including warnings.
+ */
+export interface TransformResult {
+  /** Resolved configuration */
+  config: Configuration;
+  /** Non-fatal warnings collected during transformation */
+  warnings: ConfigWarnings;
+}
+
+/**
  * Transform and validate a YAML config into a full Configuration object.
  * Applies defaults and validates all required fields.
  * If clusters are defined, validates node references and selects active cluster.
+ * Theme colors are validated and invalid theme names fall back to default with warning.
+ *
+ * @param yamlConfig - Raw YAML configuration
+ * @param configPath - Path to the config file (for error messages)
+ * @param requestedCluster - Optional cluster name from --cluster flag
+ * @param onWarning - Optional callback for warning messages
+ * @returns Resolved configuration
  */
 export function transformToConfiguration(
   yamlConfig: YAMLConfigFile,
   configPath: string,
-  requestedCluster?: string
+  requestedCluster?: string,
+  onWarning?: (message: string) => void
 ): Configuration {
   // Validate raw structure first
   validateYAMLConfig(yamlConfig);
@@ -245,9 +342,24 @@ export function transformToConfiguration(
     nodes = filterNodesToCluster(allNodes, clusterConfig.nodes);
   }
 
+  // Validate theme colors if custom colors are provided
+  if (
+    yamlConfig.theme !== undefined &&
+    typeof yamlConfig.theme === 'object' &&
+    yamlConfig.theme.colors !== undefined
+  ) {
+    const colorErrors = validateThemeColors(yamlConfig.theme.colors);
+    if (colorErrors.length > 0) {
+      throw new ConfigValidationError(colorErrors);
+    }
+  }
+
+  // Resolve theme with warning callback for invalid theme name fallback
+  const resolvedTheme = resolveTheme(yamlConfig.theme, onWarning);
+
   const config: Configuration = {
     nodes,
-    theme: DEFAULT_THEME,
+    theme: resolvedTheme,
     thresholds: DEFAULT_THRESHOLDS,
     pglogical: yamlConfig.pglogical ?? false,
     source: 'file',
