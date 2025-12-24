@@ -31,8 +31,12 @@ const helpText = `
     $ replmon -c config.yaml --pglogical
 `;
 
+const VERSION = '0.1.0';
+
 const cli = meow(helpText, {
   importMeta: import.meta,
+  description: false,
+  version: `replmon v${VERSION}`,
   flags: {
     config: {
       type: 'string',
@@ -118,7 +122,7 @@ function main(): void {
   } catch (error) {
     if (error instanceof InsufficientArgumentsError) {
       console.error(`Error: ${error.message}\n`);
-      cli.showHelp();
+      console.log(cli.help);
       process.exit(1);
     }
     console.error(formatConfigError(error));

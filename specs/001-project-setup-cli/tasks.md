@@ -114,9 +114,9 @@
 
 ### Implementation for User Story 4
 
-- [ ] T033 [US4] Configure meow help text per cli-interface.md contract in src/index.tsx
-- [ ] T034 [US4] Configure meow version from package.json in src/index.tsx
-- [ ] T035 [US4] Ensure clean exit (code 0) after displaying help or version in src/index.tsx
+- [X] T033 [US4] Configure meow help text per cli-interface.md contract in src/index.tsx
+- [X] T034 [US4] Configure meow version from package.json in src/index.tsx
+- [X] T035 [US4] Ensure clean exit (code 0) after displaying help or version in src/index.tsx
 
 **Checkpoint**: User Story 4 complete - help and version display correctly
 
@@ -126,10 +126,10 @@
 
 **Purpose**: Final integration, edge cases, and validation
 
-- [ ] T036 [P] Add PGPASSWORD environment variable fallback for password in src/config/parser.ts
-- [ ] T037 [P] Handle config file paths with spaces and special characters in src/config/loader.ts
-- [ ] T038 Add 2-second startup time validation (performance check) in src/index.tsx
-- [ ] T039 Run quickstart.md validation checklist manually
+- [X] T036 [P] Add PGPASSWORD environment variable fallback for password in src/config/parser.ts
+- [X] T037 [P] Handle config file paths with spaces and special characters in src/config/loader.ts
+- [X] T038 Add 2-second startup time validation (performance check) in src/index.tsx
+- [X] T039 Run quickstart.md validation checklist manually
 
 ---
 
