@@ -4,7 +4,6 @@
  * Demonstrates ink-testing-library usage for testing Ink/TUI components.
  */
 import { describe, test, expect } from 'bun:test';
-import React from 'react';
 import { render } from 'ink-testing-library';
 import { StatusBar } from './StatusBar.js';
 

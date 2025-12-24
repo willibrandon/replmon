@@ -71,11 +71,11 @@
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Extend interpolateEnvVars() in src/config/loader.ts to support ${VAR:-default} syntax
-- [ ] T017 [US2] Add EnvVarInterpolationError class to src/config/errors.ts for missing required env vars
-- [ ] T018 [US2] Update src/config/loader.ts to throw EnvVarInterpolationError when required var missing
-- [ ] T019 [US2] Ensure env var interpolation runs before Zod validation in src/config/parser.ts
-- [ ] T020 [US2] Validate interpolated values post-substitution (e.g., port must be numeric) in src/config/validator.ts
+- [x] T016 [US2] Extend interpolateEnvVars() in src/config/loader.ts to support ${VAR:-default} syntax
+- [x] T017 [US2] Add EnvVarInterpolationError class to src/config/errors.ts for missing required env vars
+- [x] T018 [US2] Update src/config/loader.ts to throw EnvVarInterpolationError when required var missing
+- [x] T019 [US2] Ensure env var interpolation runs before Zod validation in src/config/parser.ts
+- [x] T020 [US2] Validate interpolated values post-substitution (e.g., port must be numeric) in src/config/validator.ts
 
 **Checkpoint**: User Story 2 complete - env vars interpolated, missing vars error cleanly
 

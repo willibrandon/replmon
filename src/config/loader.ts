@@ -7,6 +7,7 @@ import {
   ConfigFilePermissionError,
   YAMLParseError,
   EnvVarInterpolationError,
+  ConfigValidationError,
 } from '../types/errors.js';
 import { getDefaultConfigPath } from './defaults.js';
 
@@ -16,6 +17,7 @@ export {
   ConfigFilePermissionError,
   YAMLParseError,
   EnvVarInterpolationError,
+  ConfigValidationError,
 };
 
 /**
@@ -43,8 +45,9 @@ export function interpolateEnvVars(value: string): string {
 
 /**
  * Interpolate environment variables in a node configuration.
+ * Validates that port is a valid number after interpolation.
  */
-function interpolateNodeConfig(node: YAMLNodeConfig): YAMLNodeConfig {
+function interpolateNodeConfig(node: YAMLNodeConfig, nodeName: string): YAMLNodeConfig {
   const result: YAMLNodeConfig = {};
 
   if (node.host !== undefined) {
@@ -54,8 +57,21 @@ function interpolateNodeConfig(node: YAMLNodeConfig): YAMLNodeConfig {
     // Port may be a string with env var, convert to number after interpolation
     if (typeof node.port === 'string') {
       const interpolated = interpolateEnvVars(node.port);
-      result.port = parseInt(interpolated, 10);
+      const parsedPort = parseInt(interpolated, 10);
+      // Validate port is a valid number after interpolation
+      if (isNaN(parsedPort) || parsedPort < 1 || parsedPort > 65535) {
+        throw new ConfigValidationError([
+          `nodes.${nodeName}.port: Invalid port '${interpolated}'`,
+        ]);
+      }
+      result.port = parsedPort;
     } else {
+      // Validate numeric port value
+      if (node.port < 1 || node.port > 65535) {
+        throw new ConfigValidationError([
+          `nodes.${nodeName}.port: Invalid port ${node.port}`,
+        ]);
+      }
       result.port = node.port;
     }
   }
@@ -85,7 +101,7 @@ function interpolateConfig(config: YAMLConfigFile): YAMLConfigFile {
   if (config.nodes) {
     result.nodes = {};
     for (const [name, node] of Object.entries(config.nodes)) {
-      result.nodes[name] = interpolateNodeConfig(node);
+      result.nodes[name] = interpolateNodeConfig(node, name);
     }
   }
 

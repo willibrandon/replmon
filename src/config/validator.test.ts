@@ -78,10 +78,12 @@ describe('transformToConfiguration', () => {
     };
 
     const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    const primary = config.nodes['primary'];
 
-    expect(config.nodes.primary.host).toBe('localhost');
-    expect(config.nodes.primary.port).toBe(5432);
-    expect(config.nodes.primary.database).toBe('mydb');
+    expect(primary).toBeDefined();
+    expect(primary!.host).toBe('localhost');
+    expect(primary!.port).toBe(5432);
+    expect(primary!.database).toBe('mydb');
     expect(config.pglogical).toBe(true);
     expect(config.source).toBe('file');
     expect(config.configPath).toBe('/path/to/config.yaml');
@@ -120,7 +122,7 @@ describe('transformToConfiguration', () => {
     };
 
     const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
-    expect(config.nodes.primary.port).toBe(5432);
+    expect(config.nodes['primary']!.port).toBe(5432);
   });
 
   test('applies default theme and thresholds', () => {
@@ -134,8 +136,8 @@ describe('transformToConfiguration', () => {
     };
 
     const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
-    expect(config.theme.name).toBe('dark');
-    expect(config.thresholds.replicationLag.warning).toBe(10);
-    expect(config.thresholds.replicationLag.critical).toBe(60);
+    expect(config.theme!.name).toBe('dark');
+    expect(config.thresholds!.replicationLag.warning).toBe(10);
+    expect(config.thresholds!.replicationLag.critical).toBe(60);
   });
 });

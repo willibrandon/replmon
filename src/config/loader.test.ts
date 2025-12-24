@@ -11,6 +11,7 @@ import {
   interpolateEnvVars,
   ConfigFileNotFoundError,
   EnvVarInterpolationError,
+  ConfigValidationError,
 } from './loader.js';
 
 describe('interpolateEnvVars', () => {
@@ -136,5 +137,124 @@ describe('tryLoadDefaultConfig', () => {
     // We can't guarantee it doesn't exist, so just check the structure
     expect(result).toHaveProperty('found');
     expect(result).toHaveProperty('path');
+  });
+});
+
+describe('post-interpolation validation', () => {
+  const tmpDir = path.join(os.tmpdir(), 'replmon-postval-test-' + Date.now());
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+    fs.mkdirSync(tmpDir, { recursive: true });
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  test('interpolates port from env var and validates as number', () => {
+    process.env['PG_PORT'] = '5433';
+    const configPath = path.join(tmpDir, 'config.yaml');
+    fs.writeFileSync(
+      configPath,
+      `
+nodes:
+  primary:
+    host: localhost
+    port: \${PG_PORT}
+    database: mydb
+`
+    );
+
+    const config = loadConfigFile(configPath);
+    expect(config.nodes?.primary?.port).toBe(5433);
+  });
+
+  test('throws ConfigValidationError for invalid port string after interpolation', () => {
+    process.env['PG_PORT'] = 'notaport';
+    const configPath = path.join(tmpDir, 'config.yaml');
+    fs.writeFileSync(
+      configPath,
+      `
+nodes:
+  primary:
+    host: localhost
+    port: \${PG_PORT}
+    database: mydb
+`
+    );
+
+    expect(() => loadConfigFile(configPath)).toThrow(ConfigValidationError);
+  });
+
+  test('throws ConfigValidationError for port out of valid range (too low)', () => {
+    process.env['PG_PORT'] = '0';
+    const configPath = path.join(tmpDir, 'config.yaml');
+    fs.writeFileSync(
+      configPath,
+      `
+nodes:
+  primary:
+    host: localhost
+    port: \${PG_PORT}
+    database: mydb
+`
+    );
+
+    expect(() => loadConfigFile(configPath)).toThrow(ConfigValidationError);
+  });
+
+  test('throws ConfigValidationError for port out of valid range (too high)', () => {
+    process.env['PG_PORT'] = '70000';
+    const configPath = path.join(tmpDir, 'config.yaml');
+    fs.writeFileSync(
+      configPath,
+      `
+nodes:
+  primary:
+    host: localhost
+    port: \${PG_PORT}
+    database: mydb
+`
+    );
+
+    expect(() => loadConfigFile(configPath)).toThrow(ConfigValidationError);
+  });
+
+  test('validates numeric port value in valid range', () => {
+    const configPath = path.join(tmpDir, 'config.yaml');
+    fs.writeFileSync(
+      configPath,
+      `
+nodes:
+  primary:
+    host: localhost
+    port: 5432
+    database: mydb
+`
+    );
+
+    const config = loadConfigFile(configPath);
+    expect(config.nodes?.primary?.port).toBe(5432);
+  });
+
+  test('uses default for missing env var with fallback', () => {
+    delete process.env['OPTIONAL_PORT'];
+    const configPath = path.join(tmpDir, 'config.yaml');
+    fs.writeFileSync(
+      configPath,
+      `
+nodes:
+  primary:
+    host: localhost
+    port: \${OPTIONAL_PORT:-5433}
+    database: mydb
+`
+    );
+
+    const config = loadConfigFile(configPath);
+    expect(config.nodes?.primary?.port).toBe(5433);
   });
 });
