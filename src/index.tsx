@@ -3,11 +3,10 @@ import { render } from 'ink';
 import meow from 'meow';
 import { createElement } from 'react';
 import { App } from './components/App.js';
-import { loadConfigFile } from './config/loader.js';
-import { transformToConfiguration, formatConfigError } from './config/validator.js';
+import { parseConfiguration, InsufficientArgumentsError } from './config/parser.js';
+import { formatConfigError } from './config/validator.js';
 import type { Configuration } from './types/config.js';
 import type { CLIArguments } from './types/cli.js';
-import os from 'os';
 
 const helpText = `
   replmon - PostgreSQL replication monitoring TUI
@@ -94,59 +93,6 @@ function parseCliFlags(): CLIArguments {
   return args;
 }
 
-/**
- * Build configuration from CLI arguments (inline flags only, no config file).
- */
-function buildConfigFromCLI(args: CLIArguments): Configuration {
-  const currentUser = os.userInfo().username;
-
-  const nodeConfig: Configuration['nodes'][string] = {
-    host: args.host!,
-    port: args.port ?? 5432,
-    database: args.database!,
-    user: args.user ?? currentUser,
-    name: 'default',
-  };
-
-  // Only add password if defined (exactOptionalPropertyTypes)
-  if (args.password !== undefined) {
-    nodeConfig.password = args.password;
-  }
-
-  return {
-    nodes: {
-      default: nodeConfig,
-    },
-    pglogical: args.pglogical ?? false,
-    source: 'cli',
-  };
-}
-
-/**
- * Load configuration from file, CLI args, or merged.
- */
-function loadConfiguration(args: CLIArguments): Configuration {
-  // Case 1: Config file provided
-  if (args.config) {
-    const yamlConfig = loadConfigFile(args.config);
-    const config = transformToConfiguration(yamlConfig, args.config);
-
-    // Apply CLI overrides for pglogical flag
-    if (args.pglogical) {
-      config.pglogical = true;
-    }
-
-    return config;
-  }
-
-  // Case 2: Inline flags only (requires host and database)
-  if (args.host && args.database) {
-    return buildConfigFromCLI(args);
-  }
-
-  // Case 3: Neither config nor sufficient inline args
-  throw new Error('Either --config or (--host and --database) required');
-}
 
 /**
  * Exit handler for cleanup.
@@ -168,8 +114,13 @@ function main(): void {
 
   let config: Configuration;
   try {
-    config = loadConfiguration(args);
+    config = parseConfiguration(args);
   } catch (error) {
+    if (error instanceof InsufficientArgumentsError) {
+      console.error(`Error: ${error.message}\n`);
+      cli.showHelp();
+      process.exit(1);
+    }
     console.error(formatConfigError(error));
     process.exit(1);
   }

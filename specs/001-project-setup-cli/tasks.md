@@ -78,12 +78,12 @@
 
 ### Implementation for User Story 2
 
-- [ ] T023 [US2] Add inline connection flags to meow CLI setup (--host, --port, --database, --user, --password) in src/index.tsx
-- [ ] T024 [US2] Implement CLI args to Configuration conversion in src/config/parser.ts
-- [ ] T025 [US2] Implement config merging (CLI flags override config file values) in src/config/parser.ts
-- [ ] T026 [US2] Implement validation for minimum required args (--host and --database when no config) in src/config/parser.ts
-- [ ] T027 [US2] Add default port (5432) and default user (current OS user) handling in src/config/parser.ts
-- [ ] T028 [US2] Display usage help with required options when insufficient arguments provided in src/index.tsx
+- [X] T023 [US2] Add inline connection flags to meow CLI setup (--host, --port, --database, --user, --password) in src/index.tsx
+- [X] T024 [US2] Implement CLI args to Configuration conversion in src/config/parser.ts
+- [X] T025 [US2] Implement config merging (CLI flags override config file values) in src/config/parser.ts
+- [X] T026 [US2] Implement validation for minimum required args (--host and --database when no config) in src/config/parser.ts
+- [X] T027 [US2] Add default port (5432) and default user (current OS user) handling in src/config/parser.ts
+- [X] T028 [US2] Display usage help with required options when insufficient arguments provided in src/index.tsx
 
 **Checkpoint**: User Story 2 complete - can use inline flags or mix with config file
 
