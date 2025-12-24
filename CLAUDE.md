@@ -72,6 +72,8 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - N/A (queries PostgreSQL nodes via ConnectionManager, no local storage) (004-polling-service)
 - TypeScript 5.7 (strict mode) + Zustand 5.x (with subscribeWithSelector + devtools middleware), React 18.x, Ink 5.x (005-state-management)
 - In-memory Zustand store (no persistence required) (005-state-management)
+- TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.0.x (existing stack) (006-ui-framework)
+- N/A (UI-only feature, uses existing Zustand store) (006-ui-framework)
 
 ## Development Environment
 
@@ -81,6 +83,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
+- 006-ui-framework: Added TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.0.x (existing stack)
 - 005-state-management: Implemented Zustand store with connection, replication, and UI slices. Replication slice tracks nodes, subscriptions, slots, conflicts, and lag history (60-sample FIFO). UI slice handles panel focus, modal state with focus preservation, and j/k list navigation. Includes 56 passing tests and memoized selectors for aggregations, filters, and computed values.
 - 004-polling-service: Added PollingService with event-based data collection, configurable intervals (250ms min), per-node pglogical detection, partial results on node failure, and typed event subscriptions for stats/slots/subscriptions/conflicts
-- 003-connection-management: Added ConnectionManager service with multi-node pooling, health monitoring, parallel queries, dynamic node management, and graceful shutdown
