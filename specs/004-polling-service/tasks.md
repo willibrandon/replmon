@@ -105,11 +105,11 @@
 
 ### Implementation for User Story 4
 
-- [ ] T026 [US4] Implement per-node error capture in poll cycle in `src/services/polling/index.ts`
-- [ ] T027 [US4] Implement NodeData wrapper with success/error fields in poll result aggregation in `src/services/polling/index.ts`
-- [ ] T028 [US4] Implement partial result emission (FR-008) when some nodes fail in `src/services/polling/index.ts`
-- [ ] T029 [US4] Implement `error` event emission when all nodes fail in `src/services/polling/index.ts`
-- [ ] T030 [US4] Implement graceful degradation when ConnectionManager not ready (FR-015) in `src/services/polling/index.ts`
+- [X] T026 [US4] Implement per-node error capture in poll cycle in `src/services/polling/index.ts`
+- [X] T027 [US4] Implement NodeData wrapper with success/error fields in poll result aggregation in `src/services/polling/index.ts`
+- [X] T028 [US4] Implement partial result emission (FR-008) when some nodes fail in `src/services/polling/index.ts`
+- [X] T029 [US4] Implement `error` event emission when all nodes fail in `src/services/polling/index.ts`
+- [X] T030 [US4] Implement graceful degradation when ConnectionManager not ready (FR-015) in `src/services/polling/index.ts`
 
 **Checkpoint**: Service resilient to node failures, emits partial results
 
