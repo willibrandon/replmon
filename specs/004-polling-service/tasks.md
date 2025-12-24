@@ -123,11 +123,11 @@
 
 ### Implementation for User Story 5
 
-- [ ] T031 [US5] Emit `stats` event with NodeData<ReplicationStats[]>[] after each cycle in `src/services/polling/index.ts`
-- [ ] T032 [US5] Emit `slots` event with NodeData<SlotData[]>[] after each cycle in `src/services/polling/index.ts`
-- [ ] T033 [US5] Emit `subscriptions` event with NodeData<SubscriptionData[]>[] after each cycle in `src/services/polling/index.ts`
-- [ ] T034 [US5] Emit `conflicts` event with NodeData<ConflictData[]>[] after each cycle in `src/services/polling/index.ts`
-- [ ] T035 [US5] Implement `on()`, `off()`, `once()` typed event methods in `src/services/polling/index.ts`
+- [X] T031 [US5] Emit `stats` event with NodeData<ReplicationStats[]>[] after each cycle in `src/services/polling/index.ts`
+- [X] T032 [US5] Emit `slots` event with NodeData<SlotData[]>[] after each cycle in `src/services/polling/index.ts`
+- [X] T033 [US5] Emit `subscriptions` event with NodeData<SubscriptionData[]>[] after each cycle in `src/services/polling/index.ts`
+- [X] T034 [US5] Emit `conflicts` event with NodeData<ConflictData[]>[] after each cycle in `src/services/polling/index.ts`
+- [X] T035 [US5] Implement `on()`, `off()`, `once()` typed event methods in `src/services/polling/index.ts`
 
 **Checkpoint**: Components can subscribe to specific data categories
 
@@ -137,10 +137,10 @@
 
 **Purpose**: Final validation and documentation
 
-- [ ] T036 [P] Verify all exports from `src/services/polling/index.ts` match IPollingService contract
-- [ ] T037 [P] Verify TypeScript strict mode passes with no `any` types
-- [ ] T038 Run quickstart.md code examples to validate API
-- [ ] T039 Update plan.md with "Implementation Complete" status
+- [X] T036 [P] Verify all exports from `src/services/polling/index.ts` match IPollingService contract
+- [X] T037 [P] Verify TypeScript strict mode passes with no `any` types
+- [X] T038 Run quickstart.md code examples to validate API
+- [X] T039 Update plan.md with "Implementation Complete" status
 
 ---
 

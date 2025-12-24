@@ -23,6 +23,10 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 - Parallel query execution across nodes
 - Dynamic node addition/removal at runtime
 - Graceful shutdown with connection draining
+- Event-based polling with configurable intervals (250ms-∞)
+- Per-node pglogical detection with caching
+- Partial results on node failure (graceful degradation)
+- Typed event subscriptions for stats, slots, subscriptions, and conflicts
 
 ## Installation
 
