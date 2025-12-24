@@ -63,6 +63,8 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - YAML configuration files (no database for this feature) (001-project-setup-cli)
 - TypeScript 5.7 (strict mode) + yaml 2.6.x, zod 3.24.x, meow 13.x, React 18.x, Ink 5.x, zustand 5.x (002-yaml-config)
 - YAML files (no database) (002-yaml-config)
+- TypeScript 5.7 (strict mode) + pg (^8.x), pg-pool (^3.x), existing Zustand store, existing YAML config system (002-yaml-config) (003-connection-management)
+- PostgreSQL 10+ (external nodes being monitored) (003-connection-management)
 
 ## Recent Changes
 - 002-yaml-config: Added YAML configuration with env var interpolation, multi-cluster support, theme customization, and threshold configuration
