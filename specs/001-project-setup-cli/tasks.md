@@ -19,9 +19,9 @@
 
 **Purpose**: Project initialization, dependencies, and TypeScript configuration
 
-- [ ] T001 Initialize Bun project with package.json at repository root
-- [ ] T002 Configure TypeScript strict mode in tsconfig.json
-- [ ] T003 [P] Create project directory structure per plan.md in src/
+- [X] T001 Initialize Bun project with package.json at repository root
+- [X] T002 Configure TypeScript strict mode in tsconfig.json
+- [X] T003 [P] Create project directory structure per plan.md in src/
 
 ---
 
@@ -31,15 +31,15 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Create Configuration interface in src/types/config.ts
-- [ ] T005 [P] Create CLIArguments interface in src/types/cli.ts
-- [ ] T006 [P] Create ConnectionConfig interface in src/types/connection.ts
-- [ ] T007 [P] Create YAMLConfigFile and YAMLNodeConfig interfaces in src/types/yaml-config.ts
-- [ ] T008 [P] Create ConnectionStoreState, ConnectionStoreActions types in src/store/connection.ts
-- [ ] T009 Create Zod validation schemas for ConnectionConfig and Configuration in src/config/schemas.ts
-- [ ] T010 Implement Zustand connection store with subscribeWithSelector in src/store/connection.ts
-- [ ] T011 Create base App component shell in src/components/App.tsx
-- [ ] T012 Create StatusBar component in src/components/StatusBar.tsx
+- [X] T004 [P] Create Configuration interface in src/types/config.ts
+- [X] T005 [P] Create CLIArguments interface in src/types/cli.ts
+- [X] T006 [P] Create ConnectionConfig interface in src/types/connection.ts
+- [X] T007 [P] Create YAMLConfigFile and YAMLNodeConfig interfaces in src/types/yaml-config.ts
+- [X] T008 [P] Create ConnectionStoreState, ConnectionStoreActions types in src/store/connection.ts
+- [X] T009 Create Zod validation schemas for ConnectionConfig and Configuration in src/config/schemas.ts
+- [X] T010 Implement Zustand connection store with subscribeWithSelector in src/store/connection.ts
+- [X] T011 Create base App component shell in src/components/App.tsx
+- [X] T012 Create StatusBar component in src/components/StatusBar.tsx
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 

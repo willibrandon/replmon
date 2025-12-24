@@ -1,0 +1,41 @@
+{
+  "name": "replmon",
+  "version": "0.1.0",
+  "description": "PostgreSQL replication monitoring TUI",
+  "type": "module",
+  "main": "src/index.tsx",
+  "bin": {
+    "replmon": "src/index.tsx"
+  },
+  "scripts": {
+    "start": "bun run src/index.tsx",
+    "dev": "bun --watch src/index.tsx",
+    "test": "bun test",
+    "build": "bun build src/index.tsx --outdir dist --target node"
+  },
+  "dependencies": {
+    "ink": "^5.0.1",
+    "meow": "^13.2.0",
+    "react": "^18.3.1",
+    "yaml": "^2.6.1",
+    "zod": "^3.24.1",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@types/react": "^18.3.17",
+    "ink-testing-library": "^4.0.0",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "postgresql",
+    "replication",
+    "monitoring",
+    "tui",
+    "pglogical"
+  ],
+  "license": "MIT"
+}
