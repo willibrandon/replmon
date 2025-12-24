@@ -19,6 +19,10 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 - Operations: pause/resume subscriptions, resync tables, manage slots
 - Multi-cluster configuration with easy switching
 - Keyboard-driven interface (mouse optional)
+- Multi-node connection pooling with health monitoring
+- Parallel query execution across nodes
+- Dynamic node addition/removal at runtime
+- Graceful shutdown with connection draining
 
 ## Installation
 

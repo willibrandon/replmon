@@ -67,5 +67,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - PostgreSQL 10+ (external nodes being monitored) (003-connection-management)
 
 ## Recent Changes
+- 003-connection-management: Added ConnectionManager service with multi-node pooling, health monitoring, parallel queries, dynamic node management, and graceful shutdown
 - 002-yaml-config: Added YAML configuration with env var interpolation, multi-cluster support, theme customization, and threshold configuration
 - 001-project-setup-cli: Added TypeScript 5.x (strict mode) on Bun 1.x (Node.js 18+ fallback) + React 18.x, Ink 5.x, meow 13.x, js-yaml, Zustand
