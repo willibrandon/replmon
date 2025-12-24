@@ -71,10 +71,10 @@
 
 ### Implementation for User Story 2
 
-- [ ] T018 [US2] Implement PollingConfig validation (minimum 250ms enforcement) in `src/services/polling/index.ts`
-- [ ] T019 [US2] Implement `getConfig()` returning resolved configuration in `src/services/polling/index.ts`
-- [ ] T020 [US2] Implement `setInterval()` for runtime interval changes in `src/services/polling/index.ts`
-- [ ] T021 [US2] Implement default 1000ms interval when no config provided in `src/services/polling/index.ts`
+- [X] T018 [US2] Implement PollingConfig validation (minimum 250ms enforcement) in `src/services/polling/index.ts`
+- [X] T019 [US2] Implement `getConfig()` returning resolved configuration in `src/services/polling/index.ts`
+- [X] T020 [US2] Implement `setInterval()` for runtime interval changes in `src/services/polling/index.ts`
+- [X] T021 [US2] Implement default 1000ms interval when no config provided in `src/services/polling/index.ts`
 
 **Checkpoint**: Interval configuration works at construction and runtime
 
