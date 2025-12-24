@@ -50,14 +50,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Create PollingService class skeleton with constructor accepting ConnectionManager in `src/services/polling/index.ts`
-- [ ] T011 [US1] Implement TypedEventEmitter pattern for PollingEvents in `src/services/polling/index.ts`
-- [ ] T012 [US1] Implement private `poll()` method executing parallel queries via ConnectionManager in `src/services/polling/index.ts`
-- [ ] T013 [US1] Implement `start()` with immediate first poll, then interval scheduling in `src/services/polling/index.ts`
-- [ ] T014 [US1] Implement `stop()` with in-flight result discard (FR-012) in `src/services/polling/index.ts`
-- [ ] T015 [US1] Implement `isRunning()` state getter in `src/services/polling/index.ts`
-- [ ] T016 [US1] Wire query modules to poll cycle and emit `data` event with PollingCycleResult in `src/services/polling/index.ts`
-- [ ] T017 [US1] Emit lifecycle events (`started`, `stopped`, `cycle:start`, `cycle:complete`) in `src/services/polling/index.ts`
+- [X] T010 [US1] Create PollingService class skeleton with constructor accepting ConnectionManager in `src/services/polling/index.ts`
+- [X] T011 [US1] Implement TypedEventEmitter pattern for PollingEvents in `src/services/polling/index.ts`
+- [X] T012 [US1] Implement private `poll()` method executing parallel queries via ConnectionManager in `src/services/polling/index.ts`
+- [X] T013 [US1] Implement `start()` with immediate first poll, then interval scheduling in `src/services/polling/index.ts`
+- [X] T014 [US1] Implement `stop()` with in-flight result discard (FR-012) in `src/services/polling/index.ts`
+- [X] T015 [US1] Implement `isRunning()` state getter in `src/services/polling/index.ts`
+- [X] T016 [US1] Wire query modules to poll cycle and emit `data` event with PollingCycleResult in `src/services/polling/index.ts`
+- [X] T017 [US1] Emit lifecycle events (`started`, `stopped`, `cycle:start`, `cycle:complete`) in `src/services/polling/index.ts`
 
 **Checkpoint**: PollingService emits complete `data` events at configured intervals
 

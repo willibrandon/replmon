@@ -68,6 +68,13 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - TypeScript 5.7 (strict mode) + Node.js EventEmitter, ConnectionManager (003-connection-management), pg (^8.x) (004-polling-service)
 - N/A (queries PostgreSQL nodes via ConnectionManager, no local storage) (004-polling-service)
 
+## Development Environment
+
+- Multiple PostgreSQL instances (PG13-18) running locally via pgrx
+- Active replication setup: PG18 primary (28818) + standby (28819)
+- Homebrew PG18 on default port 5432
+- User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
+
 ## Recent Changes
 - 003-connection-management: Added ConnectionManager service with multi-node pooling, health monitoring, parallel queries, dynamic node management, and graceful shutdown
 - 002-yaml-config: Added YAML configuration with env var interpolation, multi-cluster support, theme customization, and threshold configuration
