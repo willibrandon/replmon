@@ -20,8 +20,8 @@
 
 **Purpose**: Project initialization and shared type definitions
 
-- [ ] T001 [P] Install dev dependency `@redux-devtools/extension` for TypeScript types
-- [ ] T002 Create store types at `src/store/types.ts` based on contracts/store-types.ts
+- [x] T001 [P] Install dev dependency `@redux-devtools/extension` for TypeScript types
+- [x] T002 Create store types at `src/store/types.ts` based on contracts/store-types.ts
 
 ---
 
@@ -31,13 +31,13 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Create replication slice at `src/store/replication.ts` with state and actions per contracts
-- [ ] T004 Create UI slice at `src/store/ui.ts` with state and actions per contracts
-- [ ] T005 Update combined store export at `src/store/index.ts` to merge connection, replication, and UI slices with devtools middleware
-- [ ] T006 Create selectors index at `src/store/selectors/index.ts` with re-exports
-- [ ] T007 [P] Create aggregation selectors at `src/store/selectors/aggregations.ts` per contracts/selectors.ts
-- [ ] T008 [P] Create filter selectors at `src/store/selectors/filters.ts` per contracts/selectors.ts
-- [ ] T009 [P] Create computed selectors at `src/store/selectors/computed.ts` per contracts/selectors.ts
+- [x] T003 Create replication slice at `src/store/replication.ts` with state and actions per contracts
+- [x] T004 Create UI slice at `src/store/ui.ts` with state and actions per contracts
+- [x] T005 Update combined store export at `src/store/index.ts` to merge connection, replication, and UI slices with devtools middleware
+- [x] T006 Create selectors index at `src/store/selectors/index.ts` with re-exports
+- [x] T007 [P] Create aggregation selectors at `src/store/selectors/aggregations.ts` per contracts/selectors.ts
+- [x] T008 [P] Create filter selectors at `src/store/selectors/filters.ts` per contracts/selectors.ts
+- [x] T009 [P] Create computed selectors at `src/store/selectors/computed.ts` per contracts/selectors.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -51,12 +51,12 @@
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Extend connection slice at `src/store/connection.ts` with node initialization action `initializeNodes(nodeIds: string[])`
-- [ ] T011 [US1] Add node status selectors to `src/store/selectors/computed.ts`: `selectNodeCountByStatus`, `selectIsPollingActive`
-- [ ] T012 [US1] Add node health selectors to `src/store/selectors/aggregations.ts`: `selectNodeIds`, `selectNodeById`, `selectNodeStatus`, `selectNodeHealth`, `selectHealthyNodeIds`, `selectStaleNodeIds`
-- [ ] T013 [US1] Implement `initializeNodesInfo` action in `src/store/replication.ts` to populate nodes Map from config
-- [ ] T014 [US1] Implement `markNodeStale` and `clearNodeStale` actions in `src/store/replication.ts` for stale data handling
-- [ ] T015 [US1] Add `selectIsNodeStale`, `selectNodeLastUpdated`, `selectNodeHasPglogical` selectors to `src/store/selectors/aggregations.ts`
+- [x] T010 [US1] Extend connection slice at `src/store/connection.ts` with node initialization action `initializeNodes(nodeIds: string[])` *(implemented in src/store/index.ts)*
+- [x] T011 [US1] Add node status selectors to `src/store/selectors/computed.ts`: `selectNodeCountByStatus`, `selectIsPollingActive`
+- [x] T012 [US1] Add node health selectors to `src/store/selectors/aggregations.ts`: `selectNodeIds`, `selectNodeById`, `selectNodeStatus`, `selectNodeHealth`, `selectHealthyNodeIds`, `selectStaleNodeIds`
+- [x] T013 [US1] Implement `initializeNodesInfo` action in `src/store/replication.ts` to populate nodes Map from config
+- [x] T014 [US1] Implement `markNodeStale` and `clearNodeStale` actions in `src/store/replication.ts` for stale data handling
+- [x] T015 [US1] Add `selectIsNodeStale`, `selectNodeLastUpdated`, `selectNodeHasPglogical` selectors to `src/store/selectors/aggregations.ts`
 
 **Checkpoint**: User Story 1 complete - connection status displayed with stale indicators
 
@@ -70,11 +70,11 @@
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Implement `setFocusedPanel` action in `src/store/ui.ts` with panel validation
-- [ ] T017 [US2] Implement `focusNextPanel` action in `src/store/ui.ts` using PANEL_ORDER constant for Tab cycling
-- [ ] T018 [US2] Implement `focusPreviousPanel` action in `src/store/ui.ts` for Shift+Tab reverse cycling
-- [ ] T019 [US2] Add basic UI selectors to `src/store/selectors/computed.ts`: `selectCurrentScreen`, `selectFocusedPanel`, `selectPglogicalMode`
-- [ ] T020 [US2] Export PANEL_ORDER and PANEL_SHORTCUTS constants from `src/store/types.ts` for keyboard handling
+- [x] T016 [US2] Implement `setFocusedPanel` action in `src/store/ui.ts` with panel validation
+- [x] T017 [US2] Implement `focusNextPanel` action in `src/store/ui.ts` using PANEL_ORDER constant for Tab cycling
+- [x] T018 [US2] Implement `focusPreviousPanel` action in `src/store/ui.ts` for Shift+Tab reverse cycling
+- [x] T019 [US2] Add basic UI selectors to `src/store/selectors/computed.ts`: `selectCurrentScreen`, `selectFocusedPanel`, `selectPglogicalMode`
+- [x] T020 [US2] Export PANEL_ORDER and PANEL_SHORTCUTS constants from `src/store/types.ts` for keyboard handling
 
 **Checkpoint**: User Story 2 complete - panel navigation via keyboard works
 
@@ -88,12 +88,12 @@
 
 ### Implementation for User Story 3
 
-- [ ] T021 [US3] Implement `setSubscriptions` action in `src/store/replication.ts` to update per-node subscription data
-- [ ] T022 [US3] Add subscription selectors to `src/store/selectors/aggregations.ts`: `selectSubscriptionsByNode`, `selectAllSubscriptions`, `selectSubscriptionByName`
-- [ ] T023 [US3] Add subscription filter selectors to `src/store/selectors/filters.ts`: `selectFilteredSubscriptions`, `selectLaggingSubscriptions`, `selectUnhealthySubscriptions`
-- [ ] T024 [US3] Add subscription computed selector `selectTotalSubscriptionCount` to `src/store/selectors/computed.ts`
-- [ ] T025 [US3] Implement `setSelection` action in `src/store/ui.ts` for subscription selection within panel
-- [ ] T026 [US3] Add selection selectors to `src/store/selectors/computed.ts`: `selectPanelSelection`, `selectCurrentSelection`, `selectIsSelected`
+- [x] T021 [US3] Implement `setSubscriptions` action in `src/store/replication.ts` to update per-node subscription data
+- [x] T022 [US3] Add subscription selectors to `src/store/selectors/aggregations.ts`: `selectSubscriptionsByNode`, `selectAllSubscriptions`, `selectSubscriptionByName`
+- [x] T023 [US3] Add subscription filter selectors to `src/store/selectors/filters.ts`: `selectFilteredSubscriptions`, `selectLaggingSubscriptions`, `selectUnhealthySubscriptions`
+- [x] T024 [US3] Add subscription computed selector `selectTotalSubscriptionCount` to `src/store/selectors/computed.ts`
+- [x] T025 [US3] Implement `setSelection` action in `src/store/ui.ts` for subscription selection within panel
+- [x] T026 [US3] Add selection selectors to `src/store/selectors/computed.ts`: `selectPanelSelection`, `selectCurrentSelection`, `selectIsSelected`
 
 **Checkpoint**: User Story 3 complete - subscription list with selection works
 
@@ -107,10 +107,10 @@
 
 ### Implementation for User Story 4
 
-- [ ] T027 [US4] Implement `setSlots` action in `src/store/replication.ts` to update per-node slot data
-- [ ] T028 [US4] Add slot selectors to `src/store/selectors/aggregations.ts`: `selectSlotsByNode`, `selectAllSlots`, `selectSlotByName`
-- [ ] T029 [US4] Add slot filter selectors to `src/store/selectors/filters.ts`: `selectActiveSlots`, `selectInactiveSlots`, `selectStaleSlots`, `selectLogicalSlots`, `selectPhysicalSlots`
-- [ ] T030 [US4] Add slot computed selectors to `src/store/selectors/computed.ts`: `selectTotalSlotCount`, `selectActiveSlotCount`, `selectTotalRetainedBytes`
+- [x] T027 [US4] Implement `setSlots` action in `src/store/replication.ts` to update per-node slot data
+- [x] T028 [US4] Add slot selectors to `src/store/selectors/aggregations.ts`: `selectSlotsByNode`, `selectAllSlots`, `selectSlotByName`
+- [x] T029 [US4] Add slot filter selectors to `src/store/selectors/filters.ts`: `selectActiveSlots`, `selectInactiveSlots`, `selectStaleSlots`, `selectLogicalSlots`, `selectPhysicalSlots`
+- [x] T030 [US4] Add slot computed selectors to `src/store/selectors/computed.ts`: `selectTotalSlotCount`, `selectActiveSlotCount`, `selectTotalRetainedBytes`
 
 **Checkpoint**: User Story 4 complete - slot monitoring with filtering works
 
@@ -124,9 +124,9 @@
 
 ### Implementation for User Story 5
 
-- [ ] T031 [US5] Implement `setConflicts` action in `src/store/replication.ts` to update per-node conflict data
-- [ ] T032 [US5] Add conflict selectors to `src/store/selectors/aggregations.ts`: `selectConflictsByNode`, `selectAllConflicts`, `selectConflictsBySubscription`
-- [ ] T033 [US5] Add conflict computed selectors to `src/store/selectors/computed.ts`: `selectTotalConflictCount`, `selectHasConflicts`, `selectSubscriptionsWithConflicts`
+- [x] T031 [US5] Implement `setConflicts` action in `src/store/replication.ts` to update per-node conflict data
+- [x] T032 [US5] Add conflict selectors to `src/store/selectors/aggregations.ts`: `selectConflictsByNode`, `selectAllConflicts`, `selectConflictsBySubscription`
+- [x] T033 [US5] Add conflict computed selectors to `src/store/selectors/computed.ts`: `selectTotalConflictCount`, `selectHasConflicts`, `selectSubscriptionsWithConflicts`
 
 **Checkpoint**: User Story 5 complete - conflict review works
 
@@ -140,10 +140,10 @@
 
 ### Implementation for User Story 6
 
-- [ ] T034 [US6] Implement `appendLagSample` action in `src/store/replication.ts` with FIFO eviction at MAX_LAG_HISTORY_SAMPLES
-- [ ] T035 [US6] Add lag history selectors to `src/store/selectors/aggregations.ts`: `selectLagHistory`, `selectLatestLagSample`
-- [ ] T036 [US6] Add lag trend selectors to `src/store/selectors/computed.ts`: `selectLagTrend`, `selectMaxHistoricalLag`, `selectMinHistoricalLag`, `selectAverageLag`
-- [ ] T037 [US6] Add global lag selectors to `src/store/selectors/computed.ts`: `selectMaxLagSeconds`, `selectMaxLagBytes`
+- [x] T034 [US6] Implement `appendLagSample` action in `src/store/replication.ts` with FIFO eviction at MAX_LAG_HISTORY_SAMPLES
+- [x] T035 [US6] Add lag history selectors to `src/store/selectors/aggregations.ts`: `selectLagHistory`, `selectLatestLagSample`
+- [x] T036 [US6] Add lag trend selectors to `src/store/selectors/computed.ts`: `selectLagTrend`, `selectMaxHistoricalLag`, `selectMinHistoricalLag`, `selectAverageLag`
+- [x] T037 [US6] Add global lag selectors to `src/store/selectors/computed.ts`: `selectMaxLagSeconds`, `selectMaxLagBytes`
 
 **Checkpoint**: User Story 6 complete - lag history tracking with sparkline data works
 
@@ -157,9 +157,9 @@
 
 ### Implementation for User Story 7
 
-- [ ] T038 [US7] Implement `openModal` action in `src/store/ui.ts` with focus preservation (previousFocusedPanel)
-- [ ] T039 [US7] Implement `closeModal` action in `src/store/ui.ts` with focus restoration
-- [ ] T040 [US7] Add modal selectors to `src/store/selectors/computed.ts`: `selectActiveModal`, `selectModalData`, `selectIsModalOpen`
+- [x] T038 [US7] Implement `openModal` action in `src/store/ui.ts` with focus preservation (previousFocusedPanel)
+- [x] T039 [US7] Implement `closeModal` action in `src/store/ui.ts` with focus restoration
+- [x] T040 [US7] Add modal selectors to `src/store/selectors/computed.ts`: `selectActiveModal`, `selectModalData`, `selectIsModalOpen`
 
 **Checkpoint**: User Story 7 complete - modal interaction with focus management works
 
@@ -169,15 +169,15 @@
 
 **Purpose**: PollingService integration and cross-cutting concerns
 
-- [ ] T041 Implement `handlePollingData` action in `src/store/replication.ts` to process complete PollingCycleResult (subscriptions, slots, conflicts, lag samples)
-- [ ] T042 Implement `setLastUpdated` action in `src/store/replication.ts` for polling timestamp tracking
-- [ ] T043 Implement `setNodePglogical` action in `src/store/replication.ts` for runtime pglogical detection
-- [ ] T044 Implement `clearReplicationData` action in `src/store/replication.ts` for store reset
-- [ ] T045 Implement `resetUIState` action in `src/store/ui.ts` for UI reset
-- [ ] T046 Implement `selectNext` and `selectPrevious` actions in `src/store/ui.ts` for j/k list navigation
-- [ ] T047 Add `selectSelectableItems`, `selectNextSelectableItem`, `selectPreviousSelectableItem` to `src/store/selectors/computed.ts`
-- [ ] T048 Add `selectSystemHealthSummary`, `selectLastPollingTime` to `src/store/selectors/computed.ts`
-- [ ] T049 Validate quickstart.md usage examples against implemented store
+- [x] T041 Implement `handlePollingData` action in `src/store/replication.ts` to process complete PollingCycleResult (subscriptions, slots, conflicts, lag samples)
+- [x] T042 Implement `setLastUpdated` action in `src/store/replication.ts` for polling timestamp tracking
+- [x] T043 Implement `setNodePglogical` action in `src/store/replication.ts` for runtime pglogical detection
+- [x] T044 Implement `clearReplicationData` action in `src/store/replication.ts` for store reset
+- [x] T045 Implement `resetUIState` action in `src/store/ui.ts` for UI reset
+- [x] T046 Implement `selectNext` and `selectPrevious` actions in `src/store/ui.ts` for j/k list navigation
+- [x] T047 Add `selectSelectableItems`, `selectNextSelectableItem`, `selectPreviousSelectableItem` to `src/store/selectors/computed.ts`
+- [x] T048 Add `selectSystemHealthSummary`, `selectLastPollingTime` to `src/store/selectors/computed.ts`
+- [x] T049 Validate quickstart.md usage examples against implemented store
 
 ---
 
