@@ -19,9 +19,9 @@
 
 **Purpose**: Project initialization and directory structure
 
-- [ ] T001 Create polling service directory structure at `src/services/polling/`
-- [ ] T002 [P] Create types module with all data types, enums, and event definitions in `src/services/polling/types.ts`
-- [ ] T003 [P] Create re-export module in `src/types/polling.ts` for convenience imports
+- [X] T001 Create polling service directory structure at `src/services/polling/`
+- [X] T002 [P] Create types module with all data types, enums, and event definitions in `src/services/polling/types.ts`
+- [X] T003 [P] Create re-export module in `src/types/polling.ts` for convenience imports
 
 ---
 
@@ -31,12 +31,12 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Implement pglogical detection logic with caching in `src/services/polling/pglogical-detector.ts`
-- [ ] T005 [P] Implement stats query module with lag calculation in `src/services/polling/queries/stats.ts`
-- [ ] T006 [P] Implement slots query module with WAL retention calculation in `src/services/polling/queries/slots.ts`
-- [ ] T007 [P] Implement subscriptions query module (native + pglogical) in `src/services/polling/queries/subscriptions.ts`
-- [ ] T008 [P] Implement conflicts query module (PG16+ native, unavailable fallback) in `src/services/polling/queries/conflicts.ts`
-- [ ] T009 Create query aggregator that executes all query modules in `src/services/polling/queries/index.ts`
+- [X] T004 Implement pglogical detection logic with caching in `src/services/polling/pglogical-detector.ts`
+- [X] T005 [P] Implement stats query module with lag calculation in `src/services/polling/queries/stats.ts`
+- [X] T006 [P] Implement slots query module with WAL retention calculation in `src/services/polling/queries/slots.ts`
+- [X] T007 [P] Implement subscriptions query module (native + pglogical) in `src/services/polling/queries/subscriptions.ts`
+- [X] T008 [P] Implement conflicts query module (PG16+ native, unavailable fallback) in `src/services/polling/queries/conflicts.ts`
+- [X] T009 Create query aggregator that executes all query modules in `src/services/polling/queries/index.ts`
 
 **Checkpoint**: Foundation ready - query modules and pglogical detection complete
 

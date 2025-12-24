@@ -49,3 +49,27 @@ export {
   InvalidThresholdError,
   InsufficientArgumentsError,
 } from './errors.js';
+
+// Polling service types
+export type {
+  PollingConfig,
+  ResolvedPollingConfig,
+  ReplicationState,
+  SyncState,
+  SlotType,
+  WalStatus,
+  SubscriptionStatus,
+  SubscriptionSource,
+  ConflictSource,
+  ReplicationStats,
+  SlotData,
+  SubscriptionData,
+  ConflictData,
+  NodeData,
+  PollingCycleResult,
+  PollingError,
+  PollingEvents,
+  QueryFn,
+  QueryModule,
+  PglogicalDetectionResult,
+} from './polling.js';
