@@ -55,16 +55,16 @@
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Implement YAML file loader with fs.readFileSync in src/config/loader.ts
-- [ ] T014 [US1] Implement environment variable interpolation (${VAR_NAME} syntax) in src/config/loader.ts
-- [ ] T015 [US1] Implement config validation using Zod schemas in src/config/validator.ts
-- [ ] T016 [US1] Implement error formatting for file not found, YAML parse errors, validation errors in src/config/validator.ts
-- [ ] T017 [US1] Create CLI entry point with meow setup (--config flag) in src/index.tsx
-- [ ] T018 [US1] Implement ConnectionStatus component showing per-node status in src/components/ConnectionStatus.tsx
-- [ ] T019 [US1] Implement Dashboard component with Topology panel placeholder in src/components/Dashboard.tsx
-- [ ] T020 [US1] Integrate config loading into App component with screen transitions in src/components/App.tsx
-- [ ] T021 [US1] Add keyboard handlers (r=retry, q=quit) on ConnectionStatus screen in src/components/ConnectionStatus.tsx
-- [ ] T022 [US1] Implement graceful exit with process.exit(0) on 'q' and process.exit(1) on errors in src/index.tsx
+- [X] T013 [US1] Implement YAML file loader with fs.readFileSync in src/config/loader.ts
+- [X] T014 [US1] Implement environment variable interpolation (${VAR_NAME} syntax) in src/config/loader.ts
+- [X] T015 [US1] Implement config validation using Zod schemas in src/config/validator.ts
+- [X] T016 [US1] Implement error formatting for file not found, YAML parse errors, validation errors in src/config/validator.ts
+- [X] T017 [US1] Create CLI entry point with meow setup (--config flag) in src/index.tsx
+- [X] T018 [US1] Implement ConnectionStatus component showing per-node status in src/components/ConnectionStatus.tsx
+- [X] T019 [US1] Implement Dashboard component with Topology panel placeholder in src/components/Dashboard.tsx
+- [X] T020 [US1] Integrate config loading into App component with screen transitions in src/components/App.tsx
+- [X] T021 [US1] Add keyboard handlers (r=retry, q=quit) on ConnectionStatus screen in src/components/ConnectionStatus.tsx
+- [X] T022 [US1] Implement graceful exit with process.exit(0) on 'q' and process.exit(1) on errors in src/index.tsx
 
 **Checkpoint**: User Story 1 complete - can load config file and display connection status screen with retry/quit
 
