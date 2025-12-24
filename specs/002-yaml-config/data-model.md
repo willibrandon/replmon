@@ -92,6 +92,7 @@ Metric thresholds for replication monitoring.
 |-------|------|----------|---------|-------------|
 | replication_lag | `ThresholdLevels` | No | `{warning: 10, critical: 60}` | Lag thresholds in seconds |
 | slot_retention | `ThresholdLevels` | No | `{warning: 1GB, critical: 5GB}` | Slot retention thresholds |
+| conflict_rate | `ThresholdLevels` | No | `{warning: 5, critical: 20}` | Conflict rate thresholds (per minute) |
 
 ---
 
@@ -164,6 +165,7 @@ Parsed threshold values in canonical units.
 |-------|------|-------------|
 | replicationLag | `{warning: number, critical: number}` | Seconds |
 | slotRetention | `{warning: number, critical: number}` | Bytes |
+| conflictRate | `{warning: number, critical: number}` | Conflicts per minute |
 
 ---
 
@@ -262,7 +264,8 @@ YAMLConfigFile
     └──── thresholds ─────▶ YAMLThresholdConfig
                                    │
                                    ├── replication_lag ──▶ ThresholdLevels
-                                   └── slot_retention ───▶ ThresholdLevels
+                                   ├── slot_retention ───▶ ThresholdLevels
+                                   └── conflict_rate ────▶ ThresholdLevels
 ```
 
 ---
@@ -277,5 +280,7 @@ YAMLConfigFile
 | YAMLThresholdConfig | replication_lag.critical | `60` (seconds) |
 | YAMLThresholdConfig | slot_retention.warning | `1073741824` (1GB) |
 | YAMLThresholdConfig | slot_retention.critical | `5368709120` (5GB) |
+| YAMLThresholdConfig | conflict_rate.warning | `5` (conflicts/minute) |
+| YAMLThresholdConfig | conflict_rate.critical | `20` (conflicts/minute) |
 | Theme | name | `dark` |
 | Configuration | pglogical | `false` |

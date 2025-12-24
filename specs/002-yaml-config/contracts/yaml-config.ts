@@ -117,6 +117,9 @@ export interface YAMLThresholdConfig {
 
   /** Slot retention thresholds (in bytes, accepts "1GB" format) */
   slot_retention?: YAMLThresholdLevels;
+
+  /** Conflict rate thresholds (conflicts per minute) */
+  conflict_rate?: YAMLThresholdLevels;
 }
 
 /**

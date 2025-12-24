@@ -129,6 +129,9 @@ export interface ResolvedThresholds {
 
   /** Slot retention thresholds (in bytes) */
   slotRetention: ThresholdLevels;
+
+  /** Conflict rate thresholds (conflicts per minute) */
+  conflictRate: ThresholdLevels;
 }
 
 /**

@@ -132,9 +132,9 @@
 - [ ] T035 [US5] Add threshold schema validation in src/config/schemas.ts (warning/critical numeric or string)
 - [ ] T036 [US5] Implement parseThresholdValue() in src/config/parser.ts for "10s", "1GB" formats
 - [ ] T037 [US5] Add InvalidThresholdError to src/config/errors.ts for invalid threshold values
-- [ ] T038 [US5] Implement resolveThresholds() in src/config/parser.ts applying defaults
+- [ ] T038 [US5] Implement resolveThresholds() in src/config/parser.ts applying defaults for lag, retention, and conflict_rate
 - [ ] T039 [US5] Validate critical >= warning with warning log if inverted in src/config/validator.ts
-- [ ] T040 [US5] Include resolved thresholds in final Configuration output
+- [ ] T040 [US5] Include resolved thresholds (replicationLag, slotRetention, conflictRate) in final Configuration output
 
 **Checkpoint**: User Story 5 complete - thresholds parse, defaults apply, invalid values error
 
@@ -239,4 +239,4 @@ T035 → T036 → T037 → T038 → T039 → T040
 - Environment variable interpolation pattern already exists in loader.ts - extend it
 - No live reload - config read once at startup per spec clarification
 - Error messages must be under 100 characters per SC-004
-- Threshold defaults: lag 10s/60s, retention 1GB/5GB
+- Threshold defaults: lag 10s/60s, retention 1GB/5GB, conflict rate 5/20 per minute

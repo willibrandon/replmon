@@ -82,8 +82,8 @@ As an operator monitoring replication health, I want to configure thresholds for
 
 **Acceptance Scenarios**:
 
-1. **Given** a config with `thresholds: { replication_lag_warning: 30, replication_lag_critical: 60 }`, **When** lag reaches 35 seconds, **Then** the UI shows a warning indicator.
-2. **Given** a config with `thresholds: { slot_retention_warning: 100MB }`, **When** a slot retains 150MB, **Then** the UI shows a warning for that slot.
+1. **Given** a config with `thresholds: { replication_lag: { warning: 30, critical: 60 } }`, **When** lag reaches 35 seconds, **Then** the UI shows a warning indicator.
+2. **Given** a config with `thresholds: { slot_retention: { warning: "100MB" } }`, **When** a slot retains 150MB, **Then** the UI shows a warning for that slot.
 3. **Given** no threshold settings in config, **When** the user runs `replmon`, **Then** default thresholds are used (lag: 10s warn/60s critical, retention: 1GB warn/5GB critical).
 
 ---
@@ -112,7 +112,7 @@ As an operator monitoring replication health, I want to configure thresholds for
 - **FR-010**: System MUST use a default cluster when multiple are defined and none is specified
 - **FR-011**: System MUST support theme selection via a `theme` configuration key
 - **FR-012**: System MUST support threshold configuration for replication metrics (lag, slot retention)
-- **FR-013**: System MUST provide default thresholds when not explicitly configured: replication lag warning at 10 seconds / critical at 60 seconds; slot retention warning at 1GB / critical at 5GB
+- **FR-013**: System MUST provide default thresholds when not explicitly configured: replication lag warning at 10 seconds / critical at 60 seconds; slot retention warning at 1GB / critical at 5GB; conflict rate warning at 5 / critical at 20 conflicts per minute
 - **FR-014**: System MUST support node definitions with host, port, database, user, and password fields
 - **FR-015**: System MUST gracefully handle missing config file at default location (not an error, just no config)
 

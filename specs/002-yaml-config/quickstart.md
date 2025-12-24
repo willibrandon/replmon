@@ -138,6 +138,10 @@ thresholds:
   slot_retention:
     warning: 2GB
     critical: 10GB
+
+  conflict_rate:
+    warning: 10   # conflicts per minute
+    critical: 50
 ```
 
 ## Default Values
@@ -152,6 +156,8 @@ thresholds:
 | Lag critical | 60 seconds |
 | Retention warning | 1GB |
 | Retention critical | 5GB |
+| Conflict rate warning | 5/minute |
+| Conflict rate critical | 20/minute |
 
 ## CLI Overrides
 

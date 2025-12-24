@@ -26,6 +26,12 @@ export const DEFAULT_RETENTION_WARNING_BYTES = 1073741824;
 /** Default slot retention critical threshold (bytes) - 5GB */
 export const DEFAULT_RETENTION_CRITICAL_BYTES = 5368709120;
 
+/** Default conflict rate warning threshold (conflicts per minute) */
+export const DEFAULT_CONFLICT_RATE_WARNING = 5;
+
+/** Default conflict rate critical threshold (conflicts per minute) */
+export const DEFAULT_CONFLICT_RATE_CRITICAL = 20;
+
 /** Default threshold configuration */
 export const DEFAULT_THRESHOLDS: ResolvedThresholds = {
   replicationLag: {
@@ -35,6 +41,10 @@ export const DEFAULT_THRESHOLDS: ResolvedThresholds = {
   slotRetention: {
     warning: DEFAULT_RETENTION_WARNING_BYTES,
     critical: DEFAULT_RETENTION_CRITICAL_BYTES,
+  },
+  conflictRate: {
+    warning: DEFAULT_CONFLICT_RATE_WARNING,
+    critical: DEFAULT_CONFLICT_RATE_CRITICAL,
   },
 };
 
