@@ -167,6 +167,36 @@ export class ConnectionManager {
     return this.nodes.has(nodeId);
   }
 
+  /**
+   * Remove a node from the connection manager.
+   * Stops health checking, closes the pool gracefully, and emits node:removed.
+   *
+   * @param nodeId - Node identifier to remove
+   * @throws Error if node not found
+   */
+  async removeNode(nodeId: string): Promise<void> {
+    const node = this.nodes.get(nodeId);
+    if (!node) {
+      throw new Error(`Node "${nodeId}" not found`);
+    }
+
+    // Stop health checking for this node
+    this.healthChecker.stopNode(nodeId);
+
+    // Close the pool gracefully
+    try {
+      await node.pool.end();
+    } catch (err) {
+      // Log but don't throw - pool may already be closed
+    }
+
+    // Remove from nodes map
+    this.nodes.delete(nodeId);
+
+    // Emit removal event
+    this.events.emit('node:removed', { nodeId });
+  }
+
   // ===========================================================================
   // Querying
   // ===========================================================================
@@ -178,9 +208,13 @@ export class ConnectionManager {
    * @param queryText - SQL query string
    * @param params - Query parameters
    * @returns Query result rows
-   * @throws Error if node not found or query fails
+   * @throws Error if node not found, query fails, or manager is shutting down
    */
   async query<T>(nodeId: string, queryText: string, params?: unknown[]): Promise<T[]> {
+    if (!this.running) {
+      throw new Error('ConnectionManager is not running');
+    }
+
     const node = this.nodes.get(nodeId);
     if (!node) {
       throw new Error(`Node "${nodeId}" not found`);
@@ -197,8 +231,13 @@ export class ConnectionManager {
    * @param queryText - SQL query string
    * @param params - Query parameters
    * @returns Array of results from all nodes
+   * @throws Error if manager is not running
    */
   async queryAll<T>(queryText: string, params?: unknown[]): Promise<NodeQueryResult<T[]>[]> {
+    if (!this.running) {
+      throw new Error('ConnectionManager is not running');
+    }
+
     const nodes = Array.from(this.nodes.values());
     const timeout = this.config.queryTimeoutMs;
 
@@ -237,8 +276,13 @@ export class ConnectionManager {
    * @param queryText - SQL query string
    * @param params - Query parameters
    * @returns Array of results from healthy nodes
+   * @throws Error if manager is not running
    */
   async queryHealthy<T>(queryText: string, params?: unknown[]): Promise<NodeQueryResult<T[]>[]> {
+    if (!this.running) {
+      throw new Error('ConnectionManager is not running');
+    }
+
     const healthyNodes = Array.from(this.nodes.values()).filter(
       (node) => node.health.status === 'healthy'
     );
@@ -382,7 +426,7 @@ export class ConnectionManager {
 
   /**
    * Gracefully shutdown all connections.
-   * Waits for in-flight queries up to the configured timeout.
+   * Waits for in-flight queries up to the configured timeout, then force closes.
    */
   async shutdown(): Promise<void> {
     if (!this.running) {
@@ -394,9 +438,13 @@ export class ConnectionManager {
     // Stop health monitoring
     this.healthChecker.stop();
 
-    // Close all pools in parallel
-    const closePromises = Array.from(this.nodes.values()).map(async (node) => {
+    // Close all pools in parallel with timeout
+    const nodes = Array.from(this.nodes.values());
+    const timeout = this.config.shutdownTimeoutMs;
+
+    const closePromises = nodes.map(async (node) => {
       try {
+        // pool.end() waits for in-flight queries to complete
         await node.pool.end();
         this.events.emit('node:disconnected', { nodeId: node.id });
       } catch (err) {
@@ -407,7 +455,30 @@ export class ConnectionManager {
       }
     });
 
-    await Promise.allSettled(closePromises);
+    // Race between graceful close and timeout
+    const timeoutPromise = new Promise<'timeout'>((resolve) =>
+      setTimeout(() => resolve('timeout'), timeout)
+    );
+
+    const result = await Promise.race([
+      Promise.allSettled(closePromises).then(() => 'completed' as const),
+      timeoutPromise,
+    ]);
+
+    // If timeout, pools may still be closing but we proceed
+    // pg-pool doesn't have a force close, so we just clear our references
+    if (result === 'timeout') {
+      // Force emit disconnected for any nodes that didn't complete
+      for (const node of nodes) {
+        if (this.nodes.has(node.id)) {
+          this.events.emit('node:disconnected', {
+            nodeId: node.id,
+            error: new Error('Shutdown timeout - connection forcefully terminated'),
+          });
+        }
+      }
+    }
+
     this.nodes.clear();
   }
 

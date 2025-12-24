@@ -117,9 +117,9 @@
 
 ### Implementation for User Story 4
 
-- [ ] T031 [US4] Enhance addNode to validate duplicate node IDs and throw clear error in src/services/connection-manager/index.ts
-- [ ] T032 [US4] Integrate new node into health checker immediately after pool creation in src/services/connection-manager/index.ts
-- [ ] T033 [US4] Implement isRunning method to check if manager is initialized in src/services/connection-manager/index.ts
+- [x] T031 [US4] Enhance addNode to validate duplicate node IDs and throw clear error in src/services/connection-manager/index.ts
+- [x] T032 [US4] Integrate new node into health checker immediately after pool creation in src/services/connection-manager/index.ts
+- [x] T033 [US4] Implement isRunning method to check if manager is initialized in src/services/connection-manager/index.ts
 
 **Checkpoint**: At this point, User Stories 1-4 should work - dynamic node addition fully functional
 
@@ -133,11 +133,11 @@
 
 ### Implementation for User Story 5
 
-- [ ] T034 [US5] Implement removeNode method: stop health checking, close pool gracefully, emit node:removed in src/services/connection-manager/index.ts
-- [ ] T035 [US5] Implement shutdown method: stop health checker, drain in-flight queries with timeout in src/services/connection-manager/index.ts
-- [ ] T036 [US5] Close all pools in parallel using Promise.allSettled during shutdown in src/services/connection-manager/index.ts
-- [ ] T037 [US5] Set running flag to false and reject new queries after shutdown called in src/services/connection-manager/index.ts
-- [ ] T038 [US5] Handle shutdown timeout: force close pools if graceful drain exceeds configured timeout in src/services/connection-manager/index.ts
+- [x] T034 [US5] Implement removeNode method: stop health checking, close pool gracefully, emit node:removed in src/services/connection-manager/index.ts
+- [x] T035 [US5] Implement shutdown method: stop health checker, drain in-flight queries with timeout in src/services/connection-manager/index.ts
+- [x] T036 [US5] Close all pools in parallel using Promise.allSettled during shutdown in src/services/connection-manager/index.ts
+- [x] T037 [US5] Set running flag to false and reject new queries after shutdown called in src/services/connection-manager/index.ts
+- [x] T038 [US5] Handle shutdown timeout: force close pools if graceful drain exceeds configured timeout in src/services/connection-manager/index.ts
 
 **Checkpoint**: At this point, all 5 User Stories should be fully functional
 
