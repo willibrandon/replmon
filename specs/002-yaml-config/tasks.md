@@ -19,9 +19,9 @@
 
 **Purpose**: Copy contract types and establish project foundation
 
-- [ ] T001 Copy contract types from specs/002-yaml-config/contracts/ to src/types/
-- [ ] T002 [P] Create src/config/defaults.ts with default path resolution and threshold constants
-- [ ] T003 [P] Create src/types/theme.ts re-exporting theme types from contracts
+- [x] T001 Copy contract types from specs/002-yaml-config/contracts/ to src/types/
+- [x] T002 [P] Create src/config/defaults.ts with default path resolution and threshold constants
+- [x] T003 [P] Create src/types/theme.ts re-exporting theme types from contracts
 
 **Checkpoint**: Type foundation established, ready for foundational implementation
 
@@ -33,10 +33,10 @@
 
 **Critical**: No user story work can begin until this phase is complete
 
-- [ ] T004 Extend src/config/schemas.ts with Zod schemas for clusters, theme, and thresholds
-- [ ] T005 Update src/types/yaml-config.ts to import and re-export new YAML types from contracts
-- [ ] T006 Update src/types/config.ts to import and re-export Configuration, ResolvedTheme, ResolvedThresholds from contracts
-- [ ] T007 Update src/types/cli.ts to add --cluster flag to CLIArguments interface
+- [x] T004 Extend src/config/schemas.ts with Zod schemas for clusters, theme, and thresholds
+- [x] T005 Update src/types/yaml-config.ts to import and re-export new YAML types from contracts
+- [x] T006 Update src/types/config.ts to import and re-export Configuration, ResolvedTheme, ResolvedThresholds from contracts
+- [x] T007 Update src/types/cli.ts to add --cluster flag to CLIArguments interface
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
