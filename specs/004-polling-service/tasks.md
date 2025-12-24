@@ -88,10 +88,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T022 [US3] Implement no-op behavior for `start()` when already running in `src/services/polling/index.ts`
-- [ ] T023 [US3] Implement no-op behavior for `stop()` when already stopped in `src/services/polling/index.ts`
-- [ ] T024 [US3] Implement overlap prevention with `cycle:skip` event (FR-007) in `src/services/polling/index.ts`
-- [ ] T025 [US3] Verify timer cleanup on stop to prevent memory leaks in `src/services/polling/index.ts`
+- [X] T022 [US3] Implement no-op behavior for `start()` when already running in `src/services/polling/index.ts`
+- [X] T023 [US3] Implement no-op behavior for `stop()` when already stopped in `src/services/polling/index.ts`
+- [X] T024 [US3] Implement overlap prevention with `cycle:skip` event (FR-007) in `src/services/polling/index.ts`
+- [X] T025 [US3] Verify timer cleanup on stop to prevent memory leaks in `src/services/polling/index.ts`
 
 **Checkpoint**: Lifecycle control is idempotent and handles edge cases
 
