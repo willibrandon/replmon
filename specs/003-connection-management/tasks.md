@@ -98,12 +98,12 @@
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Create parallel-query module skeleton in src/services/connection-manager/parallel-query.ts
-- [ ] T026 [US3] Implement queryWithTimeout helper: wrap pool.query with timeout using Promise.race in src/services/connection-manager/parallel-query.ts
-- [ ] T027 [US3] Implement executeParallel: run queries on all nodes using Promise.allSettled in src/services/connection-manager/parallel-query.ts
-- [ ] T028 [US3] Implement result normalization: transform PromiseSettledResult to NodeQueryResult in src/services/connection-manager/parallel-query.ts
-- [ ] T029 [US3] Implement queryAll method in ConnectionManager using parallel-query module in src/services/connection-manager/index.ts
-- [ ] T030 [US3] Implement queryHealthy method: filter to healthy nodes before parallel execution in src/services/connection-manager/index.ts
+- [x] T025 [US3] Create parallel-query module skeleton in src/services/connection-manager/parallel-query.ts
+- [x] T026 [US3] Implement queryWithTimeout helper: wrap pool.query with timeout using Promise.race in src/services/connection-manager/parallel-query.ts
+- [x] T027 [US3] Implement executeParallel: run queries on all nodes using Promise.allSettled in src/services/connection-manager/parallel-query.ts
+- [x] T028 [US3] Implement result normalization: transform PromiseSettledResult to NodeQueryResult in src/services/connection-manager/parallel-query.ts
+- [x] T029 [US3] Implement queryAll method in ConnectionManager using parallel-query module in src/services/connection-manager/index.ts
+- [x] T030 [US3] Implement queryHealthy method: filter to healthy nodes before parallel execution in src/services/connection-manager/index.ts
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should work - can run parallel queries with partial failure handling
 

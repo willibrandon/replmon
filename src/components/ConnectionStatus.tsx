@@ -29,6 +29,7 @@ export function ConnectionStatus({
   const setConnectionError = useConnectionStore((s) => s.setConnectionError);
   const setCurrentScreen = useConnectionStore((s) => s.setCurrentScreen);
   const [connectionAttempt, setConnectionAttempt] = React.useState(0);
+  const quittingRef = React.useRef(false);
 
   // Attempt connections when component mounts or retry is triggered
   React.useEffect(() => {
@@ -50,13 +51,13 @@ export function ConnectionStatus({
 
       // Subscribe to health events to update UI when status changes
       connectionManager.on('node:connected', ({ nodeId }) => {
-        if (!cancelled) {
+        if (!cancelled && !quittingRef.current) {
           setNodeStatus(nodeId, 'connected');
         }
       });
 
       connectionManager.on('node:disconnected', ({ nodeId, error }) => {
-        if (!cancelled) {
+        if (!cancelled && !quittingRef.current) {
           setNodeStatus(nodeId, 'failed');
           if (error) {
             setConnectionError(nodeId, error.message);
@@ -113,6 +114,8 @@ export function ConnectionStatus({
   // Handle keyboard input
   useInput((input, key) => {
     if (input === 'q' || (key.ctrl && input === 'c')) {
+      // Mark as quitting to prevent UI updates during shutdown
+      quittingRef.current = true;
       // Cleanup before exit
       if (connectionManager) {
         connectionManager.shutdown().finally(() => exitApp(0));
