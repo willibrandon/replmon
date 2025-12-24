@@ -2,11 +2,21 @@
  * Tests for config validator
  */
 import { describe, test, expect } from 'bun:test';
-import { formatConfigError, transformToConfiguration } from './validator.js';
+import {
+  formatConfigError,
+  transformToConfiguration,
+  validateClusterNodeReferences,
+  selectDefaultCluster,
+  resolveCluster,
+  transformClusters,
+  filterNodesToCluster,
+} from './validator.js';
 import {
   ConfigFileNotFoundError,
   ConfigValidationError,
   EnvVarInterpolationError,
+  ClusterNodeReferenceError,
+  ClusterNotFoundError,
 } from '../types/errors.js';
 
 describe('formatConfigError', () => {
@@ -139,5 +149,286 @@ describe('transformToConfiguration', () => {
     expect(config.theme!.name).toBe('dark');
     expect(config.thresholds!.replicationLag.warning).toBe(10);
     expect(config.thresholds!.replicationLag.critical).toBe(60);
+  });
+
+  test('transforms config with clusters and filters to active cluster', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'db1.example.com', database: 'postgres' },
+        replica: { host: 'db2.example.com', database: 'postgres' },
+        staging: { host: 'staging.example.com', database: 'postgres' },
+      },
+      clusters: {
+        production: { nodes: ['primary', 'replica'], default: true },
+        dev: { nodes: ['staging'] },
+      },
+    };
+
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+
+    // Should have all clusters defined
+    expect(config.clusters).toBeDefined();
+    expect(Object.keys(config.clusters!)).toEqual(['production', 'dev']);
+
+    // Should have activeCluster set to production (marked as default)
+    expect(config.activeCluster).toBe('production');
+
+    // Should only have nodes from the active cluster
+    expect(Object.keys(config.nodes)).toEqual(['primary', 'replica']);
+    expect(config.nodes['staging']).toBeUndefined();
+  });
+
+  test('selects first cluster when no default is marked', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'db1.example.com', database: 'postgres' },
+        staging: { host: 'staging.example.com', database: 'postgres' },
+      },
+      clusters: {
+        production: { nodes: ['primary'] },
+        dev: { nodes: ['staging'] },
+      },
+    };
+
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+
+    // Should select first cluster (production)
+    expect(config.activeCluster).toBe('production');
+    expect(Object.keys(config.nodes)).toEqual(['primary']);
+  });
+
+  test('uses --cluster flag to select specific cluster', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'db1.example.com', database: 'postgres' },
+        staging: { host: 'staging.example.com', database: 'postgres' },
+      },
+      clusters: {
+        production: { nodes: ['primary'], default: true },
+        dev: { nodes: ['staging'] },
+      },
+    };
+
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml', 'dev');
+
+    // Should use requested cluster instead of default
+    expect(config.activeCluster).toBe('dev');
+    expect(Object.keys(config.nodes)).toEqual(['staging']);
+  });
+
+  test('throws ClusterNotFoundError for invalid cluster name', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'db1.example.com', database: 'postgres' },
+      },
+      clusters: {
+        production: { nodes: ['primary'] },
+      },
+    };
+
+    expect(() =>
+      transformToConfiguration(yamlConfig, '/path/to/config.yaml', 'nonexistent')
+    ).toThrow(ClusterNotFoundError);
+  });
+
+  test('throws ClusterNodeReferenceError for undefined node reference', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'db1.example.com', database: 'postgres' },
+      },
+      clusters: {
+        production: { nodes: ['primary', 'missing_node'] },
+      },
+    };
+
+    expect(() =>
+      transformToConfiguration(yamlConfig, '/path/to/config.yaml')
+    ).toThrow(ClusterNodeReferenceError);
+  });
+});
+
+describe('validateClusterNodeReferences', () => {
+  test('passes when all node references exist', () => {
+    const clusters = {
+      production: { nodes: ['primary', 'replica'] },
+      dev: { nodes: ['staging'] },
+    };
+    const nodeNames = ['primary', 'replica', 'staging'];
+
+    expect(() => validateClusterNodeReferences(clusters, nodeNames)).not.toThrow();
+  });
+
+  test('throws ClusterNodeReferenceError for missing node', () => {
+    const clusters = {
+      production: { nodes: ['primary', 'missing'] },
+    };
+    const nodeNames = ['primary', 'replica'];
+
+    expect(() => validateClusterNodeReferences(clusters, nodeNames)).toThrow(
+      ClusterNodeReferenceError
+    );
+  });
+
+  test('includes cluster name and missing nodes in error', () => {
+    const clusters = {
+      production: { nodes: ['missing1', 'missing2'] },
+    };
+    const nodeNames = ['primary'];
+
+    try {
+      validateClusterNodeReferences(clusters, nodeNames);
+      expect(true).toBe(false); // Should not reach here
+    } catch (error) {
+      expect(error).toBeInstanceOf(ClusterNodeReferenceError);
+      const clusterError = error as ClusterNodeReferenceError;
+      expect(clusterError.clusterName).toBe('production');
+      expect(clusterError.missingNodes).toEqual(['missing1', 'missing2']);
+    }
+  });
+});
+
+describe('selectDefaultCluster', () => {
+  test('returns cluster marked as default', () => {
+    const clusters = {
+      production: { nodes: ['primary'] },
+      staging: { nodes: ['staging'], default: true },
+    };
+
+    expect(selectDefaultCluster(clusters)).toBe('staging');
+  });
+
+  test('returns first cluster when no default is marked', () => {
+    const clusters = {
+      production: { nodes: ['primary'] },
+      staging: { nodes: ['staging'] },
+    };
+
+    expect(selectDefaultCluster(clusters)).toBe('production');
+  });
+
+  test('throws when no clusters are defined', () => {
+    const clusters = {};
+
+    expect(() => selectDefaultCluster(clusters)).toThrow(ConfigValidationError);
+  });
+});
+
+describe('resolveCluster', () => {
+  test('returns requested cluster when valid', () => {
+    const clusters = {
+      production: { nodes: ['primary'] },
+      staging: { nodes: ['staging'] },
+    };
+
+    expect(resolveCluster(clusters, 'staging')).toBe('staging');
+  });
+
+  test('throws ClusterNotFoundError for invalid cluster', () => {
+    const clusters = {
+      production: { nodes: ['primary'] },
+    };
+
+    expect(() => resolveCluster(clusters, 'nonexistent')).toThrow(ClusterNotFoundError);
+  });
+
+  test('error includes available cluster names', () => {
+    const clusters = {
+      production: { nodes: ['primary'] },
+      staging: { nodes: ['staging'] },
+    };
+
+    try {
+      resolveCluster(clusters, 'invalid');
+      expect(true).toBe(false);
+    } catch (error) {
+      expect(error).toBeInstanceOf(ClusterNotFoundError);
+      const clusterError = error as ClusterNotFoundError;
+      expect(clusterError.requestedCluster).toBe('invalid');
+      expect(clusterError.availableClusters).toEqual(['production', 'staging']);
+    }
+  });
+
+  test('returns default cluster when no cluster requested', () => {
+    const clusters = {
+      production: { nodes: ['primary'] },
+      staging: { nodes: ['staging'], default: true },
+    };
+
+    expect(resolveCluster(clusters)).toBe('staging');
+  });
+});
+
+describe('transformClusters', () => {
+  test('transforms YAML clusters to resolved format', () => {
+    const yamlClusters = {
+      production: { nodes: ['primary', 'replica'], default: true },
+      dev: { nodes: ['staging'] },
+    };
+
+    const resolved = transformClusters(yamlClusters);
+
+    expect(resolved['production']).toEqual({
+      nodes: ['primary', 'replica'],
+      default: true,
+    });
+    expect(resolved['dev']).toEqual({
+      nodes: ['staging'],
+      default: false,
+    });
+  });
+
+  test('defaults missing default field to false', () => {
+    const yamlClusters = {
+      production: { nodes: ['primary'] },
+    };
+
+    const resolved = transformClusters(yamlClusters);
+
+    expect(resolved['production']!.default).toBe(false);
+  });
+});
+
+describe('filterNodesToCluster', () => {
+  test('filters nodes to only cluster members', () => {
+    const nodes = {
+      primary: { host: 'db1', port: 5432, database: 'db', user: 'u' },
+      replica: { host: 'db2', port: 5432, database: 'db', user: 'u' },
+      staging: { host: 'db3', port: 5432, database: 'db', user: 'u' },
+    };
+    const clusterNodes = ['primary', 'replica'];
+
+    const filtered = filterNodesToCluster(nodes, clusterNodes);
+
+    expect(Object.keys(filtered)).toEqual(['primary', 'replica']);
+    expect(filtered['staging']).toBeUndefined();
+  });
+
+  test('ignores cluster nodes that do not exist in nodes map', () => {
+    const nodes = {
+      primary: { host: 'db1', port: 5432, database: 'db', user: 'u' },
+    };
+    const clusterNodes = ['primary', 'nonexistent'];
+
+    const filtered = filterNodesToCluster(nodes, clusterNodes);
+
+    expect(Object.keys(filtered)).toEqual(['primary']);
+  });
+});
+
+describe('formatConfigError with cluster errors', () => {
+  test('formats ClusterNodeReferenceError', () => {
+    const error = new ClusterNodeReferenceError('production', ['missing1', 'missing2']);
+    const message = formatConfigError(error);
+    expect(message).toStartWith('Error:');
+    expect(message).toContain('production');
+    expect(message.length).toBeLessThanOrEqual(100);
+  });
+
+  test('formats ClusterNotFoundError with available clusters', () => {
+    const error = new ClusterNotFoundError('invalid', ['production', 'staging']);
+    const message = formatConfigError(error);
+    expect(message).toStartWith('Error:');
+    expect(message).toContain('invalid');
+    expect(message.length).toBeLessThanOrEqual(100);
   });
 });

@@ -89,14 +89,14 @@
 
 ### Implementation for User Story 3
 
-- [ ] T021 [US3] Add cluster schema validation in src/config/schemas.ts (nodes array, default boolean)
-- [ ] T022 [US3] Implement validateClusterNodeReferences() in src/config/validator.ts
-- [ ] T023 [US3] Add ClusterNodeReferenceError and ClusterNotFoundError to src/config/errors.ts
-- [ ] T024 [US3] Implement selectDefaultCluster() in src/config/parser.ts (default: true or first defined)
-- [ ] T025 [US3] Extend src/config/parser.ts to resolve cluster from --cluster flag or default
-- [ ] T026 [US3] Update src/cli.ts to add --cluster <name> flag handling
-- [ ] T027 [US3] Filter nodes to only active cluster's nodes in final Configuration output
-- [ ] T028 [US3] Display available cluster names in error when invalid cluster specified
+- [x] T021 [US3] Add cluster schema validation in src/config/schemas.ts (nodes array, default boolean)
+- [x] T022 [US3] Implement validateClusterNodeReferences() in src/config/validator.ts
+- [x] T023 [US3] Add ClusterNodeReferenceError and ClusterNotFoundError to src/types/errors.ts
+- [x] T024 [US3] Implement selectDefaultCluster() in src/config/validator.ts (default: true or first defined)
+- [x] T025 [US3] Extend src/config/parser.ts to resolve cluster from --cluster flag or default
+- [x] T026 [US3] Update src/index.tsx to add --cluster <name> flag handling
+- [x] T027 [US3] Filter nodes to only active cluster's nodes in final Configuration output
+- [x] T028 [US3] Display available cluster names in error when invalid cluster specified
 
 **Checkpoint**: User Story 3 complete - clusters work, --cluster switches, invalid names error with list
 

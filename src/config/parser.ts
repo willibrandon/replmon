@@ -183,12 +183,14 @@ export function validateMinimumArgs(args: CLIArguments, hasDefaultConfig: boolea
  * 2. Default config file exists: Load from ~/.config/replmon/config.yaml
  * 3. Inline flags only: Build from CLI args
  * 4. Mixed: Load from file, merge with CLI overrides
+ *
+ * When clusters are defined, uses --cluster flag or selects default cluster.
  */
 export function parseConfiguration(args: CLIArguments): Configuration {
   // Check for explicit config file first
   if (args.config !== undefined) {
     const yamlConfig = loadConfigFile(args.config);
-    const fileConfig = transformToConfiguration(yamlConfig, args.config);
+    const fileConfig = transformToConfiguration(yamlConfig, args.config, args.cluster);
 
     // Check if we need to merge CLI overrides
     const hasInlineArgs =
@@ -219,7 +221,7 @@ export function parseConfiguration(args: CLIArguments): Configuration {
 
   // Case 2: Default config exists and was loaded
   if (defaultResult.found && defaultResult.config !== undefined) {
-    const fileConfig = transformToConfiguration(defaultResult.config, defaultResult.path);
+    const fileConfig = transformToConfiguration(defaultResult.config, defaultResult.path, args.cluster);
 
     // Check if we need to merge CLI overrides
     const hasInlineArgs =
