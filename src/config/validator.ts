@@ -10,8 +10,8 @@ import {
   ClusterNodeReferenceError,
   ClusterNotFoundError,
 } from '../types/errors.js';
-import { DEFAULT_THRESHOLDS } from './defaults.js';
 import { resolveTheme } from '../theme/index.js';
+import { resolveThresholds } from './thresholds.js';
 import type { YAMLClusterConfig } from '../types/yaml-config.js';
 import type { ClusterConfig } from '../types/config.js';
 
@@ -357,10 +357,13 @@ export function transformToConfiguration(
   // Resolve theme with warning callback for invalid theme name fallback
   const resolvedTheme = resolveTheme(yamlConfig.theme, onWarning);
 
+  // Resolve thresholds with warning callback for inverted thresholds
+  const resolvedThresholds = resolveThresholds(yamlConfig.thresholds, onWarning);
+
   const config: Configuration = {
     nodes,
     theme: resolvedTheme,
-    thresholds: DEFAULT_THRESHOLDS,
+    thresholds: resolvedThresholds,
     pglogical: yamlConfig.pglogical ?? false,
     source: 'file',
     configPath,

@@ -610,3 +610,132 @@ describe('transformToConfiguration with theme', () => {
     expect(config.theme.name).toBe('dark');
   });
 });
+
+describe('transformToConfiguration with thresholds', () => {
+  test('uses default thresholds when no thresholds specified', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.thresholds.replicationLag).toEqual({ warning: 10, critical: 60 });
+    expect(config.thresholds.slotRetention).toEqual({
+      warning: 1073741824,
+      critical: 5368709120,
+    });
+    expect(config.thresholds.conflictRate).toEqual({ warning: 5, critical: 20 });
+  });
+
+  test('parses replication_lag threshold from string format', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      thresholds: {
+        replication_lag: { warning: '5s', critical: '30s' },
+      },
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.thresholds.replicationLag).toEqual({ warning: 5, critical: 30 });
+  });
+
+  test('parses replication_lag threshold from minutes', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      thresholds: {
+        replication_lag: { warning: '1m', critical: '5m' },
+      },
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.thresholds.replicationLag).toEqual({ warning: 60, critical: 300 });
+  });
+
+  test('parses slot_retention threshold from byte format', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      thresholds: {
+        slot_retention: { warning: '500MB', critical: '2GB' },
+      },
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.thresholds.slotRetention.warning).toBe(524288000);
+    expect(config.thresholds.slotRetention.critical).toBe(2147483648);
+  });
+
+  test('parses conflict_rate threshold from number', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      thresholds: {
+        conflict_rate: { warning: 10, critical: 50 },
+      },
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.thresholds.conflictRate).toEqual({ warning: 10, critical: 50 });
+  });
+
+  test('parses all thresholds together', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      thresholds: {
+        replication_lag: { warning: '15s', critical: '2m' },
+        slot_retention: { warning: '2GB', critical: '10GB' },
+        conflict_rate: { warning: 3, critical: 15 },
+      },
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.thresholds.replicationLag).toEqual({ warning: 15, critical: 120 });
+    expect(config.thresholds.slotRetention.warning).toBe(2147483648);
+    expect(config.thresholds.slotRetention.critical).toBe(10737418240);
+    expect(config.thresholds.conflictRate).toEqual({ warning: 3, critical: 15 });
+  });
+
+  test('applies defaults for missing threshold values', () => {
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      thresholds: {
+        replication_lag: { warning: '5s' }, // only warning
+        slot_retention: { critical: '10GB' }, // only critical
+      },
+    };
+    const config = transformToConfiguration(yamlConfig, '/path/to/config.yaml');
+    expect(config.thresholds.replicationLag.warning).toBe(5);
+    expect(config.thresholds.replicationLag.critical).toBe(60); // default
+    expect(config.thresholds.slotRetention.warning).toBe(1073741824); // default
+    expect(config.thresholds.slotRetention.critical).toBe(10737418240);
+  });
+
+  test('warns when critical < warning (inverted thresholds)', () => {
+    const warnings: string[] = [];
+    const yamlConfig = {
+      nodes: {
+        primary: { host: 'localhost', database: 'mydb' },
+      },
+      thresholds: {
+        replication_lag: { warning: 60, critical: 10 },
+      },
+    };
+    const config = transformToConfiguration(
+      yamlConfig,
+      '/path/to/config.yaml',
+      undefined,
+      (msg) => warnings.push(msg)
+    );
+    // Still parses the values
+    expect(config.thresholds.replicationLag).toEqual({ warning: 60, critical: 10 });
+    // But issues a warning
+    expect(warnings.length).toBe(1);
+    expect(warnings[0]).toContain('inverted');
+    expect(warnings[0]).toContain('replication_lag');
+  });
+});

@@ -129,12 +129,12 @@
 
 ### Implementation for User Story 5
 
-- [ ] T035 [US5] Add threshold schema validation in src/config/schemas.ts (warning/critical numeric or string)
-- [ ] T036 [US5] Implement parseThresholdValue() in src/config/parser.ts for "10s", "1GB" formats
-- [ ] T037 [US5] Add InvalidThresholdError to src/config/errors.ts for invalid threshold values
-- [ ] T038 [US5] Implement resolveThresholds() in src/config/parser.ts applying defaults for lag, retention, and conflict_rate
-- [ ] T039 [US5] Validate critical >= warning with warning log if inverted in src/config/validator.ts
-- [ ] T040 [US5] Include resolved thresholds (replicationLag, slotRetention, conflictRate) in final Configuration output
+- [x] T035 [US5] Add threshold schema validation in src/config/schemas.ts (warning/critical numeric or string)
+- [x] T036 [US5] Implement parseThresholdValue() in src/config/thresholds.ts for "10s", "1GB" formats
+- [x] T037 [US5] Add InvalidThresholdError to src/config/errors.ts for invalid threshold values
+- [x] T038 [US5] Implement resolveThresholds() in src/config/thresholds.ts applying defaults for lag, retention, and conflict_rate
+- [x] T039 [US5] Validate critical >= warning with warning log if inverted in src/config/thresholds.ts
+- [x] T040 [US5] Include resolved thresholds (replicationLag, slotRetention, conflictRate) in final Configuration output
 
 **Checkpoint**: User Story 5 complete - thresholds parse, defaults apply, invalid values error
 

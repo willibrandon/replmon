@@ -222,11 +222,8 @@ export function parseConfiguration(args: CLIArguments): Configuration {
       return mergeConfigWithCLI(fileConfig, args);
     }
 
-    // Theme is already resolved by transformToConfiguration, just ensure thresholds have defaults
-    return {
-      ...fileConfig,
-      thresholds: fileConfig.thresholds ?? DEFAULT_THRESHOLDS,
-    };
+    // Theme and thresholds are already resolved by transformToConfiguration
+    return fileConfig;
   }
 
   // Try to load default config file (graceful fallback if not found)
@@ -257,11 +254,8 @@ export function parseConfiguration(args: CLIArguments): Configuration {
       return mergeConfigWithCLI(fileConfig, args);
     }
 
-    // Theme is already resolved by transformToConfiguration, just ensure thresholds have defaults
-    return {
-      ...fileConfig,
-      thresholds: fileConfig.thresholds ?? DEFAULT_THRESHOLDS,
-    };
+    // Theme and thresholds are already resolved by transformToConfiguration
+    return fileConfig;
   }
 
   // Case 3: Inline flags only (no config file)
