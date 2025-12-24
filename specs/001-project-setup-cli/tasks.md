@@ -97,10 +97,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] Add --pglogical boolean flag to meow CLI setup in src/index.tsx
-- [ ] T030 [US3] Pass pglogical mode to Zustand store on app initialization in src/components/App.tsx
-- [ ] T031 [US3] Update StatusBar to display pglogical mode indicator in src/components/StatusBar.tsx
-- [ ] T032 [US3] Add pglogical mode indicator to Dashboard view in src/components/Dashboard.tsx
+- [X] T029 [US3] Add --pglogical boolean flag to meow CLI setup in src/index.tsx
+- [X] T030 [US3] Pass pglogical mode to Zustand store on app initialization in src/components/App.tsx
+- [X] T031 [US3] Update StatusBar to display pglogical mode indicator in src/components/StatusBar.tsx
+- [X] T032 [US3] Add pglogical mode indicator to Dashboard view in src/components/Dashboard.tsx
 
 **Checkpoint**: User Story 3 complete - pglogical mode flag accepted and reflected in UI
 
