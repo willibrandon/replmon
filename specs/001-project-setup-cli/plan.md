@@ -10,7 +10,7 @@ Initialize replmon as a Bun/TypeScript project with React/Ink TUI framework. Cre
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x (strict mode) on Bun 1.x (Node.js 18+ fallback)
-**Primary Dependencies**: React 18.x, Ink 5.x, meow 13.x, js-yaml, Zustand
+**Primary Dependencies**: React 18.x, Ink 5.x, meow 13.x, yaml, Zustand
 **Storage**: YAML configuration files (no database for this feature)
 **Testing**: bun test (Bun's built-in test runner), ink-testing-library for components
 **Target Platform**: macOS, Linux terminal (xterm-256color compatible)

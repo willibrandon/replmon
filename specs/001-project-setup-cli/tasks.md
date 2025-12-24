@@ -31,7 +31,7 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Create Configuration and ConnectionConfig interfaces in src/types/config.ts
+- [ ] T004 [P] Create Configuration interface in src/types/config.ts
 - [ ] T005 [P] Create CLIArguments interface in src/types/cli.ts
 - [ ] T006 [P] Create ConnectionConfig interface in src/types/connection.ts
 - [ ] T007 [P] Create YAMLConfigFile and YAMLNodeConfig interfaces in src/types/yaml-config.ts
@@ -50,6 +50,8 @@
 **Goal**: User can run `replmon --config path/to/config.yaml` and the application loads all connection configurations from the YAML file.
 
 **Independent Test**: Create a sample config file with one or more PostgreSQL connection entries, run `replmon --config path/to/config.yaml`, and verify the application starts and attempts to connect.
+
+**Scope Note**: This feature implements config loading and UI scaffolding only. Actual PostgreSQL connection attempts (and the "connecting" → "connected" state transition) are deferred to the next feature (connection management). The ConnectionStatus screen will display a static "ready to connect" state for now.
 
 ### Implementation for User Story 1
 
