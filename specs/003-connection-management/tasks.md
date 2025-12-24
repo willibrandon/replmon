@@ -54,7 +54,7 @@
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Create internal Node type with pool reference in src/services/connection-manager/types.ts (extends ManagedNode with Pool instance)
+- [ ] T007 [US1] Create InternalNode type (ManagedNode + Pool instance) in src/services/connection-manager/types.ts for internal use only; ManagedNode is the public interface
 - [ ] T008 [US1] Implement ConnectionManager class skeleton with constructor and node Map in src/services/connection-manager/index.ts
 - [ ] T009 [US1] Implement addNode method: create pool via pool-factory, store in nodes Map, emit node:added event in src/services/connection-manager/index.ts
 - [ ] T010 [US1] Implement initialize method: call addNode for each node config in parallel, await all in src/services/connection-manager/index.ts

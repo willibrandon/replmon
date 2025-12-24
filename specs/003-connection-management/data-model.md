@@ -21,6 +21,10 @@ Represents a PostgreSQL server being monitored.
 - `id` must be unique across all nodes in the cluster
 - `id` is immutable after creation
 
+**Internal vs Public Types**:
+- `ManagedNode`: Public interface exposed to consumers (id, name, config, health)
+- `InternalNode`: Internal type extending ManagedNode with `pool: Pool` reference (not exported)
+
 **State Transitions**: None (Node is a container; health has transitions)
 
 ### NodeConnectionConfig

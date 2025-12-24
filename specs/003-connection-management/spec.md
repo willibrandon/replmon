@@ -102,10 +102,10 @@ When the application shuts down or a node is removed, connections should be prop
 
 - **FR-001**: System MUST maintain a connection pool per PostgreSQL node using pg-pool
 - **FR-002**: System MUST support standard PostgreSQL connection options (host, port, database, user, password, SSL)
-- **FR-003**: System MUST support environment variable interpolation in connection configuration (as per 002-yaml-config feature)
+- **FR-003**: System MUST support environment variable interpolation in connection configuration (dependency: 002-yaml-config feature provides `${VAR_NAME}` syntax - no implementation needed here)
 - **FR-004**: System MUST track health status for each node (healthy, unhealthy, connecting, reconnecting, disconnected)
 - **FR-005**: System MUST perform periodic health checks using a lightweight query (e.g., `SELECT 1`)
-- **FR-006**: System MUST use configurable thresholds for marking a node unhealthy (consecutive failures, timeout duration)
+- **FR-006**: System MUST use configurable thresholds for marking a node unhealthy: `unhealthyThreshold` (default: 3 consecutive failures), `healthCheckIntervalMs` (default: 5000ms), `queryTimeoutMs` (default: 30000ms)
 - **FR-007**: System MUST automatically retry failed connections using exponential backoff (1s, 2s, 4s, 8s, capped at 30s) until connection succeeds or node is removed
 - **FR-008**: System MUST execute queries in parallel across multiple nodes and aggregate results
 - **FR-009**: System MUST handle partial failures in parallel queries (return successful results even if some nodes fail)
@@ -152,3 +152,4 @@ When the application shuts down or a node is removed, connections should be prop
 - Connection pools use sensible defaults (min: 1, max: 10 connections per node) which can be overridden in config
 - Health check interval defaults to 5 seconds, configurable per cluster or globally
 - The application runs in an environment where environment variables for secrets are securely managed
+- Environment variable interpolation in YAML configs is handled by the 002-yaml-config feature; ConnectionManager receives already-interpolated values
