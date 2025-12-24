@@ -48,53 +48,57 @@ export function ConnectionStatus({
         queryTimeoutMs: 30000,
       });
 
-      const nodeIds = Object.keys(config.nodes);
-      const results: Array<{ nodeId: string; success: boolean; error?: string }> = [];
-
-      // Try to connect to each node
-      for (const nodeId of nodeIds) {
-        if (cancelled) return;
-
-        const nodeConfig = config.nodes[nodeId];
-        if (!nodeConfig) {
-          setNodeStatus(nodeId, 'failed');
-          setConnectionError(nodeId, 'Node configuration not found');
-          results.push({ nodeId, success: false, error: 'Node configuration not found' });
-          continue;
+      // Subscribe to health events to update UI when status changes
+      connectionManager.on('node:connected', ({ nodeId }) => {
+        if (!cancelled) {
+          setNodeStatus(nodeId, 'connected');
         }
+      });
 
-        try {
-          await connectionManager.addNode(nodeId, {
+      connectionManager.on('node:disconnected', ({ nodeId, error }) => {
+        if (!cancelled) {
+          setNodeStatus(nodeId, 'failed');
+          if (error) {
+            setConnectionError(nodeId, error.message);
+          }
+        }
+      });
+
+      const nodeIds = Object.keys(config.nodes);
+
+      // Set all nodes to connecting initially
+      for (const nodeId of nodeIds) {
+        setNodeStatus(nodeId, 'connecting');
+      }
+
+      // Build node configs for initialize
+      const nodeConfigs: Array<{ id: string; config: { host: string; port: number; database: string; user: string; password?: string; name?: string } }> = [];
+      for (const nodeId of nodeIds) {
+        const nodeConfig = config.nodes[nodeId];
+        if (!nodeConfig) continue;
+        nodeConfigs.push({
+          id: nodeId,
+          config: {
             host: nodeConfig.host,
             port: nodeConfig.port,
             database: nodeConfig.database,
             user: nodeConfig.user,
             ...(nodeConfig.password !== undefined && { password: nodeConfig.password }),
             ...(nodeConfig.name !== undefined && { name: nodeConfig.name }),
-          });
-
-          // Test the connection with a simple query
-          await connectionManager.query(nodeId, 'SELECT 1');
-
-          if (!cancelled) {
-            setNodeStatus(nodeId, 'connected');
-            results.push({ nodeId, success: true });
-          }
-        } catch (err) {
-          if (!cancelled) {
-            const errorMessage = err instanceof Error ? err.message : String(err);
-            setNodeStatus(nodeId, 'failed');
-            setConnectionError(nodeId, errorMessage);
-            results.push({ nodeId, success: false, error: errorMessage });
-          }
-        }
+          },
+        });
       }
 
-      // If all nodes connected successfully, transition to dashboard
-      if (!cancelled) {
-        const allConnected = results.every((r) => r.success);
-        if (allConnected && results.length > 0) {
-          setCurrentScreen('dashboard');
+      try {
+        // Initialize all nodes - this starts health checking
+        await connectionManager.initialize(nodeConfigs);
+      } catch (err) {
+        // Initialize failed for some reason
+        if (!cancelled) {
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          for (const nodeId of nodeIds) {
+            setConnectionError(nodeId, errorMessage);
+          }
         }
       }
     }

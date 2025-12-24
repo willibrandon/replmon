@@ -17,6 +17,7 @@ import type {
 } from './types.js';
 import { TypedEventEmitter } from './events.js';
 import { createPool } from './pool-factory.js';
+import { HealthChecker } from './health-checker.js';
 
 /** Default configuration values */
 const DEFAULT_CONFIG: Required<ConnectionManagerConfig> = {
@@ -69,12 +70,17 @@ export class ConnectionManager {
   private readonly config: Required<ConnectionManagerConfig>;
   private readonly nodes: Map<string, InternalNode>;
   private readonly events: TypedEventEmitter;
+  private readonly healthChecker: HealthChecker;
   private running: boolean;
 
   constructor(config: ConnectionManagerConfig = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.nodes = new Map();
     this.events = new TypedEventEmitter();
+    this.healthChecker = new HealthChecker(this.nodes, this.events, {
+      healthCheckIntervalMs: this.config.healthCheckIntervalMs,
+      unhealthyThreshold: this.config.unhealthyThreshold,
+    });
     this.running = false;
   }
 
@@ -111,13 +117,10 @@ export class ConnectionManager {
     this.nodes.set(nodeId, node);
     this.events.emit('node:added', { nodeId });
 
-    // Mark as healthy after successful pool creation
-    // In production, the health checker will take over
-    node.health = {
-      ...node.health,
-      status: 'healthy',
-      lastSuccessTime: new Date(),
-    };
+    // If running, start health checking for this node immediately
+    if (this.running) {
+      this.healthChecker.startNode(nodeId);
+    }
   }
 
   /**
@@ -372,6 +375,9 @@ export class ConnectionManager {
     );
 
     this.running = true;
+
+    // Start health monitoring
+    this.healthChecker.start();
   }
 
   /**
@@ -384,6 +390,9 @@ export class ConnectionManager {
     }
 
     this.running = false;
+
+    // Stop health monitoring
+    this.healthChecker.stop();
 
     // Close all pools in parallel
     const closePromises = Array.from(this.nodes.values()).map(async (node) => {

@@ -75,16 +75,16 @@
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Create health-checker module skeleton with HealthChecker class in src/services/connection-manager/health-checker.ts
-- [ ] T016 [US2] Implement checkHealth method: execute SELECT 1 with timeout, track latency in src/services/connection-manager/health-checker.ts
-- [ ] T017 [US2] Implement health check loop with configurable interval in src/services/connection-manager/health-checker.ts
-- [ ] T018 [US2] Implement consecutive failure tracking and unhealthy threshold in src/services/connection-manager/health-checker.ts
-- [ ] T019 [US2] Implement exponential backoff for reconnection (1s, 2s, 4s, 8s, max 30s with jitter) in src/services/connection-manager/health-checker.ts
-- [ ] T020 [US2] Implement health state machine transitions (connecting -> healthy -> unhealthy -> reconnecting) in src/services/connection-manager/health-checker.ts
-- [ ] T021 [US2] Emit node:health events when status changes in src/services/connection-manager/health-checker.ts
-- [ ] T022 [US2] Integrate HealthChecker into ConnectionManager: start on initialize, stop on shutdown in src/services/connection-manager/index.ts
-- [ ] T023 [US2] Implement getHealth, getAllHealth, getHealthyNodes methods in src/services/connection-manager/index.ts
-- [ ] T024 [US2] Emit node:connected and node:disconnected events at appropriate state transitions in src/services/connection-manager/health-checker.ts
+- [x] T015 [US2] Create health-checker module skeleton with HealthChecker class in src/services/connection-manager/health-checker.ts
+- [x] T016 [US2] Implement checkHealth method: execute SELECT 1 with timeout, track latency in src/services/connection-manager/health-checker.ts
+- [x] T017 [US2] Implement health check loop with configurable interval in src/services/connection-manager/health-checker.ts
+- [x] T018 [US2] Implement consecutive failure tracking and unhealthy threshold in src/services/connection-manager/health-checker.ts
+- [x] T019 [US2] Implement exponential backoff for reconnection (1s, 2s, 4s, 8s, max 30s with jitter) in src/services/connection-manager/health-checker.ts
+- [x] T020 [US2] Implement health state machine transitions (connecting -> healthy -> unhealthy -> reconnecting) in src/services/connection-manager/health-checker.ts
+- [x] T021 [US2] Emit node:health events when status changes in src/services/connection-manager/health-checker.ts
+- [x] T022 [US2] Integrate HealthChecker into ConnectionManager: start on initialize, stop on shutdown in src/services/connection-manager/index.ts
+- [x] T023 [US2] Implement getHealth, getAllHealth, getHealthyNodes methods in src/services/connection-manager/index.ts
+- [x] T024 [US2] Emit node:connected and node:disconnected events at appropriate state transitions in src/services/connection-manager/health-checker.ts
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work - can monitor health status of all nodes
 
