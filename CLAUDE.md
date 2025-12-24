@@ -27,7 +27,8 @@ src/
 │   └── modals/         # OperationsModal, HelpModal
 ├── hooks/              # usePolling, useKeyboardNavigation, useSubscriptions
 ├── services/           # ConnectionManager, PollingService, queries
-├── store/              # Zustand store with selectors
+├── store/              # Zustand store (connection, replication, ui slices)
+│   └── selectors/      # Aggregation, filter, and computed selectors
 ├── theme/              # Color schemes and theming
 └── types/              # TypeScript interfaces
 ```
@@ -57,6 +58,8 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - **Polling**: PollingService emits data events at 1s intervals; components subscribe via Zustand
 - **Multi-node**: ConnectionManager maintains pg-pool per node; queries run in parallel
 - **Keyboard shortcuts**: t/s/l/c/o/q for panel focus, Tab for cycling, j/k for lists
+- **State**: `useStore` hook for all state access; selectors for derived data; devtools in dev mode
+- **Stale handling**: Nodes marked stale on disconnect; data retained with visual indicator until reconnect
 
 ## Active Technologies
 - TypeScript 5.x (strict mode) on Bun 1.x (Node.js 18+ fallback) + React 18.x, Ink 5.x, meow 13.x, js-yaml, Zustand (001-project-setup-cli)
@@ -78,6 +81,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
-- 005-state-management: Added TypeScript 5.7 (strict mode) + Zustand 5.x (with subscribeWithSelector + devtools middleware), React 18.x, Ink 5.x
+- 005-state-management: Implemented Zustand store with connection, replication, and UI slices. Replication slice tracks nodes, subscriptions, slots, conflicts, and lag history (60-sample FIFO). UI slice handles panel focus, modal state with focus preservation, and j/k list navigation. Includes 56 passing tests and memoized selectors for aggregations, filters, and computed values.
 - 004-polling-service: Added PollingService with event-based data collection, configurable intervals (250ms min), per-node pglogical detection, partial results on node failure, and typed event subscriptions for stats/slots/subscriptions/conflicts
 - 003-connection-management: Added ConnectionManager service with multi-node pooling, health monitoring, parallel queries, dynamic node management, and graceful shutdown

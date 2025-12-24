@@ -27,6 +27,11 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 - Per-node pglogical detection with caching
 - Partial results on node failure (graceful degradation)
 - Typed event subscriptions for stats, slots, subscriptions, and conflicts
+- Zustand state management with devtools support
+- Per-node subscription, slot, and conflict tracking
+- FIFO lag history (60 samples) for sparkline visualization
+- Stale data indicators when nodes disconnect
+- Modal focus preservation and restoration
 
 ## Installation
 
