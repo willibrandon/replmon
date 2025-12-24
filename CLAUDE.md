@@ -65,6 +65,8 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - YAML files (no database) (002-yaml-config)
 - TypeScript 5.7 (strict mode) + pg (^8.x), pg-pool (^3.x), existing Zustand store, existing YAML config system (002-yaml-config) (003-connection-management)
 - PostgreSQL 10+ (external nodes being monitored) (003-connection-management)
+- TypeScript 5.7 (strict mode) + Node.js EventEmitter, ConnectionManager (003-connection-management), pg (^8.x) (004-polling-service)
+- N/A (queries PostgreSQL nodes via ConnectionManager, no local storage) (004-polling-service)
 
 ## Recent Changes
 - 003-connection-management: Added ConnectionManager service with multi-node pooling, health monitoring, parallel queries, dynamic node management, and graceful shutdown
