@@ -5,24 +5,13 @@ import type { YAMLConfigFile } from '../types/yaml-config.js';
 import type { Configuration } from '../types/config.js';
 import type { ConnectionConfig } from '../types/connection.js';
 import {
-  ConfigFileNotFoundError,
-  YAMLParseError,
-  EnvVarInterpolationError,
-} from './loader.js';
+  ConfigError,
+  ConfigValidationError,
+} from '../types/errors.js';
+import { DEFAULT_THEME, DEFAULT_THRESHOLDS } from './defaults.js';
 
-/**
- * Error thrown when configuration validation fails.
- */
-export class ConfigValidationError extends Error {
-  public readonly issues: string[];
-
-  constructor(issues: string[]) {
-    const message = `Config validation failed: ${issues.join('; ')}`;
-    super(message);
-    this.name = 'ConfigValidationError';
-    this.issues = issues;
-  }
-}
+// Re-export for backwards compatibility
+export { ConfigValidationError };
 
 /**
  * Format a Zod error into a human-readable message.
@@ -36,29 +25,40 @@ function formatZodError(error: z.ZodError): string[] {
 }
 
 /**
+ * Truncate a message to fit under 100 characters.
+ * Preserves the start and adds ellipsis if needed.
+ */
+function truncateMessage(message: string, maxLen: number = 93): string {
+  // Account for "Error: " prefix (7 chars) to keep total under 100
+  if (message.length <= maxLen) {
+    return message;
+  }
+  return message.slice(0, maxLen - 3) + '...';
+}
+
+/**
  * Format any config-related error into a user-friendly message.
+ * All messages are guaranteed to be under 100 characters per SC-004.
  */
 export function formatConfigError(error: unknown): string {
-  if (error instanceof ConfigFileNotFoundError) {
-    return `Error: ${error.message}`;
+  // Handle our custom config errors
+  if (error instanceof ConfigError) {
+    return `Error: ${truncateMessage(error.message)}`;
   }
-  if (error instanceof YAMLParseError) {
-    return `Error: ${error.message}`;
-  }
-  if (error instanceof EnvVarInterpolationError) {
-    return `Error: ${error.message}`;
-  }
-  if (error instanceof ConfigValidationError) {
-    return `Error: ${error.message}`;
-  }
+
+  // Handle Zod validation errors
   if (error instanceof z.ZodError) {
     const issues = formatZodError(error);
-    return `Error: Config validation failed: ${issues.join('; ')}`;
+    const msg = issues.length === 1 ? issues[0]! : `${issues.length} validation errors`;
+    return `Error: ${truncateMessage(msg)}`;
   }
+
+  // Handle generic errors
   if (error instanceof Error) {
-    return `Error: ${error.message}`;
+    return `Error: ${truncateMessage(error.message)}`;
   }
-  return `Error: ${String(error)}`;
+
+  return `Error: ${truncateMessage(String(error))}`;
 }
 
 /**
@@ -123,6 +123,8 @@ export function transformToConfiguration(
 
   const config: Configuration = {
     nodes,
+    theme: DEFAULT_THEME,
+    thresholds: DEFAULT_THRESHOLDS,
     pglogical: yamlConfig.pglogical ?? false,
     source: 'file',
     configPath,
@@ -135,10 +137,5 @@ export function transformToConfiguration(
  * Check if a value is a config-related error.
  */
 export function isConfigError(error: unknown): boolean {
-  return (
-    error instanceof ConfigFileNotFoundError ||
-    error instanceof YAMLParseError ||
-    error instanceof EnvVarInterpolationError ||
-    error instanceof ConfigValidationError
-  );
+  return error instanceof ConfigError;
 }

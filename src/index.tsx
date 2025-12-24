@@ -3,7 +3,8 @@ import { render } from 'ink';
 import meow from 'meow';
 import { createElement } from 'react';
 import { App } from './components/App.js';
-import { parseConfiguration, InsufficientArgumentsError } from './config/parser.js';
+import { parseConfiguration } from './config/parser.js';
+import { InsufficientArgumentsError } from './types/errors.js';
 import { formatConfigError } from './config/validator.js';
 import type { Configuration } from './types/config.js';
 import type { CLIArguments } from './types/cli.js';
@@ -16,6 +17,7 @@ const helpText = `
 
   Options
     --config, -c     Path to YAML configuration file
+    --cluster        Cluster name to use (when config has multiple clusters)
     --host           PostgreSQL host (required if no config)
     --port           PostgreSQL port (default: 5432)
     --database, -d   PostgreSQL database (required if no config)
@@ -27,6 +29,7 @@ const helpText = `
 
   Examples
     $ replmon --config ~/.replmon/config.yaml
+    $ replmon --config config.yaml --cluster production
     $ replmon --host localhost --database myapp
     $ replmon -c config.yaml --pglogical
 `;
@@ -41,6 +44,9 @@ const cli = meow(helpText, {
     config: {
       type: 'string',
       shortFlag: 'c',
+    },
+    cluster: {
+      type: 'string',
     },
     host: {
       type: 'string',
@@ -74,6 +80,9 @@ function parseCliFlags(): CLIArguments {
 
   if (cli.flags.config !== undefined) {
     args.config = cli.flags.config;
+  }
+  if (cli.flags.cluster !== undefined) {
+    args.cluster = cli.flags.cluster;
   }
   if (cli.flags.host !== undefined) {
     args.host = cli.flags.host;
@@ -126,6 +135,12 @@ function main(): void {
       process.exit(1);
     }
     console.error(formatConfigError(error));
+    process.exit(1);
+  }
+
+  // Check for interactive terminal
+  if (!process.stdin.isTTY) {
+    console.error('Error: replmon requires an interactive terminal');
     process.exit(1);
   }
 

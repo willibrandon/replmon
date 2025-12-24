@@ -50,14 +50,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Implement getDefaultConfigPath() in src/config/defaults.ts using XDG spec
-- [ ] T009 [US1] Extend src/config/loader.ts loadConfigFile() to check default path when --config not provided
-- [ ] T010 [US1] Extend src/config/loader.ts to handle graceful fallback when default config missing (not an error)
-- [ ] T011 [US1] Update src/config/parser.ts parseYAMLConfig() to validate node structure with new schemas
-- [ ] T012 [US1] Extend src/config/parser.ts mergeConfigWithCLI() to properly merge CLI flags over config values
-- [ ] T013 [US1] Update src/cli.ts to add --config flag handling and pass path to loader
-- [ ] T014 [US1] Add ConfigFileNotFoundError and ConfigFilePermissionError handling in src/config/loader.ts
-- [ ] T015 [US1] Format config errors under 100 chars in src/config/validator.ts formatConfigError()
+- [x] T008 [US1] Implement getDefaultConfigPath() in src/config/defaults.ts using XDG spec
+- [x] T009 [US1] Extend src/config/loader.ts loadConfigFile() to check default path when --config not provided
+- [x] T010 [US1] Extend src/config/loader.ts to handle graceful fallback when default config missing (not an error)
+- [x] T011 [US1] Update src/config/parser.ts parseYAMLConfig() to validate node structure with new schemas
+- [x] T012 [US1] Extend src/config/parser.ts mergeConfigWithCLI() to properly merge CLI flags over config values
+- [x] T013 [US1] Update src/cli.ts to add --config flag handling and pass path to loader
+- [x] T014 [US1] Add ConfigFileNotFoundError and ConfigFilePermissionError handling in src/config/loader.ts
+- [x] T015 [US1] Format config errors under 100 chars in src/config/validator.ts formatConfigError()
 
 **Checkpoint**: User Story 1 complete - config files load from default or specified path, CLI overrides work
 

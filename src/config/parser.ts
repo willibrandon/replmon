@@ -2,18 +2,13 @@ import os from 'os';
 import type { CLIArguments } from '../types/cli.js';
 import type { Configuration } from '../types/config.js';
 import type { ConnectionConfig } from '../types/connection.js';
-import { loadConfigFile } from './loader.js';
+import { InsufficientArgumentsError } from '../types/errors.js';
+import { loadConfigFile, tryLoadDefaultConfig } from './loader.js';
 import { transformToConfiguration } from './validator.js';
+import { DEFAULT_THEME, DEFAULT_THRESHOLDS } from './defaults.js';
 
-/**
- * Error thrown when CLI arguments are insufficient.
- */
-export class InsufficientArgumentsError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'InsufficientArgumentsError';
-  }
-}
+// Re-export for backwards compatibility
+export { InsufficientArgumentsError };
 
 /**
  * Get the default PostgreSQL user.
@@ -60,6 +55,8 @@ export function buildConfigurationFromCLI(args: CLIArguments): Configuration {
     nodes: {
       default: nodeConfig,
     },
+    theme: DEFAULT_THEME,
+    thresholds: DEFAULT_THRESHOLDS,
     pglogical: args.pglogical ?? false,
     source: 'cli',
   };
@@ -87,11 +84,18 @@ export function mergeConfigWithCLI(
     if (args.pglogical) {
       return {
         ...fileConfig,
+        theme: fileConfig.theme ?? DEFAULT_THEME,
+        thresholds: fileConfig.thresholds ?? DEFAULT_THRESHOLDS,
         pglogical: true,
         source: 'merged',
       };
     }
-    return fileConfig;
+    // Ensure theme and thresholds have defaults
+    return {
+      ...fileConfig,
+      theme: fileConfig.theme ?? DEFAULT_THEME,
+      thresholds: fileConfig.thresholds ?? DEFAULT_THRESHOLDS,
+    };
   }
 
   // Merge inline args into the first node (or all nodes if host is specified)
@@ -119,12 +123,21 @@ export function mergeConfigWithCLI(
 
   const result: Configuration = {
     nodes: mergedNodes,
+    theme: fileConfig.theme ?? DEFAULT_THEME,
+    thresholds: fileConfig.thresholds ?? DEFAULT_THRESHOLDS,
     pglogical: args.pglogical ?? fileConfig.pglogical,
     source: 'merged',
   };
 
+  // Preserve optional fields from file config
   if (fileConfig.configPath !== undefined) {
     result.configPath = fileConfig.configPath;
+  }
+  if (fileConfig.clusters !== undefined) {
+    result.clusters = fileConfig.clusters;
+  }
+  if (fileConfig.activeCluster !== undefined) {
+    result.activeCluster = fileConfig.activeCluster;
   }
 
   return result;
@@ -132,16 +145,22 @@ export function mergeConfigWithCLI(
 
 /**
  * Validate that minimum required CLI arguments are provided.
- * When no config file is specified, --host and --database are required.
+ * When no config file is available, --host and --database are required.
+ * Note: This is called AFTER checking for default config file.
  * Throws InsufficientArgumentsError if validation fails.
  */
-export function validateMinimumArgs(args: CLIArguments): void {
-  // If config file is provided, no minimum args required
+export function validateMinimumArgs(args: CLIArguments, hasDefaultConfig: boolean): void {
+  // If config file is provided explicitly, no minimum args required
   if (args.config !== undefined) {
     return;
   }
 
-  // Without config, host and database are required
+  // If default config exists and will be loaded, no minimum args required
+  if (hasDefaultConfig) {
+    return;
+  }
+
+  // Without any config, host and database are required
   const missing: string[] = [];
   if (args.host === undefined) {
     missing.push('--host');
@@ -159,16 +178,14 @@ export function validateMinimumArgs(args: CLIArguments): void {
 
 /**
  * Parse CLI arguments and load configuration.
- * Handles three cases:
- * 1. Config file only: Load from YAML file
- * 2. Inline flags only: Build from CLI args
- * 3. Mixed: Load from file, merge with CLI overrides
+ * Handles four cases:
+ * 1. Explicit --config file: Load from specified YAML file
+ * 2. Default config file exists: Load from ~/.config/replmon/config.yaml
+ * 3. Inline flags only: Build from CLI args
+ * 4. Mixed: Load from file, merge with CLI overrides
  */
 export function parseConfiguration(args: CLIArguments): Configuration {
-  // Validate minimum requirements
-  validateMinimumArgs(args);
-
-  // Case 1: Config file provided
+  // Check for explicit config file first
   if (args.config !== undefined) {
     const yamlConfig = loadConfigFile(args.config);
     const fileConfig = transformToConfiguration(yamlConfig, args.config);
@@ -186,9 +203,45 @@ export function parseConfiguration(args: CLIArguments): Configuration {
       return mergeConfigWithCLI(fileConfig, args);
     }
 
-    return fileConfig;
+    // Ensure defaults are applied
+    return {
+      ...fileConfig,
+      theme: fileConfig.theme ?? DEFAULT_THEME,
+      thresholds: fileConfig.thresholds ?? DEFAULT_THRESHOLDS,
+    };
   }
 
-  // Case 2: Inline flags only
+  // Try to load default config file (graceful fallback if not found)
+  const defaultResult = tryLoadDefaultConfig();
+
+  // Validate minimum requirements (now that we know if default config exists)
+  validateMinimumArgs(args, defaultResult.found);
+
+  // Case 2: Default config exists and was loaded
+  if (defaultResult.found && defaultResult.config !== undefined) {
+    const fileConfig = transformToConfiguration(defaultResult.config, defaultResult.path);
+
+    // Check if we need to merge CLI overrides
+    const hasInlineArgs =
+      args.host !== undefined ||
+      args.port !== undefined ||
+      args.database !== undefined ||
+      args.user !== undefined ||
+      args.password !== undefined ||
+      args.pglogical === true;
+
+    if (hasInlineArgs) {
+      return mergeConfigWithCLI(fileConfig, args);
+    }
+
+    // Ensure defaults are applied
+    return {
+      ...fileConfig,
+      theme: fileConfig.theme ?? DEFAULT_THEME,
+      thresholds: fileConfig.thresholds ?? DEFAULT_THRESHOLDS,
+    };
+  }
+
+  // Case 3: Inline flags only (no config file)
   return buildConfigurationFromCLI(args);
 }

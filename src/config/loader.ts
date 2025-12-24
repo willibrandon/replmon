@@ -2,36 +2,21 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { parse as parseYAML } from 'yaml';
 import type { YAMLConfigFile, YAMLNodeConfig } from '../types/yaml-config.js';
+import {
+  ConfigFileNotFoundError,
+  ConfigFilePermissionError,
+  YAMLParseError,
+  EnvVarInterpolationError,
+} from '../types/errors.js';
+import { getDefaultConfigPath } from './defaults.js';
 
-/**
- * Error thrown when config file cannot be found.
- */
-export class ConfigFileNotFoundError extends Error {
-  constructor(filePath: string) {
-    super(`Config file not found: ${filePath}`);
-    this.name = 'ConfigFileNotFoundError';
-  }
-}
-
-/**
- * Error thrown when YAML parsing fails.
- */
-export class YAMLParseError extends Error {
-  constructor(message: string) {
-    super(`Invalid YAML syntax in config: ${message}`);
-    this.name = 'YAMLParseError';
-  }
-}
-
-/**
- * Error thrown when environment variable interpolation fails.
- */
-export class EnvVarInterpolationError extends Error {
-  constructor(varName: string) {
-    super(`Config interpolation failed: Environment variable not found: ${varName}`);
-    this.name = 'EnvVarInterpolationError';
-  }
-}
+// Re-export error types for backwards compatibility
+export {
+  ConfigFileNotFoundError,
+  ConfigFilePermissionError,
+  YAMLParseError,
+  EnvVarInterpolationError,
+};
 
 /**
  * Pattern for environment variable interpolation.
@@ -108,12 +93,26 @@ function interpolateConfig(config: YAMLConfigFile): YAMLConfigFile {
 }
 
 /**
+ * Result of attempting to load a config file.
+ * Used to differentiate between "file not found" and "file found but error".
+ */
+export interface LoadConfigResult {
+  /** Whether a config file was successfully loaded */
+  found: boolean;
+  /** The loaded config, if found */
+  config?: YAMLConfigFile;
+  /** The resolved path that was used */
+  path: string;
+}
+
+/**
  * Load and parse a YAML configuration file.
  * Performs environment variable interpolation on string values.
  *
  * @param filePath - Path to the YAML configuration file
  * @returns Parsed and interpolated configuration
  * @throws ConfigFileNotFoundError if file doesn't exist
+ * @throws ConfigFilePermissionError if file is not readable
  * @throws YAMLParseError if YAML is invalid
  * @throws EnvVarInterpolationError if required env var is missing
  */
@@ -131,6 +130,13 @@ export function loadConfigFile(filePath: string): YAMLConfigFile {
   try {
     content = fs.readFileSync(resolvedPath, 'utf-8');
   } catch (err) {
+    // Check if it's a permission error
+    if (err instanceof Error && 'code' in err) {
+      const nodeErr = err as NodeJS.ErrnoException;
+      if (nodeErr.code === 'EACCES' || nodeErr.code === 'EPERM') {
+        throw new ConfigFilePermissionError(resolvedPath);
+      }
+    }
     throw new ConfigFileNotFoundError(resolvedPath);
   }
 
@@ -153,4 +159,27 @@ export function loadConfigFile(filePath: string): YAMLConfigFile {
 
   // Interpolate environment variables
   return interpolateConfig(rawConfig);
+}
+
+/**
+ * Try to load a config file from the default path.
+ * Returns null if the default config file doesn't exist (graceful fallback).
+ * Throws errors for permission issues or invalid YAML.
+ *
+ * @returns LoadConfigResult with found=true if loaded, found=false if not found
+ * @throws ConfigFilePermissionError if file exists but is not readable
+ * @throws YAMLParseError if file exists but contains invalid YAML
+ * @throws EnvVarInterpolationError if required env var is missing
+ */
+export function tryLoadDefaultConfig(): LoadConfigResult {
+  const defaultPath = getDefaultConfigPath();
+
+  // Check if default config file exists
+  if (!fs.existsSync(defaultPath)) {
+    return { found: false, path: defaultPath };
+  }
+
+  // File exists - try to load it (errors here are real errors, not graceful fallback)
+  const config = loadConfigFile(defaultPath);
+  return { found: true, config, path: defaultPath };
 }
