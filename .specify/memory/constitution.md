@@ -42,14 +42,14 @@ Polling-based live updates are the default behavior.
 - Default polling interval: 1 second
 - All UI MUST derive from Zustand store—no local component state for shared data
 - State changes trigger re-renders automatically via Zustand subscriptions
-- Lag history MUST maintain rolling 5-minute window (300 samples at 1s intervals)
+- Lag history MUST maintain rolling window (default 60 samples; configurable per feature requirements)
 
 ### IV. Keyboard-First UX
 
 Full application functionality MUST be accessible via keyboard alone.
 
 - Tab/Shift+Tab for panel navigation
-- Single-key shortcuts for common actions: t (topology), s (subscriptions), l (lag), c (conflicts), o (operations), q (quit)
+- Single-key shortcuts for common actions: t (topology), s (subscriptions), l (slots), c (conflicts), o (operations), q (quit)
 - Vim-style j/k navigation in lists
 - Mouse support is optional enhancement, never required
 

@@ -67,6 +67,8 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - PostgreSQL 10+ (external nodes being monitored) (003-connection-management)
 - TypeScript 5.7 (strict mode) + Node.js EventEmitter, ConnectionManager (003-connection-management), pg (^8.x) (004-polling-service)
 - N/A (queries PostgreSQL nodes via ConnectionManager, no local storage) (004-polling-service)
+- TypeScript 5.7 (strict mode) + Zustand 5.x (with subscribeWithSelector + devtools middleware), React 18.x, Ink 5.x (005-state-management)
+- In-memory Zustand store (no persistence required) (005-state-management)
 
 ## Development Environment
 
@@ -76,7 +78,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
+- 005-state-management: Added TypeScript 5.7 (strict mode) + Zustand 5.x (with subscribeWithSelector + devtools middleware), React 18.x, Ink 5.x
 - 004-polling-service: Added PollingService with event-based data collection, configurable intervals (250ms min), per-node pglogical detection, partial results on node failure, and typed event subscriptions for stats/slots/subscriptions/conflicts
 - 003-connection-management: Added ConnectionManager service with multi-node pooling, health monitoring, parallel queries, dynamic node management, and graceful shutdown
-- 002-yaml-config: Added YAML configuration with env var interpolation, multi-cluster support, theme customization, and threshold configuration
-- 001-project-setup-cli: Added TypeScript 5.x (strict mode) on Bun 1.x (Node.js 18+ fallback) + React 18.x, Ink 5.x, meow 13.x, js-yaml, Zustand
