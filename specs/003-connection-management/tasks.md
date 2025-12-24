@@ -147,12 +147,12 @@
 
 **Purpose**: Pool statistics, store integration, and final touches
 
-- [ ] T039 [P] Implement getPoolStats method: expose pg-pool totalCount, idleCount, waitingCount in src/services/connection-manager/index.ts
-- [ ] T040 [P] Implement getAllPoolStats method: aggregate stats from all nodes in src/services/connection-manager/index.ts
-- [ ] T041 [P] Emit pool:stats events periodically (aligned with health check interval) in src/services/connection-manager/health-checker.ts
-- [ ] T042 Extend src/store/connection.ts with health status Map and pool stats state
-- [ ] T043 Add JSDoc documentation to all public methods in src/services/connection-manager/index.ts
-- [ ] T044 Run quickstart.md validation: verify all code examples compile and patterns work
+- [x] T039 [P] Implement getPoolStats method: expose pg-pool totalCount, idleCount, waitingCount in src/services/connection-manager/index.ts
+- [x] T040 [P] Implement getAllPoolStats method: aggregate stats from all nodes in src/services/connection-manager/index.ts
+- [x] T041 [P] Emit pool:stats events periodically (aligned with health check interval) in src/services/connection-manager/health-checker.ts
+- [x] T042 Extend src/store/connection.ts with health status Map and pool stats state
+- [x] T043 Add JSDoc documentation to all public methods in src/services/connection-manager/index.ts
+- [x] T044 Run quickstart.md validation: verify all code examples compile and patterns work
 
 ---
 

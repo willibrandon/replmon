@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import type { HealthStatus, PoolStats } from '../services/connection-manager/types.js';
 
 /**
  * Connection status for a single node.
@@ -26,6 +27,12 @@ export interface ConnectionStoreState {
 
   /** Whether pglogical mode is enabled */
   pglogicalMode: boolean;
+
+  /** Per-node health status from ConnectionManager */
+  healthStatus: Map<string, HealthStatus>;
+
+  /** Per-node pool statistics from ConnectionManager */
+  poolStats: Map<string, PoolStats>;
 }
 
 /**
@@ -52,6 +59,18 @@ export interface ConnectionStoreActions {
 
   /** Initialize node statuses */
   initializeNodes: (nodeIds: string[]) => void;
+
+  /** Update health status for a specific node */
+  setHealth: (nodeId: string, status: HealthStatus) => void;
+
+  /** Update pool stats for a specific node */
+  setPoolStats: (nodeId: string, stats: PoolStats) => void;
+
+  /** Clear health status for a specific node */
+  clearHealth: (nodeId: string) => void;
+
+  /** Clear pool stats for a specific node */
+  clearPoolStats: (nodeId: string) => void;
 }
 
 export type ConnectionStore = ConnectionStoreState & ConnectionStoreActions;
@@ -65,6 +84,8 @@ export const useConnectionStore = create<ConnectionStore>()(
     nodeStatus: new Map(),
     connectionErrors: new Map(),
     pglogicalMode: false,
+    healthStatus: new Map(),
+    poolStats: new Map(),
 
     setNodeStatus: (nodeId, status) =>
       set((state) => {
@@ -110,6 +131,34 @@ export const useConnectionStore = create<ConnectionStore>()(
           nodeStatus.set(nodeId, 'connecting');
         }
         return { nodeStatus };
+      }),
+
+    setHealth: (nodeId, status) =>
+      set((state) => {
+        const healthStatus = new Map(state.healthStatus);
+        healthStatus.set(nodeId, status);
+        return { healthStatus };
+      }),
+
+    setPoolStats: (nodeId, stats) =>
+      set((state) => {
+        const poolStats = new Map(state.poolStats);
+        poolStats.set(nodeId, stats);
+        return { poolStats };
+      }),
+
+    clearHealth: (nodeId) =>
+      set((state) => {
+        const healthStatus = new Map(state.healthStatus);
+        healthStatus.delete(nodeId);
+        return { healthStatus };
+      }),
+
+    clearPoolStats: (nodeId) =>
+      set((state) => {
+        const poolStats = new Map(state.poolStats);
+        poolStats.delete(nodeId);
+        return { poolStats };
       }),
   }))
 );

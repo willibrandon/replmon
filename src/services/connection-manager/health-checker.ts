@@ -77,6 +77,7 @@ export class HealthChecker {
   private checkAllNodes(): void {
     for (const nodeId of this.nodes.keys()) {
       this.checkNode(nodeId);
+      this.emitPoolStats(nodeId);
     }
   }
 
