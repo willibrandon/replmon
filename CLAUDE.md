@@ -65,4 +65,5 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - YAML files (no database) (002-yaml-config)
 
 ## Recent Changes
+- 002-yaml-config: Added YAML configuration with env var interpolation, multi-cluster support, theme customization, and threshold configuration
 - 001-project-setup-cli: Added TypeScript 5.x (strict mode) on Bun 1.x (Node.js 18+ fallback) + React 18.x, Ink 5.x, meow 13.x, js-yaml, Zustand

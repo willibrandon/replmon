@@ -90,6 +90,7 @@ function interpolateNodeConfig(node: YAMLNodeConfig, nodeName: string): YAMLNode
 
 /**
  * Interpolate environment variables in the entire config file.
+ * Passes through clusters, theme, and thresholds unchanged.
  */
 function interpolateConfig(config: YAMLConfigFile): YAMLConfigFile {
   const result: YAMLConfigFile = {};
@@ -103,6 +104,21 @@ function interpolateConfig(config: YAMLConfigFile): YAMLConfigFile {
     for (const [name, node] of Object.entries(config.nodes)) {
       result.nodes[name] = interpolateNodeConfig(node, name);
     }
+  }
+
+  // Pass through clusters unchanged (no env var interpolation needed)
+  if (config.clusters !== undefined) {
+    result.clusters = config.clusters;
+  }
+
+  // Pass through theme unchanged (no env var interpolation needed)
+  if (config.theme !== undefined) {
+    result.theme = config.theme;
+  }
+
+  // Pass through thresholds unchanged (no env var interpolation needed)
+  if (config.thresholds !== undefined) {
+    result.thresholds = config.thresholds;
   }
 
   return result;

@@ -1,0 +1,185 @@
+# =============================================================================
+# replmon Configuration Example
+# =============================================================================
+#
+# This file demonstrates all available configuration options for replmon.
+# Copy this file to ~/.config/replmon/config.yaml and customize as needed.
+#
+# Default config location (XDG-compliant):
+#   ~/.config/replmon/config.yaml
+#
+# Or specify a custom path:
+#   replmon --config /path/to/config.yaml
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Node Definitions
+# -----------------------------------------------------------------------------
+# Define your PostgreSQL connection targets. Each node has a unique name
+# that can be referenced in cluster definitions.
+#
+# Required fields: host, database
+# Optional fields: port (default: 5432), user (default: current OS user), password
+#
+# Environment variable interpolation:
+#   ${VAR_NAME}          - Use value of VAR_NAME (error if not set)
+#   ${VAR_NAME:-default} - Use value of VAR_NAME, or "default" if not set
+
+nodes:
+  # Primary database server
+  primary:
+    host: db-primary.example.com
+    port: 5432
+    database: myapp
+    user: monitor
+    # Use environment variable for password (recommended for security)
+    password: ${PG_PASSWORD}
+
+  # Read replica
+  replica:
+    host: db-replica.example.com
+    port: 5432
+    database: myapp
+    user: monitor
+    password: ${PG_PASSWORD}
+
+  # Staging environment (with default port fallback)
+  staging:
+    host: ${STAGING_HOST:-staging-db.example.com}
+    port: ${STAGING_PORT:-5432}
+    database: myapp_staging
+    user: monitor
+    password: ${STAGING_PG_PASSWORD:-staging_password}
+
+# -----------------------------------------------------------------------------
+# Cluster Definitions (Optional)
+# -----------------------------------------------------------------------------
+# Group nodes into logical clusters for easy switching.
+# Use --cluster <name> to select which cluster to monitor.
+#
+# If no --cluster flag is provided:
+#   1. Uses cluster marked with "default: true"
+#   2. Falls back to first defined cluster
+#
+# If no clusters are defined, all nodes are monitored.
+
+clusters:
+  # Production cluster - monitors primary and replica
+  production:
+    nodes:
+      - primary
+      - replica
+    default: true  # This cluster is used when --cluster is not specified
+
+  # Staging cluster - single node
+  staging:
+    nodes:
+      - staging
+
+# -----------------------------------------------------------------------------
+# Theme Configuration (Optional)
+# -----------------------------------------------------------------------------
+# Customize the UI appearance.
+#
+# Simple usage - just specify theme name:
+#   theme: dark
+#   theme: light
+#
+# Advanced usage - customize specific colors:
+#   theme:
+#     name: dark        # Base theme (dark or light)
+#     colors:
+#       primary: "#00FF00"
+#
+# Available color keys:
+#   background - Main background color
+#   foreground - Primary text color
+#   primary    - Accent color for highlights
+#   secondary  - Secondary accent color
+#   success    - Healthy/OK state (e.g., replication healthy)
+#   warning    - Warning state (e.g., lag approaching threshold)
+#   critical   - Critical/error state (e.g., replication broken)
+#   muted      - Dimmed/inactive text
+#
+# Colors must be hex format: #RGB or #RRGGBB
+
+# Simple theme (just the name):
+theme: dark
+
+# Or use custom colors (uncomment below and comment out the line above):
+# theme:
+#   name: dark
+#   colors:
+#     primary: "#00BFFF"
+#     warning: "#FFD700"
+#     critical: "#FF4500"
+
+# -----------------------------------------------------------------------------
+# Threshold Configuration (Optional)
+# -----------------------------------------------------------------------------
+# Define warning and critical thresholds for replication health indicators.
+# When metrics exceed these thresholds, the UI updates to show warning/critical state.
+#
+# Supported formats:
+#   Time:  10, "10s", "5m", "1h" (seconds, minutes, hours)
+#   Bytes: 1024, "1KB", "500MB", "2GB", "1TB"
+#   Count: Plain numbers
+#
+# Default values:
+#   replication_lag: warning=10s, critical=60s
+#   slot_retention:  warning=1GB, critical=5GB
+#   conflict_rate:   warning=5/min, critical=20/min
+
+thresholds:
+  # Replication lag in seconds
+  # How far behind the replica is from the primary
+  replication_lag:
+    warning: 10s     # Show warning when lag exceeds 10 seconds
+    critical: 1m     # Show critical when lag exceeds 1 minute
+
+  # Replication slot retained WAL size
+  # Large values indicate slot consumers are falling behind
+  slot_retention:
+    warning: 1GB     # Show warning when retained WAL exceeds 1GB
+    critical: 5GB    # Show critical when retained WAL exceeds 5GB
+
+  # Conflict rate (pglogical mode only)
+  # Number of replication conflicts per minute
+  conflict_rate:
+    warning: 5       # Show warning at 5 conflicts/minute
+    critical: 20     # Show critical at 20 conflicts/minute
+
+# -----------------------------------------------------------------------------
+# pglogical Mode (Optional)
+# -----------------------------------------------------------------------------
+# Enable pglogical-specific monitoring features.
+# When enabled, replmon queries pglogical-specific catalog tables
+# for subscription status, conflict tracking, etc.
+#
+# Default: false
+
+pglogical: false
+
+# =============================================================================
+# Usage Examples
+# =============================================================================
+#
+# Monitor production cluster (default):
+#   replmon
+#
+# Monitor staging cluster:
+#   replmon --cluster staging
+#
+# Override host from config:
+#   replmon --host different-host.example.com
+#
+# Use different config file:
+#   replmon --config /etc/replmon/production.yaml
+#
+# Set required environment variables:
+#   export PG_PASSWORD=your_secure_password
+#   export STAGING_PG_PASSWORD=staging_password
+#   replmon
+#
+# =============================================================================

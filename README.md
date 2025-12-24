@@ -33,47 +33,67 @@ npx replmon --config ./replmon.yaml
 ## Usage
 
 ```bash
-# With config file
-replmon --config ~/.config/replmon/config.yaml
+# Uses default config (~/.config/replmon/config.yaml)
+replmon
 
-# Inline connection
-replmon --host pg.example.com --port 5432 --database myapp --user replmon
+# Explicit config file
+replmon --config /path/to/config.yaml
 
-# Multiple nodes with pglogical
-replmon \
-  --node us-east:pg-us.example.com:5432/myapp \
-  --node eu-west:pg-eu.example.com:5432/myapp \
-  --pglogical
+# Switch cluster
+replmon --cluster staging
+
+# Inline connection (no config file needed)
+replmon --host pg.example.com --database myapp
+
+# Override config values with CLI flags
+replmon --config prod.yaml --port 5433 --pglogical
 ```
 
 ## Configuration
 
+Default config location: `~/.config/replmon/config.yaml`
+
 ```yaml
+# Define PostgreSQL nodes
+nodes:
+  primary:
+    host: pg-primary.example.com
+    port: 5432
+    database: myapp
+    user: monitor
+    password: ${PG_PASSWORD}  # Environment variable interpolation
+
+  replica:
+    host: pg-replica.example.com
+    database: myapp
+    password: ${PG_PASSWORD}
+
+# Group nodes into clusters (optional)
 clusters:
   production:
-    nodes:
-      - name: us-east
-        host: pg-us-east.example.com
-        port: 5432
-        database: app_db
-        user: replmon
-        role: provider
-      - name: eu-west
-        host: pg-eu-west.example.com
-        port: 5432
-        database: app_db
-        user: replmon
-        role: subscriber
-    pglogical: true
-    pollInterval: 1000
+    nodes: [primary, replica]
+    default: true
 
-settings:
-  theme: default
-  lagWarningThreshold: 5000
-  lagCriticalThreshold: 30000
+# Theme: dark, light, or custom colors
+theme: dark
+
+# Alert thresholds (human-readable formats)
+thresholds:
+  replication_lag:
+    warning: 10s
+    critical: 1m
+  slot_retention:
+    warning: 1GB
+    critical: 5GB
+
+pglogical: true
 ```
 
-Passwords via environment variables: `REPLMON_<NODE_NAME>_PASSWORD`
+Environment variable syntax:
+- `${VAR}` — Use value (error if not set)
+- `${VAR:-default}` — Use value or fallback to default
+
+See `configs/example.yaml` for all options.
 
 ## Keyboard Shortcuts
 

@@ -1,0 +1,7 @@
+# Minimal replmon configuration
+# Copy to ~/.config/replmon/config.yaml
+
+nodes:
+  primary:
+    host: localhost
+    database: postgres

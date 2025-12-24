@@ -144,11 +144,11 @@
 
 **Purpose**: Validation and integration across all user stories
 
-- [ ] T041 Run quickstart.md validation scenarios manually
-- [ ] T042 Verify all error messages are under 100 characters per SC-004
-- [ ] T043 Verify config parsing completes under 50ms per performance goals
-- [ ] T044 Ensure graceful handling of empty config file (treat as no config)
-- [ ] T045 Final code review for TypeScript strict mode compliance
+- [x] T041 Run quickstart.md validation scenarios manually
+- [x] T042 Verify all error messages are under 100 characters per SC-004
+- [x] T043 Verify config parsing completes under 50ms per performance goals
+- [x] T044 Ensure graceful handling of empty config file (treat as no config)
+- [x] T045 Final code review for TypeScript strict mode compliance
 
 ---
 
