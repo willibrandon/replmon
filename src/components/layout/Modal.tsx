@@ -27,8 +27,9 @@ export function Modal({ config, onClose, children }: ModalProps): React.ReactEle
             <Text><Text color={colors.secondary}>c</Text>        Conflicts panel</Text>
             <Text><Text color={colors.secondary}>o</Text>        Operations panel</Text>
             <Text><Text color={colors.secondary}>Tab</Text>      Next panel</Text>
-            <Text><Text color={colors.secondary}>j/k</Text>      Navigate list items</Text>
-            <Text><Text color={colors.secondary}>?</Text>        Show this help</Text>
+            <Text><Text color={colors.secondary}>↑/k</Text>      Previous item</Text>
+            <Text><Text color={colors.secondary}>↓/j</Text>      Next item</Text>
+            <Text><Text color={colors.secondary}>h/?</Text>      Show this help</Text>
             <Text><Text color={colors.secondary}>Esc</Text>      Close modal</Text>
             <Text><Text color={colors.secondary}>q</Text>        Quit application</Text>
           </Box>

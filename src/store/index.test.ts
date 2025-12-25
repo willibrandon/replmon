@@ -15,7 +15,7 @@ beforeEach(() => {
 
 describe('Connection Slice', () => {
   test('initializes nodes with connecting status', () => {
-    const { initializeNodes, nodeStatus } = useStore.getState();
+    const { initializeNodes } = useStore.getState();
 
     initializeNodes(['node1', 'node2']);
 
@@ -237,7 +237,7 @@ describe('Replication Slice', () => {
   });
 
   test('clearReplicationData resets all replication state', () => {
-    const { initializeNodesInfo, setSubscriptions, markNodeStale, clearReplicationData } = useStore.getState();
+    const { initializeNodesInfo, markNodeStale, clearReplicationData } = useStore.getState();
     initializeNodesInfo([
       { id: 'node1', name: 'Test', host: 'localhost', port: 5432, database: 'test', hasPglogical: false },
     ]);

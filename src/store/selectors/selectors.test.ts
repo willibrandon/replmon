@@ -17,11 +17,9 @@ import {
   selectLatestLagSample,
 } from './aggregations.js';
 import {
-  selectLaggingSubscriptions,
   selectUnhealthySubscriptions,
   selectActiveSlots,
   selectInactiveSlots,
-  selectStaleSlots,
   selectLogicalSlots,
   selectPhysicalSlots,
 } from './filters.js';

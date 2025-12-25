@@ -35,9 +35,9 @@ export function MainLayout({ header, footer, children }: MainLayoutProps): React
     const targetPanel = PANEL_SHORTCUTS[input] as Panel | undefined;
     if (targetPanel) { setFocusedPanel(targetPanel); return; }
     if (key.tab) { key.shift ? focusPreviousPanel() : focusNextPanel(); return; }
-    if (input === 'j') { selectNext(); return; }
-    if (input === 'k') { selectPrevious(); return; }
-    if (input === '?') { openModal({ type: 'help', title: 'Help' }); }
+    if (input === 'j' || key.downArrow) { selectNext(); return; }
+    if (input === 'k' || key.upArrow) { selectPrevious(); return; }
+    if (input === '?' || input === 'h') { openModal({ type: 'help', title: 'Help' }); }
   });
 
   const isCompact = breakpoint === 'compact';
