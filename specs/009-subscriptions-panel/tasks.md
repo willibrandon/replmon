@@ -19,10 +19,10 @@
 
 **Purpose**: Hook and utility infrastructure needed by all user stories
 
-- [ ] T001 Create useSubscriptions hook with basic structure in src/hooks/useSubscriptions.ts
-- [ ] T002 [P] Add formatBytes utility function in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T003 [P] Add formatDuration utility function in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T004 [P] Add getStatusVariant mapping function in src/hooks/useSubscriptions.ts
+- [X] T001 Create useSubscriptions hook with basic structure in src/hooks/useSubscriptions.ts
+- [X] T002 [P] Add formatBytes utility function in src/components/panels/SubscriptionsPanel.tsx
+- [X] T003 [P] Add formatDuration utility function in src/components/panels/SubscriptionsPanel.tsx
+- [X] T004 [P] Add getStatusVariant mapping function in src/hooks/useSubscriptions.ts
 
 **Checkpoint**: Core utilities ready - panel implementation can begin
 
@@ -34,10 +34,10 @@
 
 **CRITICAL**: The panel container must exist before any story-specific features
 
-- [ ] T005 Create SubscriptionsPanel component shell with props interface in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T006 Create internal SubscriptionRow component shell in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T007 Wire SubscriptionsPanel into MainLayout to render when focusedPanel === 'subscriptions' in src/components/layout/MainLayout.tsx
-- [ ] T008 Create test file with basic render test in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T005 Create SubscriptionsPanel component shell with props interface in src/components/panels/SubscriptionsPanel.tsx
+- [X] T006 Create internal SubscriptionRow component shell in src/components/panels/SubscriptionsPanel.tsx
+- [X] T007 Wire SubscriptionsPanel into MainLayout to render when focusedPanel === 'subscriptions' in src/components/layout/MainLayout.tsx
+- [X] T008 Create test file with basic render test in src/components/panels/SubscriptionsPanel.test.tsx
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -51,18 +51,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Test empty state renders "No subscriptions found" message in src/components/panels/SubscriptionsPanel.test.tsx
-- [ ] T010 [P] [US1] Test list renders multiple subscriptions with names and node identifiers in src/components/panels/SubscriptionsPanel.test.tsx
-- [ ] T011 [P] [US1] Test status indicator shows correct variant for each status (replicating/catchup/down/disabled) in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T009 [P] [US1] Test empty state renders "No subscriptions found" message in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T010 [P] [US1] Test list renders multiple subscriptions with names and node identifiers in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T011 [P] [US1] Test status indicator shows correct variant for each status (replicating/catchup/down/disabled) in src/components/panels/SubscriptionsPanel.test.tsx
 
 ### Implementation for User Story 1
 
-- [ ] T012 [US1] Implement useSubscriptions hook to aggregate subscriptions from store with node names in src/hooks/useSubscriptions.ts
-- [ ] T013 [US1] Implement status-to-variant mapping (replicating→success, catchup→warning, down→critical, disabled→muted) in src/hooks/useSubscriptions.ts
-- [ ] T014 [US1] Implement SubscriptionRow to display StatusDot, subscription name, and node name in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T015 [US1] Implement panel header showing subscription count in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T016 [US1] Implement empty state with "No subscriptions found" message in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T017 [US1] Implement stale subscription handling with dimmed appearance for stale nodes in src/components/panels/SubscriptionsPanel.tsx
+- [X] T012 [US1] Implement useSubscriptions hook to aggregate subscriptions from store with node names in src/hooks/useSubscriptions.ts
+- [X] T013 [US1] Implement status-to-variant mapping (replicating→success, catchup→warning, down→critical, disabled→muted) in src/hooks/useSubscriptions.ts
+- [X] T014 [US1] Implement SubscriptionRow to display StatusDot, subscription name, and node name in src/components/panels/SubscriptionsPanel.tsx
+- [X] T015 [US1] Implement panel header showing subscription count in src/components/panels/SubscriptionsPanel.tsx
+- [X] T016 [US1] Implement empty state with "No subscriptions found" message in src/components/panels/SubscriptionsPanel.tsx
+- [X] T017 [US1] Implement stale subscription handling with dimmed appearance for stale nodes in src/components/panels/SubscriptionsPanel.tsx
 
 **Checkpoint**: User Story 1 complete - can see all subscriptions with status indicators
 
@@ -76,19 +76,19 @@
 
 ### Tests for User Story 2
 
-- [ ] T018 [P] [US2] Test lag bytes displays in human-readable format (KB, MB, GB) in src/components/panels/SubscriptionsPanel.test.tsx
-- [ ] T019 [P] [US2] Test lag time displays in human-readable format (s, m, h) in src/components/panels/SubscriptionsPanel.test.tsx
-- [ ] T020 [P] [US2] Test warning color applied when lag > 5s in src/components/panels/SubscriptionsPanel.test.tsx
-- [ ] T021 [P] [US2] Test critical color applied when lag > 30s in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T018 [P] [US2] Test lag bytes displays in human-readable format (KB, MB, GB) in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T019 [P] [US2] Test lag time displays in human-readable format (s, m, h) in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T020 [P] [US2] Test warning color applied when lag > 5s in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T021 [P] [US2] Test critical color applied when lag > 30s in src/components/panels/SubscriptionsPanel.test.tsx
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Extend useSubscriptions to include latest lag sample and lag severity in src/hooks/useSubscriptions.ts
-- [ ] T023 [US2] Integrate existing getLagSeverity utility for threshold calculations in src/hooks/useSubscriptions.ts
-- [ ] T024 [US2] Add lag bytes column to SubscriptionRow using formatBytes in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T025 [US2] Add lag time column to SubscriptionRow using formatDuration in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T026 [US2] Apply warning/critical colors to lag values based on severity in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T027 [US2] Handle null lag data with placeholder display ("-") in src/components/panels/SubscriptionsPanel.tsx
+- [X] T022 [US2] Extend useSubscriptions to include latest lag sample and lag severity in src/hooks/useSubscriptions.ts
+- [X] T023 [US2] Integrate existing getLagSeverity utility for threshold calculations in src/hooks/useSubscriptions.ts
+- [X] T024 [US2] Add lag bytes column to SubscriptionRow using formatBytes in src/components/panels/SubscriptionsPanel.tsx
+- [X] T025 [US2] Add lag time column to SubscriptionRow using formatDuration in src/components/panels/SubscriptionsPanel.tsx
+- [X] T026 [US2] Apply warning/critical colors to lag values based on severity in src/components/panels/SubscriptionsPanel.tsx
+- [X] T027 [US2] Handle null lag data with placeholder display ("-") in src/components/panels/SubscriptionsPanel.tsx
 
 **Checkpoint**: User Story 2 complete - lag metrics visible with color coding
 
@@ -102,13 +102,13 @@
 
 ### Tests for User Story 3
 
-- [ ] T028 [P] [US3] Test LSN column displays received LSN value in src/components/panels/SubscriptionsPanel.test.tsx
-- [ ] T029 [P] [US3] Test null LSN displays placeholder in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T028 [P] [US3] Test LSN column displays received LSN value in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T029 [P] [US3] Test null LSN displays placeholder in src/components/panels/SubscriptionsPanel.test.tsx
 
 ### Implementation for User Story 3
 
-- [ ] T030 [US3] Add LSN column to SubscriptionRow displaying receivedLsn in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T031 [US3] Handle null LSN with placeholder display in src/components/panels/SubscriptionsPanel.tsx
+- [X] T030 [US3] Add LSN column to SubscriptionRow displaying receivedLsn in src/components/panels/SubscriptionsPanel.tsx
+- [X] T031 [US3] Handle null LSN with placeholder display in src/components/panels/SubscriptionsPanel.tsx
 
 **Checkpoint**: User Story 3 complete - LSN positions visible
 
@@ -122,15 +122,15 @@
 
 ### Tests for User Story 4
 
-- [ ] T032 [P] [US4] Test selected subscription has distinct visual highlight in src/components/panels/SubscriptionsPanel.test.tsx
-- [ ] T033 [P] [US4] Test selection state read from store selections Map in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T032 [P] [US4] Test selected subscription has distinct visual highlight in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T033 [P] [US4] Test selection state read from store selections Map in src/components/panels/SubscriptionsPanel.test.tsx
 
 ### Implementation for User Story 4
 
-- [ ] T034 [US4] Extend useSubscriptions to track isSelected from store selections in src/hooks/useSubscriptions.ts
-- [ ] T035 [US4] Extend useSubscriptions to return selectedItem for current selection in src/hooks/useSubscriptions.ts
-- [ ] T036 [US4] Apply selection highlight background to selected SubscriptionRow in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T037 [US4] Verify MainLayout keyboard handling (j/k and arrow keys) works with subscriptions panel selectables in src/components/layout/MainLayout.tsx
+- [X] T034 [US4] Extend useSubscriptions to track isSelected from store selections in src/hooks/useSubscriptions.ts
+- [X] T035 [US4] Extend useSubscriptions to return selectedItem for current selection in src/hooks/useSubscriptions.ts
+- [X] T036 [US4] Apply selection highlight background to selected SubscriptionRow in src/components/panels/SubscriptionsPanel.tsx
+- [X] T037 [US4] Verify MainLayout keyboard handling (j/k and arrow keys) works with subscriptions panel selectables in src/components/layout/MainLayout.tsx
 
 **Checkpoint**: User Story 4 complete - keyboard selection working
 
@@ -144,19 +144,19 @@
 
 ### Tests for User Story 5
 
-- [ ] T038 [P] [US5] Test modal content renders subscription name as title in src/components/panels/SubscriptionsPanel.test.tsx
-- [ ] T039 [P] [US5] Test modal displays provider info for pglogical subscriptions in src/components/panels/SubscriptionsPanel.test.tsx
-- [ ] T040 [P] [US5] Test modal displays slot name, worker PID, and timestamps in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T038 [P] [US5] Test modal content renders subscription name as title in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T039 [P] [US5] Test modal displays provider info for pglogical subscriptions in src/components/panels/SubscriptionsPanel.test.tsx
+- [X] T040 [P] [US5] Test modal displays slot name, worker PID, and timestamps in src/components/panels/SubscriptionsPanel.test.tsx
 
 ### Implementation for User Story 5
 
-- [ ] T041 [US5] Create SubscriptionDetailContent component for modal in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T042 [US5] Implement detail fields: status, source type, enabled state in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T043 [US5] Implement provider info section (name, host, port) for pglogical in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T044 [US5] Implement replication sets display for pglogical in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T045 [US5] Implement slot name, worker PID, last message time display in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T046 [US5] Implement LSN positions (received, latest end) display in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T047 [US5] Wire Enter key in MainLayout to open modal with selected subscription data in src/components/layout/MainLayout.tsx
+- [X] T041 [US5] Create SubscriptionDetailContent component for modal in src/components/layout/Modal.tsx
+- [X] T042 [US5] Implement detail fields: status, source type, enabled state in src/components/layout/Modal.tsx
+- [X] T043 [US5] Implement provider info section (name, host, port) for pglogical in src/components/layout/Modal.tsx
+- [X] T044 [US5] Implement replication sets display for pglogical in src/components/layout/Modal.tsx
+- [X] T045 [US5] Implement slot name, worker PID, last message time display in src/components/layout/Modal.tsx
+- [X] T046 [US5] Implement LSN positions (received, latest end) display in src/components/layout/Modal.tsx
+- [X] T047 [US5] Wire Enter key in MainLayout to open modal with selected subscription data in src/components/layout/MainLayout.tsx
 
 **Checkpoint**: User Story 5 complete - detail modal fully functional
 
@@ -166,11 +166,11 @@
 
 **Purpose**: Final improvements and verification
 
-- [ ] T048 [P] Add source badge (native/pglogical) to SubscriptionRow in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T049 [P] Add stale count and pglogical mode badges to panel header in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T050 [P] Add warning and critical counts to useSubscriptions result in src/hooks/useSubscriptions.ts
-- [ ] T051 Verify panel works on 80-column terminals (truncation handling) in src/components/panels/SubscriptionsPanel.tsx
-- [ ] T052 Run all tests to verify complete implementation
+- [X] T048 [P] Add source badge (native/pglogical) to SubscriptionRow in src/components/panels/SubscriptionsPanel.tsx
+- [X] T049 [P] Add stale count and pglogical mode badges to panel header in src/components/panels/SubscriptionsPanel.tsx
+- [X] T050 [P] Add warning and critical counts to useSubscriptions result in src/hooks/useSubscriptions.ts
+- [X] T051 Verify panel works on 80-column terminals (truncation handling) in src/components/panels/SubscriptionsPanel.tsx
+- [X] T052 Run all tests to verify complete implementation
 
 ---
 
