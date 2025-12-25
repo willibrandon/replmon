@@ -19,8 +19,8 @@
 
 **Purpose**: Extend existing atoms and create hook infrastructure
 
-- [ ] T001 [P] Extend ProgressBar with color prop in src/components/atoms/ProgressBar.tsx
-- [ ] T002 [P] Create SlotListItem and UseSlotsResult types in src/hooks/useSlots.ts
+- [X] T001 [P] Extend ProgressBar with color prop in src/components/atoms/ProgressBar.tsx
+- [X] T002 [P] Create SlotListItem and UseSlotsResult types in src/hooks/useSlots.ts
 
 **Checkpoint**: Atoms extended, types defined
 
@@ -32,11 +32,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Create useSlots hook with store selectors in src/hooks/useSlots.ts
-- [ ] T004 Implement severity calculation functions (getRetentionSeverity, getWalStatusSeverity, getRetentionPercent) in src/hooks/useSlots.ts
-- [ ] T005 Implement slot aggregation and enrichment logic (SlotListItem derivation, all UseSlotsResult counts) in src/hooks/useSlots.ts
-- [ ] T006 Implement formatBytes utility for retention display in src/hooks/useSlots.ts
-- [ ] T007 [P] Write useSlots hook tests in src/hooks/useSlots.test.ts
+- [X] T003 Create useSlots hook with store selectors in src/hooks/useSlots.ts
+- [X] T004 Implement severity calculation functions (getRetentionSeverity, getWalStatusSeverity, getRetentionPercent) in src/hooks/useSlots.ts
+- [X] T005 Implement slot aggregation and enrichment logic (SlotListItem derivation, all UseSlotsResult counts) in src/hooks/useSlots.ts
+- [X] T006 Implement formatBytes utility for retention display in src/hooks/useSlots.ts
+- [X] T007 [P] Write useSlots hook tests in src/hooks/useSlots.test.ts
 
 **Checkpoint**: Foundation ready - useSlots hook complete with tests
 
@@ -50,16 +50,16 @@
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Write test for empty state rendering in src/components/panels/SlotsPanel.test.tsx
-- [ ] T009 [P] [US1] Write test for slot row rendering with StatusDot in src/components/panels/SlotsPanel.test.tsx
-- [ ] T010 [P] [US1] Write test for stale node slot display in src/components/panels/SlotsPanel.test.tsx
+- [X] T008 [P] [US1] Write test for empty state rendering in src/components/panels/SlotsPanel.test.tsx
+- [X] T009 [P] [US1] Write test for slot row rendering with StatusDot in src/components/panels/SlotsPanel.test.tsx
+- [X] T010 [P] [US1] Write test for stale node slot display in src/components/panels/SlotsPanel.test.tsx
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Create EmptyState subcomponent in src/components/panels/SlotsPanel.tsx
-- [ ] T012 [US1] Create SlotRow subcomponent with StatusDot and basic layout in src/components/panels/SlotsPanel.tsx
-- [ ] T013 [US1] Create SlotsPanel main component with list rendering in src/components/panels/SlotsPanel.tsx
-- [ ] T014 [US1] Export SlotsPanel from src/components/panels/index.ts
+- [X] T011 [US1] Create EmptyState subcomponent in src/components/panels/SlotsPanel.tsx
+- [X] T012 [US1] Create SlotRow subcomponent with StatusDot and basic layout in src/components/panels/SlotsPanel.tsx
+- [X] T013 [US1] Create SlotsPanel main component with list rendering in src/components/panels/SlotsPanel.tsx
+- [X] T014 [US1] Export SlotsPanel from src/components/panels/index.ts
 
 **Checkpoint**: User Story 1 complete - slots visible with active/inactive indicators
 
@@ -73,13 +73,13 @@
 
 ### Tests for User Story 2
 
-- [ ] T015 [P] [US2] Write test for progress bar severity colors in src/components/panels/SlotsPanel.test.tsx
-- [ ] T016 [P] [US2] Write test for retention percentage calculation in src/hooks/useSlots.test.ts
+- [X] T015 [P] [US2] Write test for progress bar severity colors in src/components/panels/SlotsPanel.test.tsx
+- [X] T016 [P] [US2] Write test for retention percentage calculation in src/hooks/useSlots.test.ts
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Add ProgressBar to SlotRow with severity-based color in src/components/panels/SlotsPanel.tsx
-- [ ] T018 [US2] Add formatted retention display next to progress bar in src/components/panels/SlotsPanel.tsx
+- [X] T017 [US2] Add ProgressBar to SlotRow with severity-based color in src/components/panels/SlotsPanel.tsx
+- [X] T018 [US2] Add formatted retention display next to progress bar in src/components/panels/SlotsPanel.tsx
 
 **Checkpoint**: User Story 2 complete - progress bars show with severity colors
 
@@ -93,13 +93,13 @@
 
 ### Tests for User Story 3
 
-- [ ] T019 [P] [US3] Write test for WAL status severity mapping in src/hooks/useSlots.test.ts
-- [ ] T020 [P] [US3] Write test for WAL status badge rendering in src/components/panels/SlotsPanel.test.tsx
-- [ ] T021 [P] [US3] Write test for null WAL status (PG12) handling in src/components/panels/SlotsPanel.test.tsx
+- [X] T019 [P] [US3] Write test for WAL status severity mapping in src/hooks/useSlots.test.ts
+- [X] T020 [P] [US3] Write test for WAL status badge rendering in src/components/panels/SlotsPanel.test.tsx
+- [X] T021 [P] [US3] Write test for null WAL status (PG12) handling in src/components/panels/SlotsPanel.test.tsx
 
 ### Implementation for User Story 3
 
-- [ ] T022 [US3] Add WAL status Badge to SlotRow with severity color in src/components/panels/SlotsPanel.tsx
+- [X] T022 [US3] Add WAL status Badge to SlotRow with severity color in src/components/panels/SlotsPanel.tsx
 
 **Checkpoint**: User Story 3 complete - WAL status visible with severity colors
 
@@ -113,13 +113,13 @@
 
 ### Tests for User Story 4
 
-- [ ] T023 [P] [US4] Write test for summary header badge counts in src/components/panels/SlotsPanel.test.tsx
-- [ ] T024 [P] [US4] Write test for total retention display in src/components/panels/SlotsPanel.test.tsx
-- [ ] T025 [P] [US4] Write test for critical/warning count badges in src/components/panels/SlotsPanel.test.tsx
+- [X] T023 [P] [US4] Write test for summary header badge counts in src/components/panels/SlotsPanel.test.tsx
+- [X] T024 [P] [US4] Write test for total retention display in src/components/panels/SlotsPanel.test.tsx
+- [X] T025 [P] [US4] Write test for critical/warning count badges in src/components/panels/SlotsPanel.test.tsx
 
 ### Implementation for User Story 4
 
-- [ ] T026 [US4] Create summary header component with Badges in src/components/panels/SlotsPanel.tsx
+- [X] T026 [US4] Create summary header component with Badges in src/components/panels/SlotsPanel.tsx
 
 **Checkpoint**: User Story 4 complete - summary header shows aggregated stats
 
@@ -133,14 +133,14 @@
 
 ### Tests for User Story 5
 
-- [ ] T027 [P] [US5] Write test for selection highlighting in src/components/panels/SlotsPanel.test.tsx
-- [ ] T028 [P] [US5] Write test for modal content rendering in src/components/layout/Modal.test.tsx (if exists) or SlotsPanel.test.tsx
+- [X] T027 [P] [US5] Write test for selection highlighting in src/components/panels/SlotsPanel.test.tsx
+- [X] T028 [P] [US5] Write test for modal content rendering in src/components/layout/Modal.test.tsx (if exists) or SlotsPanel.test.tsx
 
 ### Implementation for User Story 5
 
-- [ ] T029 [US5] Add selection indicator to SlotRow in src/components/panels/SlotsPanel.tsx
-- [ ] T030 [US5] Create SlotDetailContent component in src/components/layout/Modal.tsx
-- [ ] T031 [US5] Add slot type guard to Modal renderContent switch in src/components/layout/Modal.tsx
+- [X] T029 [US5] Add selection indicator to SlotRow in src/components/panels/SlotsPanel.tsx
+- [X] T030 [US5] Create SlotDetailContent component in src/components/layout/Modal.tsx
+- [X] T031 [US5] Add slot type guard to Modal renderContent switch in src/components/layout/Modal.tsx
 
 **Checkpoint**: User Story 5 complete - keyboard navigation and detail modal working
 
@@ -150,10 +150,10 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T032 Verify responsive layout at all breakpoints (standard/narrow/short/compact)
-- [ ] T033 Run full test suite: bun test
-- [ ] T034 Run type check: bun run typecheck
-- [ ] T035 Validate quickstart.md scenarios manually
+- [X] T032 Verify responsive layout at all breakpoints (standard/narrow/short/compact)
+- [X] T033 Run full test suite: bun test (379 tests pass)
+- [X] T034 Run type check: npx tsc --noEmit (no errors)
+- [X] T035 Validate quickstart.md scenarios manually (integrated SlotsPanel into Dashboard)
 
 ---
 

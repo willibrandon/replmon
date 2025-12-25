@@ -4,9 +4,11 @@ import { Header } from './Header.js';
 import { Footer } from './Footer.js';
 import { Modal } from './Modal.js';
 import { useBreakpoint } from '../../hooks/useBreakpoint.js';
+import { useTerminalSize } from '../../hooks/useTerminalSize.js';
 import { useConnectionStore } from '../../store/connection.js';
 import { useStore } from '../../store/index.js';
 import { useSubscriptions } from '../../hooks/useSubscriptions.js';
+import { useSlots } from '../../hooks/useSlots.js';
 import { useTopology } from '../../hooks/useTopology.js';
 import { PANEL_SHORTCUTS } from '../../store/types.js';
 import type { Panel } from '../../store/types.js';
@@ -20,6 +22,7 @@ export interface MainLayoutProps {
 
 export function MainLayout({ header, footer, children }: MainLayoutProps): React.ReactElement {
   const breakpoint = useBreakpoint();
+  const { columns, rows } = useTerminalSize();
   const pglogicalMode = useConnectionStore((s) => s.pglogicalMode);
   const activeModal = useStore((s) => s.activeModal);
   const modalData = useStore((s) => s.modalData);
@@ -34,6 +37,7 @@ export function MainLayout({ header, footer, children }: MainLayoutProps): React
 
   // Get selected items for detail modal
   const { selectedItem: selectedSubscription } = useSubscriptions();
+  const { selectedItem: selectedSlot } = useSlots();
   const { nodes, selectedNodeId } = useTopology();
   const selectedNode = nodes.find((n) => n.nodeId === selectedNodeId);
 
@@ -60,6 +64,12 @@ export function MainLayout({ header, footer, children }: MainLayoutProps): React
           title: selectedSubscription.subscriptionName,
           data: selectedSubscription,
         });
+      } else if (focusedPanel === 'slots' && selectedSlot) {
+        openModal({
+          type: 'details',
+          title: selectedSlot.slotName,
+          data: selectedSlot,
+        });
       }
     }
   });
@@ -67,10 +77,13 @@ export function MainLayout({ header, footer, children }: MainLayoutProps): React
   const isCompact = breakpoint === 'compact';
   const isShort = breakpoint === 'short';
 
+  // Key forces full re-render on terminal resize to clear visual artifacts
+  const layoutKey = `${columns}x${rows}`;
+
   return (
-    <Box flexDirection="column" width="100%" height="100%">
+    <Box key={layoutKey} flexDirection="column" width="100%" height="100%">
       {!isCompact && (header ?? <Header showPglogicalBadge={pglogicalMode} />)}
-      <Box flexGrow={1} flexDirection="column">
+      <Box flexGrow={1} flexDirection="column" overflow="hidden">
         {activeModal !== null && modalData !== null ? <Modal config={modalData} onClose={closeModal} /> : children}
       </Box>
       {footer ?? <Footer showTimestamp={!isShort && !isCompact} />}

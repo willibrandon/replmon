@@ -15,11 +15,11 @@ import type { TopologyLayoutConfig, LayoutBreakpoint } from '../types/topology.j
  */
 const LAYOUT_CONFIG = {
   /** Minimum node width in characters */
-  MIN_NODE_WIDTH: 18,
+  MIN_NODE_WIDTH: 19,
   /** Standard node width in characters */
   STANDARD_NODE_WIDTH: 24,
   /** Width of connection line between nodes */
-  CONNECTION_WIDTH: 12,
+  CONNECTION_WIDTH: 10,
   /** Minimum columns for horizontal layout */
   MIN_HORIZONTAL_COLS: 80,
 } as const;

@@ -3,8 +3,10 @@ import { Box, Text, useInput } from 'ink';
 import { useTheme } from '../../hooks/useTheme.js';
 import { StatusDot } from '../atoms/StatusDot.js';
 import { Badge } from '../atoms/Badge.js';
+import { ProgressBar } from '../atoms/ProgressBar.js';
 import type { ModalConfig } from '../../store/types.js';
 import type { SubscriptionListItem } from '../../hooks/useSubscriptions.js';
+import type { SlotListItem } from '../../hooks/useSlots.js';
 import type { TopologyNodeData } from '../../types/topology.js';
 import { getLagSeverity, getLagColor, formatLag, getRoleBadgeLabel, getRoleBadgeColor } from '../../utils/topology.js';
 
@@ -217,6 +219,140 @@ function TopologyNodeDetailContent({ node }: { node: TopologyNodeData }): React.
   );
 }
 
+/**
+ * Slot detail content for modal.
+ */
+function SlotDetailContent({ item }: { item: SlotListItem }): React.ReactElement {
+  const colors = useTheme();
+
+  const formatDate = (date: Date): string => {
+    return date.toLocaleString();
+  };
+
+  // Get severity color
+  const getSeverityColor = (severity: 'healthy' | 'warning' | 'critical' | null): string => {
+    if (severity === null) return colors.muted;
+    switch (severity) {
+      case 'healthy':
+        return colors.success;
+      case 'warning':
+        return colors.warning;
+      case 'critical':
+        return colors.critical;
+    }
+  };
+
+  const retentionColor = getSeverityColor(item.retentionSeverity);
+
+  return (
+    <Box flexDirection="column" gap={1}>
+      {/* Status section */}
+      <Box flexDirection="column">
+        <Text bold color={colors.primary}>Status</Text>
+        <Box gap={2} marginLeft={2}>
+          <StatusDot variant={item.active ? 'success' : 'muted'} label={item.active ? 'active' : 'inactive'} />
+          <Badge
+            label={item.slotType}
+            variant={item.slotType === 'logical' ? 'secondary' : 'muted'}
+          />
+          {item.isStale && <Badge label="stale" variant="warning" />}
+        </Box>
+      </Box>
+
+      {/* Node section */}
+      <Box flexDirection="column">
+        <Text bold color={colors.primary}>Node</Text>
+        <Box marginLeft={2} flexDirection="column">
+          <DetailRow label="Node" value={item.nodeName} />
+          <DetailRow label="Node ID" value={item.nodeId} />
+        </Box>
+      </Box>
+
+      {/* Slot details */}
+      <Box flexDirection="column">
+        <Text bold color={colors.primary}>Slot Details</Text>
+        <Box marginLeft={2} flexDirection="column">
+          <DetailRow label="Slot Name" value={item.slotName} />
+          <DetailRow label="Slot Type" value={item.slotType} />
+          {item.plugin && <DetailRow label="Plugin" value={item.plugin} />}
+          {item.database && <DetailRow label="Database" value={item.database} />}
+        </Box>
+      </Box>
+
+      {/* WAL Retention section */}
+      <Box flexDirection="column">
+        <Text bold color={colors.primary}>WAL Retention</Text>
+        <Box marginLeft={2} flexDirection="column">
+          <Box>
+            <Box width={18}>
+              <Text color={colors.muted}>Retained:</Text>
+            </Box>
+            <Text color={retentionColor}>{item.formattedRetention}</Text>
+          </Box>
+          <Box>
+            <Box width={18}>
+              <Text color={colors.muted}>Progress:</Text>
+            </Box>
+            <ProgressBar
+              percent={item.retentionPercent}
+              width={15}
+              showLabel={true}
+              color={retentionColor}
+            />
+          </Box>
+          <Box>
+            <Box width={18}>
+              <Text color={colors.muted}>Severity:</Text>
+            </Box>
+            <Badge
+              label={item.retentionSeverity}
+              variant={
+                item.retentionSeverity === 'critical'
+                  ? 'critical'
+                  : item.retentionSeverity === 'warning'
+                    ? 'warning'
+                    : 'success'
+              }
+            />
+          </Box>
+        </Box>
+      </Box>
+
+      {/* WAL Status section (PG13+) */}
+      {item.walStatus !== null && (
+        <Box flexDirection="column">
+          <Text bold color={colors.primary}>WAL Status</Text>
+          <Box marginLeft={2} flexDirection="column">
+            <Box>
+              <Box width={18}>
+                <Text color={colors.muted}>Status:</Text>
+              </Box>
+              <Badge
+                label={item.walStatus}
+                variant={
+                  item.walStatusSeverity === 'critical'
+                    ? 'critical'
+                    : item.walStatusSeverity === 'warning'
+                      ? 'warning'
+                      : 'success'
+                }
+              />
+            </Box>
+          </Box>
+        </Box>
+      )}
+
+      {/* Timestamp */}
+      <Box flexDirection="column">
+        <Text bold color={colors.primary}>Last Updated</Text>
+        <Box marginLeft={2}>
+          <Text color={colors.muted}>{formatDate(item.timestamp)}</Text>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
 export function Modal({ config, onClose, children }: ModalProps): React.ReactElement {
   const colors = useTheme();
   useInput((_input, key) => { if (key.escape) onClose(); });
@@ -251,6 +387,12 @@ export function Modal({ config, onClose, children }: ModalProps): React.ReactEle
       const subItem = config.data as SubscriptionListItem;
       if (subItem.subscriptionName !== undefined) {
         return <SubscriptionDetailContent item={subItem} />;
+      }
+
+      // Check if it's a slot item
+      const slotItem = config.data as SlotListItem;
+      if (slotItem.slotName !== undefined && slotItem.slotType !== undefined) {
+        return <SlotDetailContent item={slotItem} />;
       }
 
       // Check if it's a topology node
