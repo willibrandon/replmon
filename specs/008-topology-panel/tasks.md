@@ -19,9 +19,9 @@
 
 **Purpose**: Create type definitions and foundational utilities
 
-- [ ] T001 [P] Create topology types (TopologyEdge, NodeRole, LagSeverity, TopologyNodeData, TopologyLayoutConfig) in src/types/topology.ts
-- [ ] T002 [P] Create topology utility functions (getLagSeverity, formatLag, getLagColor, deriveNodeRole, getRoleBadgeLabel) in src/utils/topology.ts
-- [ ] T003 Update src/types/index.ts to re-export topology types
+- [X] T001 [P] Create topology types (TopologyEdge, NodeRole, LagSeverity, TopologyNodeData, TopologyLayoutConfig) in src/types/topology.ts
+- [X] T002 [P] Create topology utility functions (getLagSeverity, formatLag, getLagColor, deriveNodeRole, getRoleBadgeLabel) in src/utils/topology.ts
+- [X] T003 Update src/types/index.ts to re-export topology types
 
 ---
 
@@ -31,13 +31,13 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Create selectTopologyEdges selector (derive edges from subscriptions and replication stats) in src/store/selectors/topology.ts
-- [ ] T005 [P] Create selectTopologyNodes selector (aggregate node data with roles, edges, status) in src/store/selectors/topology.ts
-- [ ] T006 [P] Create parameterized selectors (selectNodeRole, selectEdgeLag, selectNodeEdges) in src/store/selectors/topology.ts
-- [ ] T007 [P] Create derived selectors (selectActiveEdgeCount, selectHasCriticalLag, selectNodesByRole) in src/store/selectors/topology.ts
-- [ ] T008 Update src/store/selectors/index.ts to export topology selectors
-- [ ] T009 [P] Create useTopologyLayout hook (responsive layout config based on terminal size) in src/hooks/useTopologyLayout.ts
-- [ ] T010 [P] Create useTopology hook (data aggregation using topology selectors) in src/hooks/useTopology.ts
+- [X] T004 [P] Create selectTopologyEdges selector (derive edges from subscriptions and replication stats) in src/store/selectors/topology.ts
+- [X] T005 [P] Create selectTopologyNodes selector (aggregate node data with roles, edges, status) in src/store/selectors/topology.ts
+- [X] T006 [P] Create parameterized selectors (selectNodeRole, selectEdgeLag, selectNodeEdges) in src/store/selectors/topology.ts
+- [X] T007 [P] Create derived selectors (selectActiveEdgeCount, selectHasCriticalLag, selectNodesByRole) in src/store/selectors/topology.ts
+- [X] T008 Update src/store/selectors/index.ts to export topology selectors
+- [X] T009 [P] Create useTopologyLayout hook (responsive layout config based on terminal size) in src/hooks/useTopologyLayout.ts
+- [X] T010 [P] Create useTopology hook (data aggregation using topology selectors) in src/hooks/useTopology.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -51,15 +51,15 @@
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] [US1] Create TopologyNode component (node box with status dot, name, role badge, host info) in src/components/topology/TopologyNode.tsx
-- [ ] T012 [P] [US1] Create barrel export in src/components/topology/index.ts
-- [ ] T013 [US1] Create single-node view rendering in TopologyPanel (empty state, single node case) in src/components/panels/TopologyPanel.tsx
-- [ ] T014 [US1] Integrate TopologyNode with store (read node status, selection state, stale state) in src/components/topology/TopologyNode.tsx
-- [ ] T015 [US1] Add stale node visual treatment (dimmed appearance, stale badge) in src/components/topology/TopologyNode.tsx
+- [X] T011 [P] [US1] Create TopologyNode component (node box with status dot, name, role badge, host info) in src/components/topology/TopologyNode.tsx
+- [X] T012 [P] [US1] Create barrel export in src/components/topology/index.ts
+- [X] T013 [US1] Create single-node view rendering in TopologyPanel (empty state, single node case) in src/components/panels/TopologyPanel.tsx
+- [X] T014 [US1] Integrate TopologyNode with store (read node status, selection state, stale state) in src/components/topology/TopologyNode.tsx
+- [X] T015 [US1] Add stale node visual treatment (dimmed appearance, stale badge) in src/components/topology/TopologyNode.tsx
 
 ### Tests for User Story 1
 
-- [ ] T016 [P] [US1] Create TopologyNode.test.tsx with tests for node rendering, status indicators, role badges in tests/components/topology/TopologyNode.test.tsx
+- [X] T016 [P] [US1] Create TopologyNode.test.tsx with tests for node rendering, status indicators, role badges in tests/components/topology/TopologyNode.test.tsx
 
 **Checkpoint**: Single and standalone nodes display correctly with status, role, and stale indicators
 
@@ -73,16 +73,16 @@
 
 ### Implementation for User Story 2
 
-- [ ] T017 [P] [US2] Create ConnectionLine component (arrow with direction indicator, replication type styling: native=solid, pglogical=dashed or labeled) in src/components/topology/ConnectionLine.tsx
-- [ ] T018 [P] [US2] Create TopologyRow component (horizontal arrangement of nodes with connection lines) in src/components/topology/TopologyRow.tsx
-- [ ] T019 [US2] Create TopologyLayout component (multi-row layout orchestration, responsive sizing) in src/components/topology/TopologyLayout.tsx
-- [ ] T020 [US2] Update barrel export with ConnectionLine, TopologyRow, TopologyLayout in src/components/topology/index.ts
-- [ ] T021 [US2] Enhance TopologyPanel to use TopologyLayout for multi-node display in src/components/panels/TopologyPanel.tsx
-- [ ] T022 [US2] Implement bidirectional arrow rendering (double-headed ↔ for pglogical bidirectional) in src/components/topology/ConnectionLine.tsx
+- [X] T017 [P] [US2] Create ConnectionLine component (arrow with direction indicator, replication type styling: native=solid, pglogical=dashed or labeled) in src/components/topology/ConnectionLine.tsx
+- [X] T018 [P] [US2] Create TopologyRow component (horizontal arrangement of nodes with connection lines) in src/components/topology/TopologyRow.tsx
+- [X] T019 [US2] Create TopologyLayout component (multi-row layout orchestration, responsive sizing) in src/components/topology/TopologyLayout.tsx
+- [X] T020 [US2] Update barrel export with ConnectionLine, TopologyRow, TopologyLayout in src/components/topology/index.ts
+- [X] T021 [US2] Enhance TopologyPanel to use TopologyLayout for multi-node display in src/components/panels/TopologyPanel.tsx
+- [X] T022 [US2] Implement bidirectional arrow rendering (double-headed ↔ for pglogical bidirectional) in src/components/topology/ConnectionLine.tsx
 
 ### Tests for User Story 2
 
-- [ ] T023 [P] [US2] Create ConnectionLine.test.tsx with tests for direction arrows, bidirectional display in tests/components/topology/ConnectionLine.test.tsx
+- [X] T023 [P] [US2] Create ConnectionLine.test.tsx with tests for direction arrows, bidirectional display in tests/components/topology/ConnectionLine.test.tsx
 
 **Checkpoint**: Nodes connected by replication show directional arrows, bidirectional relationships clearly distinguished
 
@@ -96,13 +96,13 @@
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Add lag display to ConnectionLine (formatted lag value, severity color) in src/components/topology/ConnectionLine.tsx
-- [ ] T025 [US3] Implement lag severity color coding (green <5s, yellow 5-30s, red >30s, gray unknown) in src/components/topology/ConnectionLine.tsx
-- [ ] T026 [US3] Add showLag prop to ConnectionLine for toggling lag visibility in src/components/topology/ConnectionLine.tsx
+- [X] T024 [US3] Add lag display to ConnectionLine (formatted lag value, severity color) in src/components/topology/ConnectionLine.tsx
+- [X] T025 [US3] Implement lag severity color coding (green <5s, yellow 5-30s, red >30s, gray unknown) in src/components/topology/ConnectionLine.tsx
+- [X] T026 [US3] Add showLag prop to ConnectionLine for toggling lag visibility in src/components/topology/ConnectionLine.tsx
 
 ### Tests for User Story 3
 
-- [ ] T027 [P] [US3] Add lag display tests to ConnectionLine.test.tsx (lag formatting, color thresholds) in tests/components/topology/ConnectionLine.test.tsx
+- [X] T027 [P] [US3] Add lag display tests to ConnectionLine.test.tsx (lag formatting, color thresholds) in tests/components/topology/ConnectionLine.test.tsx
 
 **Checkpoint**: Lag values visible on connection lines with appropriate severity colors
 
@@ -116,13 +116,13 @@
 
 ### Implementation for User Story 4
 
-- [ ] T028 [US4] Add selection highlight styling to TopologyNode (bold, border color change) in src/components/topology/TopologyNode.tsx
-- [ ] T029 [US4] Ensure TopologyPanel provides selectable items list for j/k navigation in src/components/panels/TopologyPanel.tsx
-- [ ] T030 [US4] Verify wrap-around or stop behavior at list boundaries in src/components/panels/TopologyPanel.tsx
+- [X] T028 [US4] Add selection highlight styling to TopologyNode (bold, border color change) in src/components/topology/TopologyNode.tsx
+- [X] T029 [US4] Ensure TopologyPanel provides selectable items list for j/k navigation in src/components/panels/TopologyPanel.tsx
+- [X] T030 [US4] Verify wrap-around or stop behavior at list boundaries in src/components/panels/TopologyPanel.tsx
 
 ### Tests for User Story 4
 
-- [ ] T031 [P] [US4] Create TopologyPanel.test.tsx with tests for keyboard navigation, selection state in tests/components/topology/TopologyPanel.test.tsx
+- [X] T031 [P] [US4] Create TopologyPanel.test.tsx with tests for keyboard navigation, selection state in tests/components/topology/TopologyPanel.test.tsx
 
 **Checkpoint**: Keyboard navigation works, selected node clearly highlighted
 
@@ -132,11 +132,11 @@
 
 **Purpose**: Edge cases, responsive layout, final integration
 
-- [ ] T032 [P] Implement responsive layout (narrow terminal wraps to vertical, compact node widths) in src/components/topology/TopologyLayout.tsx
-- [ ] T033 [P] Handle edge case: many nodes (5+) with row wrapping in src/components/topology/TopologyLayout.tsx
-- [ ] T034 Run type check (bun run typecheck) to verify no type errors
-- [ ] T035 Run quickstart.md verification checklist manually with test configuration
-- [ ] T036 Update CLAUDE.md if new patterns established
+- [X] T032 [P] Implement responsive layout (narrow terminal wraps to vertical, compact node widths) in src/components/topology/TopologyLayout.tsx
+- [X] T033 [P] Handle edge case: many nodes (5+) with row wrapping in src/components/topology/TopologyLayout.tsx
+- [X] T034 Run type check (bun run typecheck) to verify no type errors
+- [X] T035 Run quickstart.md verification checklist manually with test configuration
+- [X] T036 Update CLAUDE.md if new patterns established
 
 ---
 

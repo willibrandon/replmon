@@ -73,3 +73,17 @@ export type {
   QueryModule,
   PglogicalDetectionResult,
 } from './polling.js';
+
+// Topology panel types (008-topology-panel)
+export type {
+  ReplicationType,
+  EdgeDirection,
+  NodeRole,
+  LagSeverity,
+  TopologyEdge,
+  TopologyNodeData,
+  LayoutBreakpoint,
+  TopologyLayoutConfig,
+  UseTopologyResult,
+  EdgeLagData,
+} from './topology.js';

@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { render } from 'ink';
+import { withFullScreen } from 'fullscreen-ink';
 import meow from 'meow';
 import { createElement } from 'react';
 import { App } from './components/App.js';
@@ -110,11 +110,11 @@ function parseCliFlags(): CLIArguments {
 /**
  * Exit handler for cleanup.
  */
-let inkInstance: ReturnType<typeof render> | null = null;
+let fullScreenApp: ReturnType<typeof withFullScreen> | null = null;
 
 export function exitApp(code: number): void {
-  if (inkInstance) {
-    inkInstance.unmount();
+  if (fullScreenApp?.instance) {
+    fullScreenApp.instance.unmount();
   }
   process.exit(code);
 }
@@ -144,8 +144,9 @@ function main(): void {
     process.exit(1);
   }
 
-  // Render the application
-  inkInstance = render(createElement(App, { config }));
+  // Render the application with fullscreen support (alternate screen buffer)
+  fullScreenApp = withFullScreen(createElement(App, { config }));
+  fullScreenApp.start();
 }
 
 main();

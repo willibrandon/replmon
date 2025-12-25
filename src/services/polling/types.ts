@@ -132,6 +132,10 @@ export interface SubscriptionData {
   status: SubscriptionStatus;
   /** Provider node name (pglogical) */
   providerNode: string | null;
+  /** Provider host for auto-discovery (pglogical) */
+  providerHost: string | null;
+  /** Provider port for auto-discovery (pglogical) */
+  providerPort: number | null;
   /** Associated replication slot */
   slotName: string | null;
   /** Last received LSN */

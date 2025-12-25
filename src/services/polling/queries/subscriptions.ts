@@ -43,15 +43,19 @@ LEFT JOIN pg_stat_subscription st ON st.subid = sub.oid AND st.worker_type = 'ap
 /**
  * SQL query for pglogical subscriptions.
  * Uses pglogical.show_subscription_status() function.
+ * Joins with node_interface to get provider connection info for auto-discovery.
  */
 const PGLOGICAL_SUBSCRIPTIONS_QUERY = `
 SELECT
-  subscription_name,
-  status,
-  provider_node,
-  slot_name,
-  replication_sets
-FROM pglogical.show_subscription_status(NULL)
+  s.subscription_name,
+  s.status,
+  s.provider_node,
+  s.slot_name,
+  s.replication_sets,
+  i.if_dsn AS provider_dsn
+FROM pglogical.show_subscription_status(NULL) s
+LEFT JOIN pglogical.node n ON n.node_name = s.provider_node
+LEFT JOIN pglogical.node_interface i ON i.if_nodeid = n.node_id
 `;
 
 /** Raw row type from native subscriptions query */
@@ -72,6 +76,25 @@ interface PglogicalSubRow {
   provider_node: string | null;
   slot_name: string | null;
   replication_sets: string[] | string | null;
+  provider_dsn: string | null;
+}
+
+/**
+ * Parse a PostgreSQL DSN to extract host and port.
+ * DSN format: "host=localhost port=5432 dbname=postgres"
+ */
+function parseDsn(dsn: string | null): { host: string; port: number } | null {
+  if (!dsn) return null;
+
+  const hostMatch = dsn.match(/host=([^\s]+)/);
+  const portMatch = dsn.match(/port=(\d+)/);
+
+  if (!hostMatch || !hostMatch[1]) return null;
+
+  return {
+    host: hostMatch[1],
+    port: portMatch && portMatch[1] ? parseInt(portMatch[1], 10) : 5432,
+  };
 }
 
 /**
@@ -139,6 +162,8 @@ function transformNativeRow(
     enabled: row.enabled,
     status: inferNativeStatus(row.enabled, row.worker_pid),
     providerNode: null, // Not available in native subscriptions
+    providerHost: null,
+    providerPort: null,
     slotName: row.slot_name,
     receivedLsn: row.received_lsn,
     latestEndLsn: row.latest_end_lsn,
@@ -158,12 +183,16 @@ function transformPglogicalRow(
   row: PglogicalSubRow,
   timestamp: Date
 ): SubscriptionData {
+  const providerConn = parseDsn(row.provider_dsn);
+
   return {
     nodeId,
     subscriptionName: row.subscription_name,
     enabled: row.status !== 'down' && row.status !== 'stopped',
     status: mapPglogicalStatus(row.status),
     providerNode: row.provider_node,
+    providerHost: providerConn?.host ?? null,
+    providerPort: providerConn?.port ?? null,
     slotName: row.slot_name,
     receivedLsn: null, // Not directly available from show_subscription_status
     latestEndLsn: null,

@@ -92,6 +92,8 @@ describe('Replication Slice', () => {
         enabled: true,
         status: 'replicating' as const,
         providerNode: null,
+        providerHost: null,
+        providerPort: null,
         slotName: 'sub1_slot',
         receivedLsn: '0/1000',
         latestEndLsn: '0/1000',

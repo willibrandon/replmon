@@ -85,3 +85,16 @@ export {
   selectSystemHealthSummary,
   selectLastPollingTime,
 } from './computed.js';
+
+// Topology selectors (008-topology-panel)
+export {
+  selectTopologyEdges,
+  selectTopologyNodes,
+  selectNodeEdges,
+  selectNodeRole,
+  selectEdgeLag,
+  selectActiveEdgeCount,
+  selectHasCriticalLag,
+  selectNodesByRole,
+  selectSelectedTopologyNode,
+} from './topology.js';

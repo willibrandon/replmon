@@ -1,15 +1,22 @@
 import React from 'react';
 import { Box, Text, useInput } from 'ink';
 import { useConnectionStore } from '../store/connection.js';
+import { useStore } from '../store/index.js';
 import { exitApp } from '../index.js';
 import { ConnectionManager } from '../services/connection-manager/index.js';
+import { PollingService } from '../services/polling/index.js';
 import type { Configuration } from '../types/config.js';
 
 // Module-level manager instance for the app
 let connectionManager: ConnectionManager | null = null;
+let pollingService: PollingService | null = null;
 
 export function getConnectionManager(): ConnectionManager | null {
   return connectionManager;
+}
+
+export function getPollingService(): PollingService | null {
+  return pollingService;
 }
 
 interface ConnectionStatusProps {
@@ -59,6 +66,42 @@ export function ConnectionStatus({
             return useConnectionStore.getState().nodeStatus.get(id) === 'connected';
           });
           if (allConnected) {
+            // Start polling service before transitioning to dashboard
+            if (connectionManager && !pollingService) {
+              pollingService = new PollingService(connectionManager, { intervalMs: 1000 });
+
+              // Wire polling events to store
+              const store = useStore.getState();
+              pollingService.on('subscriptions', (nodeDataList) => {
+                for (const nodeData of nodeDataList) {
+                  if (nodeData.success && nodeData.data) {
+                    store.setSubscriptions(nodeData.nodeId, nodeData.data);
+                  }
+                  // Update pglogical detection
+                  if (nodeData.hasPglogical) {
+                    store.setNodePglogical(nodeData.nodeId, true);
+                  }
+                }
+              });
+
+              pollingService.on('slots', (nodeDataList) => {
+                for (const nodeData of nodeDataList) {
+                  if (nodeData.success && nodeData.data) {
+                    store.setSlots(nodeData.nodeId, nodeData.data);
+                  }
+                }
+              });
+
+              pollingService.on('conflicts', (nodeDataList) => {
+                for (const nodeData of nodeDataList) {
+                  if (nodeData.success && nodeData.data) {
+                    store.setConflicts(nodeData.nodeId, nodeData.data);
+                  }
+                }
+              });
+
+              pollingService.start();
+            }
             setCurrentScreen('dashboard');
           }
         }
@@ -124,6 +167,11 @@ export function ConnectionStatus({
     if (input === 'q' || (key.ctrl && input === 'c')) {
       // Mark as quitting to prevent UI updates during shutdown
       quittingRef.current = true;
+      // Stop polling first
+      if (pollingService) {
+        pollingService.stop();
+        pollingService = null;
+      }
       // Cleanup before exit
       if (connectionManager) {
         connectionManager.shutdown().finally(() => exitApp(0));

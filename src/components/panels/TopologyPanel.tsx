@@ -1,53 +1,124 @@
+/**
+ * TopologyPanel Component
+ *
+ * Displays an ASCII-art visualization of PostgreSQL replication cluster nodes.
+ * Shows node boxes with status indicators, role badges, and connection lines.
+ *
+ * Feature: 008-topology-panel
+ */
+
 import React from 'react';
 import { Box, Text } from 'ink';
-import { StatusDot } from '../atoms/StatusDot.js';
-import type { StatusDotVariant } from '../atoms/StatusDot.js';
 import { Badge } from '../atoms/Badge.js';
+import { TopologyNode, TopologyLayout } from '../topology/index.js';
 import { useTheme } from '../../hooks/useTheme.js';
-import { useConnectionStore } from '../../store/connection.js';
+import { useTopology } from '../../hooks/useTopology.js';
+import { useTopologyLayout } from '../../hooks/useTopologyLayout.js';
 import { useStore } from '../../store/index.js';
 import type { Configuration } from '../../types/config.js';
+import type { TopologyNodeData } from '../../types/topology.js';
 
 export interface TopologyPanelProps {
   config: Configuration;
 }
 
-function getStatusVariant(status: 'connecting' | 'connected' | 'failed' | undefined): StatusDotVariant {
-  if (status === 'connected') return 'success';
-  if (status === 'connecting') return 'connecting';
-  if (status === 'failed') return 'critical';
-  return 'muted';
-}
-
-function TopologyNode({ nodeId, config }: { nodeId: string; config: Configuration }): React.ReactElement {
+/**
+ * Empty state when no nodes are configured.
+ */
+function EmptyState(): React.ReactElement {
   const colors = useTheme();
-  const status = useConnectionStore((s) => s.nodeStatus.get(nodeId));
-  const selection = useStore((s) => s.selections.get('topology'));
-  const isSelected = selection === nodeId;
-  const nodeConfig = config.nodes[nodeId];
-  const hostInfo = nodeConfig ? `${nodeConfig.host}:${nodeConfig.port}` : '';
-
   return (
-    <Box>
-      <Box width={3}><StatusDot variant={getStatusVariant(status)} /></Box>
-      <Box width={20}><Text bold={isSelected} color={isSelected ? colors.primary : colors.foreground}>{nodeId}</Text></Box>
-      <Box><Text color={colors.muted}>{hostInfo}</Text></Box>
+    <Box flexDirection="column" alignItems="center" justifyContent="center" flexGrow={1}>
+      <Text color={colors.muted}>No nodes configured</Text>
+      <Text color={colors.muted} dimColor>
+        Add nodes to replmon.yaml to see topology
+      </Text>
     </Box>
   );
 }
 
-export function TopologyPanel({ config }: TopologyPanelProps): React.ReactElement {
+/**
+ * Single node view when only one node is configured.
+ */
+function SingleNodeView({
+  node,
+  nodeWidth,
+}: {
+  node: TopologyNodeData;
+  nodeWidth: number;
+}): React.ReactElement {
   const colors = useTheme();
-  const pglogicalMode = useConnectionStore((s) => s.pglogicalMode);
-  const nodeIds = Object.keys(config.nodes);
 
   return (
-    <Box flexDirection="column">
-      <Box marginBottom={1}>
-        <Text color={colors.muted}>{nodeIds.length} node{nodeIds.length !== 1 ? 's' : ''}</Text>
-        {pglogicalMode && <Box marginLeft={1}><Badge label="pglogical" variant="secondary" /></Box>}
+    <Box flexDirection="column" alignItems="center">
+      <TopologyNode node={node} width={nodeWidth} />
+      <Box marginTop={1}>
+        <Text color={colors.muted} dimColor>
+          Single node - no replication relationships
+        </Text>
       </Box>
-      {nodeIds.length === 0 ? <Text color={colors.muted}>No nodes configured</Text> : nodeIds.map((nodeId) => <TopologyNode key={nodeId} nodeId={nodeId} config={config} />)}
+    </Box>
+  );
+}
+
+/**
+ * TopologyPanel displays the replication topology visualization.
+ *
+ * Handles:
+ * - Empty state (no nodes configured)
+ * - Single node state (no connections)
+ * - Multi-node state (with connection lines)
+ */
+export function TopologyPanel({ config: _config }: TopologyPanelProps): React.ReactElement {
+  const colors = useTheme();
+  const pglogicalMode = useStore((s) => s.pglogicalMode);
+  const { nodes, edges, hasCriticalLag } = useTopology();
+  const layout = useTopologyLayout(nodes.length);
+
+  // Count summary
+  const nodeCount = nodes.length;
+  const edgeCount = edges.length;
+  const staleCount = nodes.filter((n) => n.isStale).length;
+
+  // Header badges
+  const badges: React.ReactElement[] = [];
+  if (pglogicalMode) {
+    badges.push(<Badge key="pglogical" label="pglogical" variant="secondary" />);
+  }
+  if (hasCriticalLag) {
+    badges.push(<Badge key="lag" label="LAG!" variant="critical" />);
+  }
+  if (staleCount > 0) {
+    badges.push(
+      <Badge key="stale" label={`${staleCount} stale`} variant="muted" />
+    );
+  }
+
+  return (
+    <Box flexDirection="column" flexGrow={1}>
+      {/* Summary header */}
+      <Box marginBottom={1} gap={1}>
+        <Text color={colors.muted}>
+          {nodeCount} node{nodeCount !== 1 ? 's' : ''}
+          {edgeCount > 0 && `, ${edgeCount} connection${edgeCount !== 1 ? 's' : ''}`}
+        </Text>
+        {badges}
+      </Box>
+
+      {/* Topology visualization */}
+      {nodeCount === 0 ? (
+        <EmptyState />
+      ) : nodeCount === 1 && nodes[0] ? (
+        <SingleNodeView node={nodes[0]} nodeWidth={layout.nodeWidth} />
+      ) : (
+        // Multi-node view with connection lines
+        <TopologyLayout
+          nodes={nodes}
+          edges={edges}
+          layout={layout}
+          showLag={true}
+        />
+      )}
     </Box>
   );
 }
