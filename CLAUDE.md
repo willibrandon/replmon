@@ -78,6 +78,8 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.0.x (existing stack) (006-ui-framework)
 - N/A (UI-only feature, uses existing Zustand store) (006-ui-framework)
 - TypeScript 5.7 (strict mode) + React 18.x, Ink 5.x, Zustand 5.x (existing stack) (007-keyboard-nav)
+- TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x (existing stack) (008-topology-panel)
+- N/A (UI-only feature, reads from existing Zustand store) (008-topology-panel)
 
 ## Development Environment
 
@@ -87,6 +89,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
+- 008-topology-panel: Added TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x (existing stack)
 - 007-keyboard-nav: Added TypeScript 5.7 (strict mode) + React 18.x, Ink 5.x, Zustand 5.x (existing stack)
 - 006-ui-framework: Implemented atomic design component system with atoms (StatusDot, Badge, ProgressBar, Spinner), layout components (Header, Footer, MainLayout, Panel, Modal, SplitView), and TopologyPanel. Added ThemeProvider/ThemeContext with useTheme hook. Added responsive hooks (useTerminalSize with 100ms debounce, useBreakpoint for standard/narrow/short/compact). Dashboard refactored to use MainLayout. StatusBar merged into Footer.
-- 005-state-management: Implemented Zustand store with connection, replication, and UI slices. Replication slice tracks nodes, subscriptions, slots, conflicts, and lag history (60-sample FIFO). UI slice handles panel focus, modal state with focus preservation, and j/k list navigation. Includes 56 passing tests and memoized selectors for aggregations, filters, and computed values.
