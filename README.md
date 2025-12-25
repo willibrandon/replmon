@@ -13,7 +13,9 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 ## Features
 
 - Live subscription and replication slot monitoring
+- Subscriptions panel with status indicators, lag metrics, and detail drill-down
 - ASCII topology visualization with node status and connection lines
+- Detail modals for nodes and subscriptions (Enter to view)
 - Auto-discovery of pglogical bidirectional replication relationships
 - Sparkline lag charts (5-minute rolling window)
 - pglogical conflict detection and display
@@ -125,6 +127,7 @@ See `configs/example.yaml` for all options.
 | `o` | Operations panel |
 | `Tab` | Next panel |
 | `j/k` | Navigate lists |
+| `Enter` | View details for selected item |
 | `?` | Help modal |
 | `Esc` | Close modal |
 | `q` | Quit |

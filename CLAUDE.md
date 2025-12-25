@@ -26,7 +26,7 @@ src/
 │   ├── topology/       # TopologyNode, ConnectionLine, TopologyRow, TopologyLayout
 │   ├── charts/         # Sparkline, TopologyGraph
 │   └── modals/         # OperationsModal, HelpModal
-├── hooks/              # useTheme, useTerminalSize, useBreakpoint, usePolling, useTopology, useTopologyLayout
+├── hooks/              # useTheme, useTerminalSize, useBreakpoint, usePolling, useTopology, useTopologyLayout, useSubscriptions
 ├── services/           # ConnectionManager, PollingService, queries
 ├── store/              # Zustand store (connection, replication, ui slices)
 │   └── selectors/      # Aggregation, filter, and computed selectors
@@ -91,6 +91,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
-- 009-subscriptions-panel: Added TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x (existing stack)
+- 009-subscriptions-panel: Implemented SubscriptionsPanel with useSubscriptions hook. Shows all subscriptions across nodes with status indicators (replicating/catchup/down/disabled), lag metrics with severity coloring, source badges (native/pglogical). Keyboard selection (j/k) with Enter to open detail modal. Added detail modals for both subscriptions and topology nodes showing connection info, replication edges, and lag data.
 - 008-topology-panel: Implemented topology visualization with TopologyNode, ConnectionLine, TopologyRow, TopologyLayout components. Added useTopology/useTopologyLayout hooks. Auto-discovers pglogical relationships via provider DSN parsing. Switched to fullscreen-ink for proper terminal resize handling (alternate screen buffer).
 - 007-keyboard-nav: Added TypeScript 5.7 (strict mode) + React 18.x, Ink 5.x, Zustand 5.x (existing stack)
