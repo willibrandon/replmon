@@ -9,7 +9,7 @@ replmon is a TUI application for monitoring PostgreSQL logical replication, with
 ## Technology Stack
 
 - **Runtime**: Bun (preferred) or Node.js 18+
-- **UI**: Ink 5.x + React 18.x (functional components only)
+- **UI**: Ink 5.x + React 18.x (functional components only) + fullscreen-ink for alternate screen buffer
 - **State**: Zustand with subscribeWithSelector middleware
 - **Database**: pg + pg-pool (no ORMs)
 - **CLI**: meow for argument parsing
@@ -23,9 +23,10 @@ src/
 │   ├── atoms/          # StatusDot, Badge, ProgressBar, Spinner
 │   ├── layout/         # Panel, Modal, SplitView, MainLayout
 │   ├── panels/         # TopologyPanel, SubscriptionsPanel, SlotsPanel, ConflictsPanel
+│   ├── topology/       # TopologyNode, ConnectionLine, TopologyRow, TopologyLayout
 │   ├── charts/         # Sparkline, TopologyGraph
 │   └── modals/         # OperationsModal, HelpModal
-├── hooks/              # useTheme, useTerminalSize, useBreakpoint, usePolling
+├── hooks/              # useTheme, useTerminalSize, useBreakpoint, usePolling, useTopology, useTopologyLayout
 ├── services/           # ConnectionManager, PollingService, queries
 ├── store/              # Zustand store (connection, replication, ui slices)
 │   └── selectors/      # Aggregation, filter, and computed selectors
@@ -63,6 +64,7 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - **Theming**: ThemeProvider wraps app; useTheme() hook returns current colors; dark/light/custom themes
 - **Responsive**: useBreakpoint() returns standard/narrow/short/compact; layout adapts automatically
 - **Layout**: MainLayout contains Header/Footer; Panel components read focus from store; Modal overlays block navigation
+- **Topology**: useTopology hook derives edges from pglogical subscriptions; auto-discovers relationships via provider DSN parsing; TopologyLayout handles responsive node arrangement
 
 ## Active Technologies
 - TypeScript 5.x (strict mode) on Bun 1.x (Node.js 18+ fallback) + React 18.x, Ink 5.x, meow 13.x, js-yaml, Zustand (001-project-setup-cli)
@@ -89,6 +91,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
-- 008-topology-panel: Added TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x (existing stack)
+- 008-topology-panel: Implemented topology visualization with TopologyNode, ConnectionLine, TopologyRow, TopologyLayout components. Added useTopology/useTopologyLayout hooks. Auto-discovers pglogical relationships via provider DSN parsing. Switched to fullscreen-ink for proper terminal resize handling (alternate screen buffer).
 - 007-keyboard-nav: Added TypeScript 5.7 (strict mode) + React 18.x, Ink 5.x, Zustand 5.x (existing stack)
 - 006-ui-framework: Implemented atomic design component system with atoms (StatusDot, Badge, ProgressBar, Spinner), layout components (Header, Footer, MainLayout, Panel, Modal, SplitView), and TopologyPanel. Added ThemeProvider/ThemeContext with useTheme hook. Added responsive hooks (useTerminalSize with 100ms debounce, useBreakpoint for standard/narrow/short/compact). Dashboard refactored to use MainLayout. StatusBar merged into Footer.

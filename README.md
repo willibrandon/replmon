@@ -13,7 +13,8 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 ## Features
 
 - Live subscription and replication slot monitoring
-- ASCII topology visualization with latency display
+- ASCII topology visualization with node status and connection lines
+- Auto-discovery of pglogical bidirectional replication relationships
 - Sparkline lag charts (5-minute rolling window)
 - pglogical conflict detection and display
 - Operations: pause/resume subscriptions, resync tables, manage slots
@@ -36,6 +37,7 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 - Atomic component system (StatusDot, Badge, ProgressBar, Spinner)
 - Theme-aware UI with dark/light/custom color schemes
 - Panel focus indicators with keyboard navigation
+- Fullscreen mode with alternate screen buffer (like vim/less)
 
 ## Installation
 
@@ -129,7 +131,7 @@ See `configs/example.yaml` for all options.
 
 ## Tech Stack
 
-TypeScript, React, Ink, Zustand, pg-pool — same architecture as Claude Code.
+TypeScript, React, Ink, fullscreen-ink, Zustand, pg-pool — same architecture as Claude Code.
 
 ## License
 
