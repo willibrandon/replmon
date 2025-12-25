@@ -83,6 +83,7 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x (existing stack) (008-topology-panel)
 - N/A (UI-only feature, reads from existing Zustand store) (008-topology-panel)
 - N/A (reads from existing Zustand store, populated by PollingService) (010-slots-panel)
+- In-memory Zustand store (existing `lagHistory` Map) (011-lag-visualization)
 
 ## Development Environment
 
@@ -92,6 +93,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
+- 011-lag-visualization: Added TypeScript 5.7 (strict mode) + React 18.x, Ink 5.x, Zustand 5.x (existing stack)
 - 010-slots-panel: Implemented SlotsPanel with useSlots hook. Shows all replication slots across nodes with active/inactive status indicators, WAL retention progress bars with severity coloring (healthy/warning/critical), WAL status badges (reserved/extended/unreserved/lost for PG13+), slot type badges (logical/physical). Summary header with counts and total retention. Keyboard selection (j/k) with Enter for detail modal showing slot configuration and WAL status.
 - 009-subscriptions-panel: Implemented SubscriptionsPanel with useSubscriptions hook. Shows all subscriptions across nodes with status indicators (replicating/catchup/down/disabled), lag metrics with severity coloring, source badges (native/pglogical). Keyboard selection (j/k) with Enter to open detail modal. Added detail modals for both subscriptions and topology nodes showing connection info, replication edges, and lag data.
-- 008-topology-panel: Implemented topology visualization with TopologyNode, ConnectionLine, TopologyRow, TopologyLayout components. Added useTopology/useTopologyLayout hooks. Auto-discovers pglogical relationships via provider DSN parsing. Switched to fullscreen-ink for proper terminal resize handling (alternate screen buffer).
