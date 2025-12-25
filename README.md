@@ -32,6 +32,10 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 - FIFO lag history (60 samples) for sparkline visualization
 - Stale data indicators when nodes disconnect
 - Modal focus preservation and restoration
+- Responsive layout with breakpoints (standard, narrow, short, compact)
+- Atomic component system (StatusDot, Badge, ProgressBar, Spinner)
+- Theme-aware UI with dark/light/custom color schemes
+- Panel focus indicators with keyboard navigation
 
 ## Installation
 
@@ -114,11 +118,13 @@ See `configs/example.yaml` for all options.
 |-----|--------|
 | `t` | Topology panel |
 | `s` | Subscriptions panel |
-| `l` | Lag chart |
+| `l` | Slots panel |
 | `c` | Conflicts panel |
-| `o` | Operations modal |
+| `o` | Operations panel |
 | `Tab` | Next panel |
 | `j/k` | Navigate lists |
+| `?` | Help modal |
+| `Esc` | Close modal |
 | `q` | Quit |
 
 ## Tech Stack

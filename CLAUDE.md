@@ -25,7 +25,7 @@ src/
 │   ├── panels/         # TopologyPanel, SubscriptionsPanel, SlotsPanel, ConflictsPanel
 │   ├── charts/         # Sparkline, TopologyGraph
 │   └── modals/         # OperationsModal, HelpModal
-├── hooks/              # usePolling, useKeyboardNavigation, useSubscriptions
+├── hooks/              # useTheme, useTerminalSize, useBreakpoint, usePolling
 ├── services/           # ConnectionManager, PollingService, queries
 ├── store/              # Zustand store (connection, replication, ui slices)
 │   └── selectors/      # Aggregation, filter, and computed selectors
@@ -57,9 +57,12 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 
 - **Polling**: PollingService emits data events at 1s intervals; components subscribe via Zustand
 - **Multi-node**: ConnectionManager maintains pg-pool per node; queries run in parallel
-- **Keyboard shortcuts**: t/s/l/c/o/q for panel focus, Tab for cycling, j/k for lists
+- **Keyboard shortcuts**: t/s/l/c/o/q for panel focus, Tab for cycling, j/k for lists, ? for help
 - **State**: `useStore` hook for all state access; selectors for derived data; devtools in dev mode
 - **Stale handling**: Nodes marked stale on disconnect; data retained with visual indicator until reconnect
+- **Theming**: ThemeProvider wraps app; useTheme() hook returns current colors; dark/light/custom themes
+- **Responsive**: useBreakpoint() returns standard/narrow/short/compact; layout adapts automatically
+- **Layout**: MainLayout contains Header/Footer; Panel components read focus from store; Modal overlays block navigation
 
 ## Active Technologies
 - TypeScript 5.x (strict mode) on Bun 1.x (Node.js 18+ fallback) + React 18.x, Ink 5.x, meow 13.x, js-yaml, Zustand (001-project-setup-cli)
@@ -83,6 +86,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
-- 006-ui-framework: Added TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.0.x (existing stack)
+- 006-ui-framework: Implemented atomic design component system with atoms (StatusDot, Badge, ProgressBar, Spinner), layout components (Header, Footer, MainLayout, Panel, Modal, SplitView), and TopologyPanel. Added ThemeProvider/ThemeContext with useTheme hook. Added responsive hooks (useTerminalSize with 100ms debounce, useBreakpoint for standard/narrow/short/compact). Dashboard refactored to use MainLayout. StatusBar merged into Footer.
 - 005-state-management: Implemented Zustand store with connection, replication, and UI slices. Replication slice tracks nodes, subscriptions, slots, conflicts, and lag history (60-sample FIFO). UI slice handles panel focus, modal state with focus preservation, and j/k list navigation. Includes 56 passing tests and memoized selectors for aggregations, filters, and computed values.
 - 004-polling-service: Added PollingService with event-based data collection, configurable intervals (250ms min), per-node pglogical detection, partial results on node failure, and typed event subscriptions for stats/slots/subscriptions/conflicts
