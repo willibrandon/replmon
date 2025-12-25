@@ -24,7 +24,8 @@ import type {
 
 /**
  * SQL query for conflict statistics.
- * Available in PostgreSQL 16+ only.
+ * Available in PostgreSQL 15+ only.
+ * Note: Column names vary by version. Using columns available in PG15-18.
  */
 const CONFLICTS_QUERY = `
 SELECT
@@ -33,7 +34,6 @@ SELECT
   COALESCE(confl_insert_exists, 0)::bigint AS insert_conflicts,
   COALESCE(confl_update_origin_differs, 0)::bigint AS update_origin_differs,
   COALESCE(confl_update_exists, 0)::bigint AS update_exists,
-  COALESCE(confl_update_deleted, 0)::bigint AS update_deleted,
   COALESCE(confl_update_missing, 0)::bigint AS update_missing,
   COALESCE(confl_delete_origin_differs, 0)::bigint AS delete_origin_differs,
   COALESCE(confl_delete_missing, 0)::bigint AS delete_missing,
@@ -56,7 +56,6 @@ interface ConflictRow {
   insert_conflicts: string | number;
   update_origin_differs: string | number;
   update_exists: string | number;
-  update_deleted: string | number;
   update_missing: string | number;
   delete_origin_differs: string | number;
   delete_missing: string | number;
@@ -98,7 +97,6 @@ function transformRow(
     insertConflicts: parseNumber(row.insert_conflicts),
     updateOriginDiffers: parseNumber(row.update_origin_differs),
     updateExists: parseNumber(row.update_exists),
-    updateDeleted: parseNumber(row.update_deleted),
     updateMissing: parseNumber(row.update_missing),
     deleteOriginDiffers: parseNumber(row.delete_origin_differs),
     deleteMissing: parseNumber(row.delete_missing),
@@ -125,7 +123,6 @@ function createUnavailableEntry(
     insertConflicts: 0,
     updateOriginDiffers: 0,
     updateExists: 0,
-    updateDeleted: 0,
     updateMissing: 0,
     deleteOriginDiffers: 0,
     deleteMissing: 0,

@@ -74,6 +74,9 @@ export interface SubscriptionListItem {
   /** Latest lag sample if available */
   latestLag: LagSample | null;
 
+  /** Full lag history for sparkline visualization (up to 300 samples / 5 minutes) */
+  lagHistory: LagSample[];
+
   /** StatusDot variant for status indicator */
   statusVariant: StatusDotVariant;
 
@@ -178,8 +181,8 @@ export function useSubscriptions(): UseSubscriptionsResult {
       for (const sub of subs) {
         const id = `${nodeId}:${sub.subscriptionName}`;
         const lagKey = `${nodeId}:${sub.subscriptionName}`;
-        const history = lagHistory.get(lagKey);
-        const latestLag = history?.[history.length - 1] ?? null;
+        const history = lagHistory.get(lagKey) ?? [];
+        const latestLag = history.length > 0 ? history[history.length - 1] : null;
         const lagSeverity = getLagSeverity(latestLag?.lagSeconds ?? null);
         const statusVariant = getStatusVariant(sub.status, sub.enabled);
 
@@ -200,7 +203,8 @@ export function useSubscriptions(): UseSubscriptionsResult {
           lastMessageTime: sub.lastMessageTime,
           workerPid: sub.workerPid,
           nodeName,
-          latestLag,
+          latestLag: latestLag ?? null,
+          lagHistory: history,
           statusVariant,
           lagSeverity,
           isStale,

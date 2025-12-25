@@ -42,6 +42,7 @@ const createSlot = (overrides: Partial<SlotData> = {}): SlotData => ({
   database: 'test',
   active: true,
   retainedBytes: 1024,
+  pendingBytes: 512,
   walStatus: 'reserved',
   isStale: false,
   timestamp: new Date(),

@@ -419,9 +419,9 @@ export type ActionName =
 
 /**
  * Maximum lag history samples per subscription.
- * Default: 60 (1 minute at 1s polling interval).
+ * 300 samples at 1s polling interval = 5 minute window.
  */
-export const MAX_LAG_HISTORY_SAMPLES = 60;
+export const MAX_LAG_HISTORY_SAMPLES = 300;
 
 /**
  * Panel navigation order for Tab cycling.

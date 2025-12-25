@@ -262,6 +262,7 @@ describe('useSlots hook', () => {
     database: 'test',
     active: true,
     retainedBytes: 1024,
+    pendingBytes: 512,
     walStatus: 'reserved',
     isStale: false,
     timestamp: new Date(),

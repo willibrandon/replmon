@@ -27,6 +27,12 @@ const STALE_THRESHOLD_BYTES = 1073741824;
  * SQL query for replication slots.
  * WAL retention calculated via pg_wal_lsn_diff().
  * wal_status available in PG13+, returns NULL on older versions.
+ *
+ * Two metrics:
+ * - retained_bytes: Total WAL retained (current - restart_lsn) - for slot health display
+ * - pending_bytes: Actual pending changes (current - confirmed_flush_lsn) - for lag calculation
+ *   For logical slots, this is the real replication lag.
+ *   For physical slots, falls back to restart_lsn.
  */
 const SLOTS_QUERY = `
 SELECT
@@ -39,11 +45,19 @@ SELECT
     pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)::bigint,
     0
   ) AS retained_bytes,
+  COALESCE(
+    pg_wal_lsn_diff(
+      pg_current_wal_lsn(),
+      COALESCE(confirmed_flush_lsn, restart_lsn)
+    )::bigint,
+    0
+  ) AS pending_bytes,
   CASE
     WHEN current_setting('server_version_num')::integer >= 130000
     THEN wal_status::text
     ELSE NULL
-  END AS wal_status
+  END AS wal_status,
+  pg_current_wal_lsn()::text AS current_wal_lsn
 FROM pg_replication_slots
 `;
 
@@ -55,6 +69,7 @@ interface SlotRow {
   database: string | null;
   active: boolean;
   retained_bytes: string | number;
+  pending_bytes: string | number;
   wal_status: string | null;
 }
 
@@ -107,6 +122,7 @@ function isStale(active: boolean, retainedBytes: number): boolean {
  */
 function transformRow(nodeId: string, row: SlotRow, timestamp: Date): SlotData {
   const retainedBytes = parseNumber(row.retained_bytes);
+  const pendingBytes = parseNumber(row.pending_bytes);
   return {
     nodeId,
     slotName: row.slot_name,
@@ -115,6 +131,7 @@ function transformRow(nodeId: string, row: SlotRow, timestamp: Date): SlotData {
     database: row.database,
     active: row.active,
     retainedBytes,
+    pendingBytes,
     walStatus: parseWalStatus(row.wal_status),
     isStale: isStale(row.active, retainedBytes),
     timestamp,

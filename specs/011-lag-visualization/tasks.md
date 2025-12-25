@@ -19,7 +19,7 @@
 
 **Purpose**: Increase lag history window to support 5-minute visualization
 
-- [ ] T001 Update MAX_LAG_HISTORY_SAMPLES constant from 60 to 300 in src/store/types.ts
+- [X] T001 Update MAX_LAG_HISTORY_SAMPLES constant from 60 to 300 in src/store/types.ts
 
 ---
 
@@ -29,14 +29,14 @@
 
 **⚠️ CRITICAL**: User story work requires this component to exist
 
-- [ ] T002 Create src/components/charts/ directory structure
-- [ ] T003 Implement Sparkline component with block character rendering in src/components/charts/Sparkline.tsx
+- [X] T002 Create src/components/charts/ directory structure
+- [X] T003 Implement Sparkline component with block character rendering in src/components/charts/Sparkline.tsx
   - Props: samples (LagSample[]), width (number), preferSeconds (boolean), isStale (boolean)
   - Block characters: ▁▂▃▄▅▆▇█
   - Linear scaling with dynamic max
   - Downsampling for width adaptation
-- [ ] T004 Add empty state rendering ("No lag data available") to src/components/charts/Sparkline.tsx
-- [ ] T005 Add stale state rendering (badge indicator) to src/components/charts/Sparkline.tsx
+- [X] T004 Add empty state rendering ("No lag data available") to src/components/charts/Sparkline.tsx
+- [X] T005 Add stale state rendering (badge indicator) to src/components/charts/Sparkline.tsx
 
 **Checkpoint**: Sparkline component ready - user story integration can now begin
 
@@ -50,10 +50,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Add lagHistory field to SubscriptionListItem interface in src/hooks/useSubscriptions.ts
-- [ ] T007 [US1] Populate lagHistory from store in useSubscriptions hook in src/hooks/useSubscriptions.ts
-- [ ] T008 [US1] Import Sparkline component in src/components/layout/Modal.tsx
-- [ ] T009 [US1] Add Sparkline to SubscriptionDetailContent in src/components/layout/Modal.tsx
+- [X] T006 [US1] Add lagHistory field to SubscriptionListItem interface in src/hooks/useSubscriptions.ts
+- [X] T007 [US1] Populate lagHistory from store in useSubscriptions hook in src/hooks/useSubscriptions.ts
+- [X] T008 [US1] Import Sparkline component in src/components/layout/Modal.tsx
+- [X] T009 [US1] Add Sparkline to SubscriptionDetailContent in src/components/layout/Modal.tsx
   - Display above or below the Lag section
   - Pass lagHistory, isStale, and appropriate width
 
@@ -69,8 +69,8 @@
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] Verify linear scaling normalizes correctly across different max values in src/components/charts/Sparkline.tsx
-- [ ] T011 [US2] Add y-axis max indicator ("max: Xs" or "max: XKB") to Sparkline output in src/components/charts/Sparkline.tsx
+- [X] T010 [US2] Verify linear scaling normalizes correctly across different max values in src/components/charts/Sparkline.tsx
+- [X] T011 [US2] Add y-axis max indicator ("max: Xs" or "max: XKB") to Sparkline output in src/components/charts/Sparkline.tsx
 
 **Checkpoint**: User Story 2 complete - operators can compare lag severity across subscriptions
 
@@ -84,8 +84,8 @@
 
 ### Implementation for User Story 3
 
-- [ ] T012 [US3] Add time axis labels ("-5m" / "now") rendering to Sparkline in src/components/charts/Sparkline.tsx
-- [ ] T013 [US3] Handle partial data time axis labels (e.g., "-2m" to "now") in src/components/charts/Sparkline.tsx
+- [X] T012 [US3] Add time axis labels ("-5m" / "now") rendering to Sparkline in src/components/charts/Sparkline.tsx
+- [X] T013 [US3] Handle partial data time axis labels (e.g., "-2m" to "now") in src/components/charts/Sparkline.tsx
 
 **Checkpoint**: User Story 3 complete - operators can correlate lag events with time
 
@@ -95,10 +95,10 @@
 
 **Purpose**: Handle edge cases defined in specification
 
-- [ ] T014 Handle zero lag values (flat line at bottom) in src/components/charts/Sparkline.tsx
-- [ ] T015 Handle extreme lag spikes (linear scaling, spike at top) in src/components/charts/Sparkline.tsx
-- [ ] T016 Handle bytes fallback when lagSeconds is null in src/components/charts/Sparkline.tsx
-- [ ] T017 Verify no flicker during 1-second polling updates in Modal rendering
+- [X] T014 Handle zero lag values (flat line at bottom) in src/components/charts/Sparkline.tsx
+- [X] T015 Handle extreme lag spikes (linear scaling, spike at top) in src/components/charts/Sparkline.tsx
+- [X] T016 Handle bytes fallback when lagSeconds is null in src/components/charts/Sparkline.tsx
+- [X] T017 Verify no flicker during 1-second polling updates in Modal rendering
 
 ---
 

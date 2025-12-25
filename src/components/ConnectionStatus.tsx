@@ -70,34 +70,13 @@ export function ConnectionStatus({
             if (connectionManager && !pollingService) {
               pollingService = new PollingService(connectionManager, { intervalMs: 1000 });
 
-              // Wire polling events to store
+              // Wire polling data event to store
+              // Use the 'data' event to get complete PollingCycleResult
+              // This allows handlePollingData to process slots and subscriptions together
+              // for proper lag calculation (subscription's slot may be on different node)
               const store = useStore.getState();
-              pollingService.on('subscriptions', (nodeDataList) => {
-                for (const nodeData of nodeDataList) {
-                  if (nodeData.success && nodeData.data) {
-                    store.setSubscriptions(nodeData.nodeId, nodeData.data);
-                  }
-                  // Update pglogical detection
-                  if (nodeData.hasPglogical) {
-                    store.setNodePglogical(nodeData.nodeId, true);
-                  }
-                }
-              });
-
-              pollingService.on('slots', (nodeDataList) => {
-                for (const nodeData of nodeDataList) {
-                  if (nodeData.success && nodeData.data) {
-                    store.setSlots(nodeData.nodeId, nodeData.data);
-                  }
-                }
-              });
-
-              pollingService.on('conflicts', (nodeDataList) => {
-                for (const nodeData of nodeDataList) {
-                  if (nodeData.success && nodeData.data) {
-                    store.setConflicts(nodeData.nodeId, nodeData.data);
-                  }
-                }
+              pollingService.on('data', (result) => {
+                store.handlePollingData(result);
               });
 
               pollingService.start();

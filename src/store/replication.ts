@@ -176,6 +176,28 @@ export const createReplicationSlice: StateCreator<
         const lastUpdated = new Map(state.lastUpdated);
         const nodes = new Map(state.nodes);
 
+        // Process slots first (needed for lag calculation)
+        for (const nodeData of result.slots) {
+          if (nodeData.success && nodeData.data) {
+            slots.set(nodeData.nodeId, nodeData.data);
+            staleNodes.delete(nodeData.nodeId);
+            lastUpdated.set(nodeData.nodeId, result.completedAt);
+          }
+        }
+
+        // Build a lookup map of all slots across all nodes for lag matching
+        // Key: slotName, Value: { nodeId, pendingBytes }
+        // pendingBytes = current_wal - confirmed_flush_lsn (actual pending changes)
+        const allSlots = new Map<string, { nodeId: string; pendingBytes: number }>();
+        for (const [nodeId, nodeSlots] of slots) {
+          for (const slot of nodeSlots) {
+            allSlots.set(slot.slotName, {
+              nodeId,
+              pendingBytes: slot.pendingBytes,
+            });
+          }
+        }
+
         // Process subscriptions
         for (const nodeData of result.subscriptions) {
           if (nodeData.success && nodeData.data) {
@@ -187,11 +209,24 @@ export const createReplicationSlice: StateCreator<
             for (const sub of nodeData.data) {
               const key = `${nodeData.nodeId}:${sub.subscriptionName}`;
               const history = lagHistory.get(key) ?? [];
+
+              // Try to find lag data from the associated slot
+              // The slot may be on a different node (the provider)
+              // Use pendingBytes (current - confirmed_flush_lsn) for actual replication lag
+              let lagBytes = 0;
+              if (sub.slotName) {
+                const slotInfo = allSlots.get(sub.slotName);
+                if (slotInfo) {
+                  lagBytes = slotInfo.pendingBytes;
+                }
+              }
+
               const sample: LagSample = {
                 timestamp: sub.timestamp,
-                lagBytes: 0, // Will be computed from stats if available
-                lagSeconds: null,
+                lagBytes,
+                lagSeconds: null, // Logical replication doesn't provide time-based lag directly
               };
+
               const updated = [...history, sample];
               lagHistory.set(
                 key,
@@ -212,15 +247,6 @@ export const createReplicationSlice: StateCreator<
           }
         }
 
-        // Process slots
-        for (const nodeData of result.slots) {
-          if (nodeData.success && nodeData.data) {
-            slots.set(nodeData.nodeId, nodeData.data);
-            staleNodes.delete(nodeData.nodeId);
-            lastUpdated.set(nodeData.nodeId, result.completedAt);
-          }
-        }
-
         // Process conflicts
         for (const nodeData of result.conflicts) {
           if (nodeData.success && nodeData.data) {
@@ -230,31 +256,35 @@ export const createReplicationSlice: StateCreator<
           }
         }
 
-        // Process replication stats for lag data
+        // Process replication stats for physical replication lag
+        // This updates lag for subscriptions where we have streaming replication stats
         for (const nodeData of result.stats) {
           if (nodeData.success && nodeData.data) {
             lastUpdated.set(nodeData.nodeId, result.completedAt);
 
             // Update lag samples with actual lag data from stats
+            // pg_stat_replication shows standbys connected TO this node
             for (const stat of nodeData.data) {
-              // Try to match stats to subscriptions by application name
-              const nodeSubs = subscriptions.get(nodeData.nodeId) ?? [];
-              const matchingSub = nodeSubs.find(
-                (s) => s.slotName === stat.applicationName
-              );
+              // For physical replication, the applicationName might match a slot
+              // Find subscriptions across ALL nodes that reference this slot
+              for (const [subNodeId, nodeSubs] of subscriptions) {
+                const matchingSub = nodeSubs.find(
+                  (s) => s.slotName === stat.applicationName
+                );
 
-              if (matchingSub) {
-                const key = `${nodeData.nodeId}:${matchingSub.subscriptionName}`;
-                const history = lagHistory.get(key) ?? [];
-                const lastSample = history[history.length - 1];
-                if (history.length > 0 && lastSample !== undefined) {
-                  // Update the most recent sample with actual lag data
-                  history[history.length - 1] = {
-                    timestamp: lastSample.timestamp,
-                    lagBytes: stat.lagBytes,
-                    lagSeconds: stat.lagSeconds,
-                  };
-                  lagHistory.set(key, history);
+                if (matchingSub) {
+                  const key = `${subNodeId}:${matchingSub.subscriptionName}`;
+                  const history = lagHistory.get(key) ?? [];
+                  const lastSample = history[history.length - 1];
+                  if (history.length > 0 && lastSample !== undefined) {
+                    // Update with stats data (has lagSeconds for physical replication)
+                    history[history.length - 1] = {
+                      timestamp: lastSample.timestamp,
+                      lagBytes: stat.lagBytes,
+                      lagSeconds: stat.lagSeconds,
+                    };
+                    lagHistory.set(key, history);
+                  }
                 }
               }
             }

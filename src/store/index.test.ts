@@ -123,6 +123,7 @@ describe('Replication Slice', () => {
         database: 'test',
         active: true,
         retainedBytes: 1024,
+        pendingBytes: 512,
         walStatus: null,
         isStale: false,
         timestamp: new Date(),
@@ -146,7 +147,6 @@ describe('Replication Slice', () => {
         insertConflicts: 2,
         updateOriginDiffers: 1,
         updateExists: 0,
-        updateDeleted: 0,
         updateMissing: 1,
         deleteOriginDiffers: 0,
         deleteMissing: 1,
@@ -180,11 +180,11 @@ describe('Replication Slice', () => {
     expect(history?.[0]?.lagBytes).toBe(1024);
   });
 
-  test('appendLagSample enforces FIFO at 60 samples', () => {
+  test('appendLagSample enforces FIFO at 300 samples', () => {
     const { appendLagSample } = useStore.getState();
 
-    // Add 65 samples
-    for (let i = 0; i < 65; i++) {
+    // Add 305 samples (5 more than max)
+    for (let i = 0; i < 305; i++) {
       appendLagSample('node1', 'sub1', {
         timestamp: new Date(),
         lagBytes: i,
@@ -194,11 +194,11 @@ describe('Replication Slice', () => {
 
     const state = useStore.getState();
     const history = state.lagHistory.get('node1:sub1');
-    expect(history?.length).toBe(60);
-    // First sample should be i=5 (oldest retained)
+    expect(history?.length).toBe(300);
+    // First sample should be i=5 (oldest retained after FIFO eviction)
     expect(history?.[0]?.lagBytes).toBe(5);
-    // Last sample should be i=64
-    expect(history?.[59]?.lagBytes).toBe(64);
+    // Last sample should be i=304
+    expect(history?.[299]?.lagBytes).toBe(304);
   });
 
   test('markNodeStale adds node to stale set', () => {

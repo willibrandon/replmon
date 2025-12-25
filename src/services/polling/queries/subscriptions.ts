@@ -44,6 +44,9 @@ LEFT JOIN pg_stat_subscription st ON st.subid = sub.oid AND st.worker_type = 'ap
  * SQL query for pglogical subscriptions.
  * Uses pglogical.show_subscription_status() function.
  * Joins with node_interface to get provider connection info for auto-discovery.
+ * Joins with pg_replication_origin_status to get LSN positions.
+ * Joins with pg_stat_activity to get worker PID (application_name = 'pglogical apply {dboid}:{subid}').
+ * Origin name format: pgl_{database}_{provider_node}_{subscription_name}
  */
 const PGLOGICAL_SUBSCRIPTIONS_QUERY = `
 SELECT
@@ -52,10 +55,18 @@ SELECT
   s.provider_node,
   s.slot_name,
   s.replication_sets,
-  i.if_dsn AS provider_dsn
+  i.if_dsn AS provider_dsn,
+  ros.remote_lsn::text AS applied_lsn,
+  a.pid AS worker_pid,
+  a.state_change AS last_state_change
 FROM pglogical.show_subscription_status(NULL) s
 LEFT JOIN pglogical.node n ON n.node_name = s.provider_node
 LEFT JOIN pglogical.node_interface i ON i.if_nodeid = n.node_id
+LEFT JOIN pg_replication_origin_status ros
+  ON ros.external_id = 'pgl_' || current_database() || '_' || s.provider_node || '_' || s.subscription_name
+LEFT JOIN pglogical.subscription sub ON sub.sub_name = s.subscription_name
+LEFT JOIN pg_stat_activity a
+  ON a.application_name = 'pglogical apply ' || (SELECT oid FROM pg_database WHERE datname = current_database()) || ':' || sub.sub_id
 `;
 
 /** Raw row type from native subscriptions query */
@@ -77,6 +88,9 @@ interface PglogicalSubRow {
   slot_name: string | null;
   replication_sets: string[] | string | null;
   provider_dsn: string | null;
+  applied_lsn: string | null;
+  worker_pid: number | null;
+  last_state_change: Date | null;
 }
 
 /**
@@ -194,11 +208,11 @@ function transformPglogicalRow(
     providerHost: providerConn?.host ?? null,
     providerPort: providerConn?.port ?? null,
     slotName: row.slot_name,
-    receivedLsn: null, // Not directly available from show_subscription_status
-    latestEndLsn: null,
+    receivedLsn: null,
+    latestEndLsn: row.applied_lsn,
     replicationSets: parseReplicationSets(row.replication_sets),
-    lastMessageTime: null,
-    workerPid: null,
+    lastMessageTime: row.last_state_change, // state_change from pg_stat_activity
+    workerPid: row.worker_pid,
     source: 'pglogical',
     timestamp,
   };

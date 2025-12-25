@@ -210,7 +210,6 @@ export const selectTotalConflictCount: Selector<number> = (state) => {
         conflict.insertConflicts +
         conflict.updateOriginDiffers +
         conflict.updateExists +
-        conflict.updateDeleted +
         conflict.updateMissing +
         conflict.deleteOriginDiffers +
         conflict.deleteMissing +
@@ -238,7 +237,6 @@ export const selectSubscriptionsWithConflicts: Selector<string[]> = (state) => {
         conflict.insertConflicts +
         conflict.updateOriginDiffers +
         conflict.updateExists +
-        conflict.updateDeleted +
         conflict.updateMissing +
         conflict.deleteOriginDiffers +
         conflict.deleteMissing +

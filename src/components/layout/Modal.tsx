@@ -4,6 +4,7 @@ import { useTheme } from '../../hooks/useTheme.js';
 import { StatusDot } from '../atoms/StatusDot.js';
 import { Badge } from '../atoms/Badge.js';
 import { ProgressBar } from '../atoms/ProgressBar.js';
+import { Sparkline } from '../charts/Sparkline.js';
 import type { ModalConfig } from '../../store/types.js';
 import type { SubscriptionListItem } from '../../hooks/useSubscriptions.js';
 import type { SlotListItem } from '../../hooks/useSlots.js';
@@ -127,6 +128,16 @@ function SubscriptionDetailContent({ item }: { item: SubscriptionListItem }): Re
           </Box>
         </Box>
       )}
+
+      {/* Lag Trend Sparkline */}
+      <Box flexDirection="column">
+        <Sparkline
+          samples={item.lagHistory}
+          width={40}
+          preferSeconds={true}
+          isStale={item.isStale}
+        />
+      </Box>
     </Box>
   );
 }

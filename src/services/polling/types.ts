@@ -108,8 +108,10 @@ export interface SlotData {
   database: string | null;
   /** Whether slot is in use */
   active: boolean;
-  /** WAL bytes retained by slot */
+  /** WAL bytes retained by slot (current - restart_lsn) */
   retainedBytes: number;
+  /** Pending WAL bytes to be replicated (current - confirmed_flush_lsn) */
+  pendingBytes: number;
   /** WAL status (PG13+) */
   walStatus: WalStatus | null;
   /** Inactive with >1GB retention */
@@ -170,8 +172,6 @@ export interface ConflictData {
   updateOriginDiffers: number;
   /** UPDATE-UPDATE conflicts */
   updateExists: number;
-  /** UPDATE-DELETE conflicts */
-  updateDeleted: number;
   /** UPDATE target missing conflicts */
   updateMissing: number;
   /** DELETE origin differs conflicts */
