@@ -18,7 +18,7 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 - ASCII topology visualization with node status and connection lines
 - Detail modals for nodes, subscriptions, and slots (Enter to view)
 - Auto-discovery of pglogical bidirectional replication relationships
-- Sparkline lag charts (5-minute rolling window)
+- Sparkline lag charts in subscription detail modals (Unicode block characters, 5-minute rolling window)
 - pglogical conflict detection and display
 - Operations: pause/resume subscriptions, resync tables, manage slots
 - Multi-cluster configuration with easy switching
@@ -33,7 +33,7 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 - Typed event subscriptions for stats, slots, subscriptions, and conflicts
 - Zustand state management with devtools support
 - Per-node subscription, slot, and conflict tracking
-- FIFO lag history (60 samples) for sparkline visualization
+- FIFO lag history (300 samples / 5 minutes) for sparkline visualization
 - Stale data indicators when nodes disconnect
 - Modal focus preservation and restoration
 - Responsive layout with breakpoints (standard, narrow, short, compact)
