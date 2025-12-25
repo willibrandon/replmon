@@ -53,6 +53,14 @@ export function ConnectionStatus({
       connectionManager.on('node:connected', ({ nodeId }) => {
         if (!cancelled && !quittingRef.current) {
           setNodeStatus(nodeId, 'connected');
+          // Check if all nodes are now connected and transition to dashboard
+          const allConnected = nodeIds.every((id) => {
+            if (id === nodeId) return true; // This one just connected
+            return useConnectionStore.getState().nodeStatus.get(id) === 'connected';
+          });
+          if (allConnected) {
+            setCurrentScreen('dashboard');
+          }
         }
       });
 

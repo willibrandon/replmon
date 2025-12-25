@@ -2,9 +2,9 @@ import React from 'react';
 import { Box } from 'ink';
 import { useConnectionStore } from '../store/connection.js';
 import type { Configuration } from '../types/config.js';
-import { StatusBar } from './StatusBar.js';
 import { ConnectionStatus } from './ConnectionStatus.js';
 import { Dashboard } from './Dashboard.js';
+import { ThemeProvider } from '../theme/index.js';
 
 export interface AppProps {
   config: Configuration;
@@ -32,14 +32,13 @@ export function App({ config }: AppProps): React.ReactElement {
   }, [resetConnectionStates]);
 
   return (
-    <Box flexDirection="column" width="100%">
-      <Box flexGrow={1}>
+    <ThemeProvider theme={config.theme}>
+      <Box flexDirection="column" width="100%" height="100%">
         {currentScreen === 'connection-status' && (
           <ConnectionStatus config={config} onRetry={handleRetry} />
         )}
         {currentScreen === 'dashboard' && <Dashboard config={config} />}
       </Box>
-      <StatusBar />
-    </Box>
+    </ThemeProvider>
   );
 }

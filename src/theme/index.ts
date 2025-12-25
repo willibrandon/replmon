@@ -155,3 +155,8 @@ export function resolveTheme(
 
 // Re-export theme types for convenience
 export type { ResolvedTheme, ThemeColors } from '../config/defaults.js';
+
+// Theme context and provider (Feature: 006-ui-framework)
+export { ThemeContext } from './ThemeContext.js';
+export { ThemeProvider } from './ThemeProvider.js';
+export type { ThemeProviderProps } from './ThemeProvider.js';
