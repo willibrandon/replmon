@@ -14,8 +14,9 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 
 - Live subscription and replication slot monitoring
 - Subscriptions panel with status indicators, lag metrics, and detail drill-down
+- Slots panel with WAL retention progress bars, severity coloring, and WAL status badges (PG13+)
 - ASCII topology visualization with node status and connection lines
-- Detail modals for nodes and subscriptions (Enter to view)
+- Detail modals for nodes, subscriptions, and slots (Enter to view)
 - Auto-discovery of pglogical bidirectional replication relationships
 - Sparkline lag charts (5-minute rolling window)
 - pglogical conflict detection and display
