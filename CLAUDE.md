@@ -91,6 +91,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
+- 009-subscriptions-panel: Added TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x (existing stack)
 - 008-topology-panel: Implemented topology visualization with TopologyNode, ConnectionLine, TopologyRow, TopologyLayout components. Added useTopology/useTopologyLayout hooks. Auto-discovers pglogical relationships via provider DSN parsing. Switched to fullscreen-ink for proper terminal resize handling (alternate screen buffer).
 - 007-keyboard-nav: Added TypeScript 5.7 (strict mode) + React 18.x, Ink 5.x, Zustand 5.x (existing stack)
-- 006-ui-framework: Implemented atomic design component system with atoms (StatusDot, Badge, ProgressBar, Spinner), layout components (Header, Footer, MainLayout, Panel, Modal, SplitView), and TopologyPanel. Added ThemeProvider/ThemeContext with useTheme hook. Added responsive hooks (useTerminalSize with 100ms debounce, useBreakpoint for standard/narrow/short/compact). Dashboard refactored to use MainLayout. StatusBar merged into Footer.
