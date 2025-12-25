@@ -19,11 +19,11 @@
 
 **Purpose**: Create directory structure and barrel exports for new components
 
-- [ ] T001 Create directory structure: `src/theme/`, `src/components/atoms/`, `src/components/layout/`, `src/components/panels/`
-- [ ] T002 [P] Create barrel export in `src/theme/index.ts`
-- [ ] T003 [P] Create barrel export in `src/components/atoms/index.ts`
-- [ ] T004 [P] Create barrel export in `src/components/layout/index.ts`
-- [ ] T005 [P] Create barrel export in `src/components/panels/index.ts`
+- [X] T001 Create directory structure: `src/theme/`, `src/components/atoms/`, `src/components/layout/`, `src/components/panels/`
+- [X] T002 [P] Create barrel export in `src/theme/index.ts`
+- [X] T003 [P] Create barrel export in `src/components/atoms/index.ts`
+- [X] T004 [P] Create barrel export in `src/components/layout/index.ts`
+- [X] T005 [P] Create barrel export in `src/components/panels/index.ts`
 
 ---
 
@@ -33,12 +33,12 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Create ThemeContext in `src/theme/ThemeContext.ts` defining context for ResolvedTheme
-- [ ] T007 Create ThemeProvider in `src/theme/ThemeProvider.tsx` accepting theme prop and providing via context
-- [ ] T008 Create useTheme hook in `src/hooks/useTheme.ts` consuming ThemeContext and returning ThemeColors
-- [ ] T009 Create useTerminalSize hook in `src/hooks/useTerminalSize.ts` with debounced resize handling (100ms)
-- [ ] T010 Create useBreakpoint hook in `src/hooks/useBreakpoint.ts` deriving breakpoint from terminal size
-- [ ] T011 Wire ThemeProvider in `src/components/App.tsx` wrapping existing content with config.theme prop
+- [X] T006 Create ThemeContext in `src/theme/ThemeContext.ts` defining context for ResolvedTheme
+- [X] T007 Create ThemeProvider in `src/theme/ThemeProvider.tsx` accepting theme prop and providing via context
+- [X] T008 Create useTheme hook in `src/hooks/useTheme.ts` consuming ThemeContext and returning ThemeColors
+- [X] T009 Create useTerminalSize hook in `src/hooks/useTerminalSize.ts` with debounced resize handling (100ms)
+- [X] T010 Create useBreakpoint hook in `src/hooks/useBreakpoint.ts` deriving breakpoint from terminal size
+- [X] T011 Wire ThemeProvider in `src/components/App.tsx` wrapping existing content with config.theme prop
 
 **Checkpoint**: Foundation ready - theme context available via useTheme(), terminal size/breakpoint available
 
@@ -52,11 +52,11 @@
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create Header component in `src/components/layout/Header.tsx` with title, pglogical badge, status indicators
-- [ ] T013 [P] [US1] Create Footer component in `src/components/layout/Footer.tsx` with keyboard hints, panel name, timestamp (merge StatusBar logic)
-- [ ] T014 [US1] Create MainLayout component in `src/components/layout/MainLayout.tsx` using useBreakpoint for responsive arrangement
-- [ ] T015 [US1] Update barrel export in `src/components/layout/index.ts` with Header, Footer, MainLayout
-- [ ] T016 [US1] Delete `src/components/StatusBar.tsx` after Footer is complete
+- [X] T012 [P] [US1] Create Header component in `src/components/layout/Header.tsx` with title, pglogical badge, status indicators
+- [X] T013 [P] [US1] Create Footer component in `src/components/layout/Footer.tsx` with keyboard hints, panel name, timestamp (merge StatusBar logic)
+- [X] T014 [US1] Create MainLayout component in `src/components/layout/MainLayout.tsx` using useBreakpoint for responsive arrangement
+- [X] T015 [US1] Update barrel export in `src/components/layout/index.ts` with Header, Footer, MainLayout
+- [X] T016 [US1] Delete `src/components/StatusBar.tsx` after Footer is complete
 
 **Checkpoint**: MainLayout renders with Header/Footer, adapts to terminal size
 
@@ -70,16 +70,16 @@
 
 ### Implementation for User Story 2
 
-- [ ] T017 [P] [US2] Create StatusDot atom in `src/components/atoms/StatusDot.tsx` with variant-based color/symbol
-- [ ] T018 [P] [US2] Create Badge atom in `src/components/atoms/Badge.tsx` with variant-based styling
-- [ ] T019 [P] [US2] Create ProgressBar atom in `src/components/atoms/ProgressBar.tsx` with percent and width props
-- [ ] T020 [P] [US2] Create Spinner atom in `src/components/atoms/Spinner.tsx` with animated indicator
-- [ ] T021 [US2] Update barrel export in `src/components/atoms/index.ts` with all atoms
-- [ ] T022 [US2] Create Panel component in `src/components/layout/Panel.tsx` reading focusedPanel from store, applying focus styling
-- [ ] T023 [US2] Update barrel export in `src/components/layout/index.ts` with Panel
-- [ ] T024 [US2] Create TopologyPanel in `src/components/panels/TopologyPanel.tsx` extracting node list logic from Dashboard, using StatusDot/Badge
-- [ ] T025 [US2] Update barrel export in `src/components/panels/index.ts` with TopologyPanel
-- [ ] T026 [US2] Refactor `src/components/Dashboard.tsx` to use MainLayout with Panel components and keyboard handling
+- [X] T017 [P] [US2] Create StatusDot atom in `src/components/atoms/StatusDot.tsx` with variant-based color/symbol
+- [X] T018 [P] [US2] Create Badge atom in `src/components/atoms/Badge.tsx` with variant-based styling
+- [X] T019 [P] [US2] Create ProgressBar atom in `src/components/atoms/ProgressBar.tsx` with percent and width props
+- [X] T020 [P] [US2] Create Spinner atom in `src/components/atoms/Spinner.tsx` with animated indicator
+- [X] T021 [US2] Update barrel export in `src/components/atoms/index.ts` with all atoms
+- [X] T022 [US2] Create Panel component in `src/components/layout/Panel.tsx` reading focusedPanel from store, applying focus styling
+- [X] T023 [US2] Update barrel export in `src/components/layout/index.ts` with Panel
+- [X] T024 [US2] Create TopologyPanel in `src/components/panels/TopologyPanel.tsx` extracting node list logic from Dashboard, using StatusDot/Badge
+- [X] T025 [US2] Update barrel export in `src/components/panels/index.ts` with TopologyPanel
+- [X] T026 [US2] Refactor `src/components/Dashboard.tsx` to use MainLayout with Panel components and keyboard handling
 
 **Checkpoint**: All panels visible with focus indicators, keyboard navigation (t/s/l/c/o/Tab) works
 
@@ -93,9 +93,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T027 [US3] Create Modal component in `src/components/layout/Modal.tsx` with config prop, onClose handler, centered layout
-- [ ] T028 [US3] Update barrel export in `src/components/layout/index.ts` with Modal
-- [ ] T029 [US3] Integrate Modal rendering in MainLayout when activeModal !== null with keyboard trapping
+- [X] T027 [US3] Create Modal component in `src/components/layout/Modal.tsx` with config prop, onClose handler, centered layout
+- [X] T028 [US3] Update barrel export in `src/components/layout/index.ts` with Modal
+- [X] T029 [US3] Integrate Modal rendering in MainLayout when activeModal !== null with keyboard trapping
 
 **Checkpoint**: Modal opens centered, blocks panel navigation, closes with Escape, focus restored
 
@@ -109,11 +109,11 @@
 
 ### Implementation for User Story 4
 
-- [ ] T030 [US4] Apply useTheme colors to Header in `src/components/layout/Header.tsx`
-- [ ] T031 [P] [US4] Apply useTheme colors to Footer in `src/components/layout/Footer.tsx`
-- [ ] T032 [P] [US4] Apply useTheme colors to Panel borders/title in `src/components/layout/Panel.tsx`
-- [ ] T033 [P] [US4] Apply useTheme colors to Modal in `src/components/layout/Modal.tsx`
-- [ ] T034 [US4] Verify all atoms (StatusDot, Badge, ProgressBar, Spinner) use theme colors consistently
+- [X] T030 [US4] Apply useTheme colors to Header in `src/components/layout/Header.tsx`
+- [X] T031 [P] [US4] Apply useTheme colors to Footer in `src/components/layout/Footer.tsx`
+- [X] T032 [P] [US4] Apply useTheme colors to Panel borders/title in `src/components/layout/Panel.tsx`
+- [X] T033 [P] [US4] Apply useTheme colors to Modal in `src/components/layout/Modal.tsx`
+- [X] T034 [US4] Verify all atoms (StatusDot, Badge, ProgressBar, Spinner) use theme colors consistently
 
 **Checkpoint**: Dark and light themes render correctly across all components
 
@@ -127,9 +127,9 @@
 
 ### Implementation for User Story 5
 
-- [ ] T035 [US5] Create SplitView component in `src/components/layout/SplitView.tsx` with direction and ratio props
-- [ ] T036 [US5] Update barrel export in `src/components/layout/index.ts` with SplitView
-- [ ] T037 [US5] Apply useBreakpoint logic to SplitView for narrow/compact fallback behavior
+- [X] T035 [US5] Create SplitView component in `src/components/layout/SplitView.tsx` with direction and ratio props
+- [X] T036 [US5] Update barrel export in `src/components/layout/index.ts` with SplitView
+- [X] T037 [US5] Apply useBreakpoint logic to SplitView for narrow/compact fallback behavior
 
 **Checkpoint**: SplitView renders with configurable ratio, adapts to breakpoints
 
@@ -139,9 +139,9 @@
 
 **Purpose**: Final validation and cleanup
 
-- [ ] T038 Validate all success criteria (SC-001 through SC-008) from spec.md
-- [ ] T039 Run quickstart.md verification checklist
-- [ ] T040 Verify type exports are complete in all barrel files
+- [X] T038 Validate all success criteria (SC-001 through SC-008) from spec.md
+- [X] T039 Run quickstart.md verification checklist
+- [X] T040 Verify type exports are complete in all barrel files
 
 ---
 
