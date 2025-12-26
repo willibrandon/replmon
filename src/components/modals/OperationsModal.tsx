@@ -12,6 +12,7 @@ import { Box, Text, useInput } from 'ink';
 import { useTheme } from '../../hooks/useTheme.js';
 import { useOperations } from '../../hooks/useOperations.js';
 import { Badge } from '../atoms/Badge.js';
+import { PrometheusExport } from '../operations/PrometheusExport.js';
 import type { Operation, Severity } from '../../types/operations.js';
 
 // =============================================================================
@@ -418,6 +419,7 @@ export function OperationsModal({ onClose }: OperationsModalProps): React.ReactE
     remediationHint: string | null;
     durationMs: number;
   } | null>(null);
+  const [showingMetrics, setShowingMetrics] = useState(false);
 
   const {
     availableOperations,
@@ -429,10 +431,20 @@ export function OperationsModal({ onClose }: OperationsModalProps): React.ReactE
     executeOperation,
     updateConfirmInput,
     cancel,
+    exportMetrics,
   } = useOperations();
 
   // Handle keyboard input
   useInput((input, key) => {
+    // Handle metrics display dismissal
+    if (showingMetrics) {
+      if (key.escape) {
+        setShowingMetrics(false);
+      }
+      // PrometheusExport component handles its own j/k scrolling
+      return;
+    }
+
     // Handle result dismissal
     if (showingResult) {
       if (key.return || key.escape) {
@@ -482,6 +494,11 @@ export function OperationsModal({ onClose }: OperationsModalProps): React.ReactE
       if (key.return) {
         const selectedOp = availableOperations[selectedOpIndex];
         if (selectedOp && !isExecuting) {
+          // Handle export-metrics specially - show the metrics view
+          if (selectedOp.id === 'export-metrics') {
+            setShowingMetrics(true);
+            return;
+          }
           startOperation(selectedOp);
         }
         return;
@@ -500,6 +517,34 @@ export function OperationsModal({ onClose }: OperationsModalProps): React.ReactE
       }
     }
   });
+
+  // Render Prometheus metrics export
+  if (showingMetrics) {
+    const metricsText = exportMetrics();
+    return (
+      <Box
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        width="100%"
+        height="100%"
+      >
+        <Box
+          flexDirection="column"
+          borderStyle="double"
+          borderColor={colors.primary}
+          paddingX={2}
+          paddingY={1}
+          minWidth={60}
+        >
+          <PrometheusExport
+            metricsText={metricsText}
+            onDismiss={() => setShowingMetrics(false)}
+          />
+        </Box>
+      </Box>
+    );
+  }
 
   // Render confirmation flow
   if (confirmationState) {
