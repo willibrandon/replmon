@@ -38,6 +38,7 @@
 - [ ] T004 Create operations Zustand slice with OperationsSliceState and OperationsSliceActions in src/store/operations.ts
 - [ ] T005 Update src/store/types.ts to include OperationsSliceState in RootState
 - [ ] T006 Update src/store/index.ts to integrate operations slice into root store
+- [ ] T006a Add isExecuting guard in executeOperation to reject concurrent calls with "Operation in progress" error in src/store/operations.ts
 - [ ] T007 Create useOperations hook with availableOperations, history, confirmationState in src/hooks/useOperations.ts
 - [ ] T008 Create OperationsModal container component shell in src/components/modals/OperationsModal.tsx
 - [ ] T009 Integrate 'o' keyboard shortcut to open OperationsModal in src/components/layout/MainLayout.tsx
@@ -116,7 +117,7 @@
 - [ ] T030 [US4] Add conflict count pre-check query for confirmation display in src/services/operations/conflict-ops.ts
 - [ ] T031 [US4] Add conflict context detection (focused panel) to useOperations in src/hooks/useOperations.ts
 - [ ] T032 [US4] Add log-based conflict detection handling (show "cannot clear" message) in src/hooks/useOperations.ts
-- [ ] T033 [US4] Wire clear conflicts operation into useOperations with type-to-confirm ("CLEAR") in src/hooks/useOperations.ts
+- [ ] T033 [US4] Wire clear conflicts operation into useOperations with type-to-confirm (type node name to confirm) in src/hooks/useOperations.ts
 
 **Checkpoint**: User Story 4 complete - can clear pglogical conflict history
 
@@ -135,8 +136,10 @@
 - [ ] T036 [US5] Create PrometheusExport scrollable modal component in src/components/operations/PrometheusExport.tsx
 - [ ] T037 [US5] Add exportMetrics function to useOperations hook in src/hooks/useOperations.ts
 - [ ] T038 [US5] Wire export metrics operation (no confirmation needed) in src/hooks/useOperations.ts
+- [ ] T038a [US5] Add file output option with path input to PrometheusExport in src/components/operations/PrometheusExport.tsx
+- [ ] T038b [US5] Implement writeMetricsToFile function using Node.js fs.writeFile in src/services/operations/prometheus.ts
 
-**Checkpoint**: User Story 5 complete - can export Prometheus metrics in scrollable modal
+**Checkpoint**: User Story 5 complete - can export Prometheus metrics in scrollable modal or to file
 
 ---
 
@@ -231,14 +234,14 @@ Task: "Create OperationResult component in src/components/operations/OperationRe
 | Phase | Tasks | Cumulative |
 |-------|-------|------------|
 | Phase 1: Setup | 3 | 3 |
-| Phase 2: Foundational | 6 | 9 |
-| Phase 3: US1 - Pause/Resume | 8 | 17 |
-| Phase 4: US2 - Resync Tables | 6 | 23 |
-| Phase 5: US3 - Manage Slots | 5 | 28 |
-| Phase 6: US4 - Clear Conflicts | 5 | 33 |
-| Phase 7: US5 - Prometheus Metrics | 5 | 38 |
-| Phase 8: Polish | 10 | 48 |
-| **Total** | **48 tasks** | |
+| Phase 2: Foundational | 7 | 10 |
+| Phase 3: US1 - Pause/Resume | 8 | 18 |
+| Phase 4: US2 - Resync Tables | 6 | 24 |
+| Phase 5: US3 - Manage Slots | 5 | 29 |
+| Phase 6: US4 - Clear Conflicts | 5 | 34 |
+| Phase 7: US5 - Prometheus Metrics | 7 | 41 |
+| Phase 8: Polish | 10 | 51 |
+| **Total** | **51 tasks** | |
 
 ---
 
