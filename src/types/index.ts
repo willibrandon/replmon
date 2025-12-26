@@ -87,3 +87,24 @@ export type {
   UseTopologyResult,
   EdgeLagData,
 } from './topology.js';
+
+// Conflict types (012-conflicts-panel)
+export type {
+  ConflictType,
+  ConflictResolution,
+  ConflictSource as ConflictDataSource,
+  ConflictEvent,
+  ConflictSummary,
+  ConflictListItem,
+  LogFileConfig,
+  LogParseResult,
+  UseConflictsResult,
+} from './conflicts.js';
+
+export {
+  CONFLICT_TYPES,
+  RESOLUTION_TYPES,
+  CONFLICT_TYPE_LABELS,
+  RESOLUTION_LABELS,
+  SOURCE_LABELS,
+} from './conflicts.js';

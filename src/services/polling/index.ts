@@ -29,11 +29,17 @@ import type {
   SlotData,
   SubscriptionData,
   ConflictData,
+  ConflictEventResult,
   QueryFn,
 } from './types.js';
 
 import { detectPglogical, clearNodeCache, clearAllCache } from './pglogical-detector.js';
 import { executeAllQueries } from './queries/index.js';
+import {
+  detectSource as detectConflictSource,
+  execute as executeConflictEvents,
+} from './queries/pglogical-conflicts.js';
+import type { ConflictEvent } from '../../types/conflicts.js';
 
 // =============================================================================
 // Constants
@@ -367,6 +373,7 @@ export class PollingService {
           subscriptions: [],
           slots: [],
           conflicts: [],
+          conflictEvents: [],
         };
 
         this.emitResults(result);
@@ -395,6 +402,7 @@ export class PollingService {
         subscriptions: nodeResults.map((r) => r.subscriptions),
         slots: nodeResults.map((r) => r.slots),
         conflicts: nodeResults.map((r) => r.conflicts),
+        conflictEvents: nodeResults.map((r) => r.conflictEvents),
       };
 
       // Check for total failure (all nodes failed)
@@ -433,6 +441,7 @@ export class PollingService {
     subscriptions: NodeData<SubscriptionData[]>;
     slots: NodeData<SlotData[]>;
     conflicts: NodeData<ConflictData[]>;
+    conflictEvents: NodeData<ConflictEventResult>;
   }> {
     const startTime = Date.now();
 
@@ -446,8 +455,36 @@ export class PollingService {
       const pglogicalResult = await detectPglogical(node.id, queryFn);
       const hasPglogical = pglogicalResult.hasPglogical;
 
-      // Execute all queries in parallel
-      const queryResults = await executeAllQueries(node.id, queryFn, hasPglogical);
+      // Execute all queries in parallel, including conflict events
+      const [queryResults, conflictSource] = await Promise.all([
+        executeAllQueries(node.id, queryFn, hasPglogical),
+        hasPglogical ? detectConflictSource(node.id, queryFn) : Promise.resolve('unavailable' as const),
+      ]);
+
+      // Query conflict events if source is available
+      const conflictEventsData = await executeConflictEvents(node.id, queryFn, conflictSource);
+
+      // Convert ConflictEvent[] to ConflictEventResult
+      const conflictEventResult: ConflictEventResult = {
+        events: conflictEventsData.map((event: ConflictEvent) => ({
+          id: event.id,
+          nodeId: event.nodeId,
+          recordedAt: event.recordedAt,
+          subscriptionName: event.subscriptionName,
+          conflictType: event.conflictType,
+          resolution: event.resolution,
+          schemaName: event.schemaName,
+          tableName: event.tableName,
+          indexName: event.indexName,
+          localTuple: event.localTuple,
+          remoteTuple: event.remoteTuple,
+          localCommitTs: event.localCommitTs,
+          remoteCommitTs: event.remoteCommitTs,
+          remoteLsn: event.remoteLsn,
+          source: event.source,
+        })),
+        source: conflictSource,
+      };
 
       const durationMs = Date.now() - startTime;
 
@@ -483,6 +520,14 @@ export class PollingService {
           nodeName: node.name,
           success: true,
           data: queryResults.conflicts,
+          durationMs,
+          hasPglogical,
+        },
+        conflictEvents: {
+          nodeId: node.id,
+          nodeName: node.name,
+          success: true,
+          data: conflictEventResult,
           durationMs,
           hasPglogical,
         },
@@ -527,6 +572,14 @@ export class PollingService {
           durationMs,
           hasPglogical: false,
         },
+        conflictEvents: {
+          nodeId: node.id,
+          nodeName: node.name,
+          success: false,
+          error,
+          durationMs,
+          hasPglogical: false,
+        },
       };
     }
   }
@@ -543,6 +596,7 @@ export class PollingService {
     this.events.emit('subscriptions', result.subscriptions);
     this.events.emit('slots', result.slots);
     this.events.emit('conflicts', result.conflicts);
+    this.events.emit('conflictEvents', result.conflictEvents);
 
     // Emit cycle:complete event
     this.events.emit('cycle:complete', {
@@ -615,6 +669,9 @@ export type {
   SubscriptionStatus,
   SubscriptionSource,
   ConflictSource,
+  ConflictEventSource,
+  ConflictEventResult,
+  ConflictEventRecord,
   QueryFn,
   QueryModule,
   PglogicalDetectionResult,
@@ -623,3 +680,4 @@ export type {
 // Re-export query modules for direct access if needed
 export { executeAllQueries } from './queries/index.js';
 export { detectPglogical, clearNodeCache, clearAllCache } from './pglogical-detector.js';
+export { pglogicalConflictsQueryModule } from './queries/pglogical-conflicts.js';

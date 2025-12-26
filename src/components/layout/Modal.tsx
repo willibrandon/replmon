@@ -5,9 +5,13 @@ import { StatusDot } from '../atoms/StatusDot.js';
 import { Badge } from '../atoms/Badge.js';
 import { ProgressBar } from '../atoms/ProgressBar.js';
 import { Sparkline } from '../charts/Sparkline.js';
+import { ConflictTypeBadge } from '../atoms/ConflictTypeBadge.js';
+import { ResolutionBadge } from '../atoms/ResolutionBadge.js';
+import { SourceBadge } from '../atoms/SourceBadge.js';
 import type { ModalConfig } from '../../store/types.js';
 import type { SubscriptionListItem } from '../../hooks/useSubscriptions.js';
 import type { SlotListItem } from '../../hooks/useSlots.js';
+import type { ConflictListItem } from '../../hooks/useConflicts.js';
 import type { TopologyNodeData } from '../../types/topology.js';
 import { getLagSeverity, getLagColor, formatLag, getRoleBadgeLabel, getRoleBadgeColor } from '../../utils/topology.js';
 
@@ -364,6 +368,114 @@ function SlotDetailContent({ item }: { item: SlotListItem }): React.ReactElement
   );
 }
 
+/**
+ * Conflict detail content for modal.
+ */
+function ConflictDetailContent({ item }: { item: ConflictListItem }): React.ReactElement {
+  const colors = useTheme();
+
+  const formatDate = (date: Date | null): string => {
+    if (!date) return '-';
+    return date.toLocaleString();
+  };
+
+  // Format JSON tuple for display
+  const formatTuple = (tuple: Record<string, unknown> | null): React.ReactElement => {
+    if (!tuple) {
+      return <Text color={colors.muted}>Not available</Text>;
+    }
+    return (
+      <Box flexDirection="column" marginLeft={2}>
+        {Object.entries(tuple).map(([key, value]) => (
+          <Box key={key}>
+            <Text color={colors.secondary}>{key}: </Text>
+            <Text color={colors.foreground}>
+              {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+            </Text>
+          </Box>
+        ))}
+      </Box>
+    );
+  };
+
+  return (
+    <Box flexDirection="column" gap={1}>
+      {/* Status section */}
+      <Box flexDirection="column">
+        <Text bold color={colors.primary}>Conflict Type</Text>
+        <Box gap={2} marginLeft={2}>
+          <ConflictTypeBadge type={item.conflictType} />
+          <ResolutionBadge resolution={item.resolution} />
+          <SourceBadge source={item.source} />
+          {item.isStale && <Badge label="stale" variant="warning" />}
+        </Box>
+      </Box>
+
+      {/* Node section */}
+      <Box flexDirection="column">
+        <Text bold color={colors.primary}>Node</Text>
+        <Box marginLeft={2} flexDirection="column">
+          <DetailRow label="Node" value={item.nodeName} />
+          <DetailRow label="Node ID" value={item.nodeId} />
+        </Box>
+      </Box>
+
+      {/* Relation section */}
+      <Box flexDirection="column">
+        <Text bold color={colors.primary}>Affected Relation</Text>
+        <Box marginLeft={2} flexDirection="column">
+          <DetailRow label="Schema" value={item.schemaName} />
+          <DetailRow label="Table" value={item.tableName} />
+          {item.indexName && <DetailRow label="Index" value={item.indexName} />}
+        </Box>
+      </Box>
+
+      {/* Subscription section */}
+      {item.subscriptionName && (
+        <Box flexDirection="column">
+          <Text bold color={colors.primary}>Subscription</Text>
+          <Box marginLeft={2}>
+            <DetailRow label="Name" value={item.subscriptionName} />
+          </Box>
+        </Box>
+      )}
+
+      {/* Tuple data (if available from history source) */}
+      {item.source === 'history' && (item.localTuple || item.remoteTuple) && (
+        <>
+          {item.localTuple && (
+            <Box flexDirection="column">
+              <Text bold color={colors.primary}>Local Tuple</Text>
+              {formatTuple(item.localTuple)}
+            </Box>
+          )}
+          {item.remoteTuple && (
+            <Box flexDirection="column">
+              <Text bold color={colors.primary}>Remote Tuple</Text>
+              {formatTuple(item.remoteTuple)}
+            </Box>
+          )}
+        </>
+      )}
+
+      {/* LSN and timestamp section */}
+      <Box flexDirection="column">
+        <Text bold color={colors.primary}>Timing</Text>
+        <Box marginLeft={2} flexDirection="column">
+          <DetailRow label="Recorded At" value={formatDate(item.recordedAt)} />
+          {item.localCommitTs && (
+            <DetailRow label="Local Commit" value={formatDate(item.localCommitTs)} />
+          )}
+          {item.remoteCommitTs && (
+            <DetailRow label="Remote Commit" value={formatDate(item.remoteCommitTs)} />
+          )}
+          {item.remoteLsn && <DetailRow label="Remote LSN" value={item.remoteLsn} />}
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
 export function Modal({ config, onClose, children }: ModalProps): React.ReactElement {
   const colors = useTheme();
   useInput((_input, key) => { if (key.escape) onClose(); });
@@ -396,7 +508,7 @@ export function Modal({ config, onClose, children }: ModalProps): React.ReactEle
     if (config.type === 'details' && config.data) {
       // Check if it's a subscription item
       const subItem = config.data as SubscriptionListItem;
-      if (subItem.subscriptionName !== undefined) {
+      if (subItem.subscriptionName !== undefined && subItem.status !== undefined) {
         return <SubscriptionDetailContent item={subItem} />;
       }
 
@@ -404,6 +516,12 @@ export function Modal({ config, onClose, children }: ModalProps): React.ReactEle
       const slotItem = config.data as SlotListItem;
       if (slotItem.slotName !== undefined && slotItem.slotType !== undefined) {
         return <SlotDetailContent item={slotItem} />;
+      }
+
+      // Check if it's a conflict item
+      const conflictItem = config.data as ConflictListItem;
+      if (conflictItem.conflictType !== undefined && conflictItem.resolution !== undefined) {
+        return <ConflictDetailContent item={conflictItem} />;
       }
 
       // Check if it's a topology node

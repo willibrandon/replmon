@@ -19,10 +19,10 @@
 
 **Purpose**: Project initialization - type definitions and store foundation
 
-- [ ] T001 [P] Create ConflictEvent, ConflictSource, ConflictType, ConflictResolution types in src/types/conflicts.ts
-- [ ] T002 [P] Create ConflictSummary type in src/types/conflicts.ts
-- [ ] T003 Add conflicts slice (conflicts Map, conflictSources Map) to store in src/store/replication.ts
-- [ ] T004 Add setConflicts and setConflictSource actions to store in src/store/replication.ts
+- [X] T001 [P] Create ConflictEvent, ConflictSource, ConflictType, ConflictResolution types in src/types/conflicts.ts
+- [X] T002 [P] Create ConflictSummary type in src/types/conflicts.ts
+- [X] T003 Add conflicts slice (conflicts Map, conflictSources Map) to store in src/store/replication.ts
+- [X] T004 Add setConflicts and setConflictSource actions to store in src/store/replication.ts
 
 **Checkpoint**: Types defined, store ready for conflict data
 
@@ -34,11 +34,11 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Create pglogical-conflicts.ts query module structure in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T006 Implement detectSource() function that checks for conflict_history table existence and enabled GUC in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T007 Implement queryConflictHistory() function with SQL query and row-to-ConflictEvent transform in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T008 Implement execute() function that calls queryConflictHistory when source='history' in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T009 Integrate pglogicalConflictsQueryModule into PollingService data cycle in src/services/polling/PollingService.ts
+- [X] T005 Create pglogical-conflicts.ts query module structure in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T006 Implement detectSource() function that checks for conflict_history table existence and enabled GUC in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T007 Implement queryConflictHistory() function with SQL query and row-to-ConflictEvent transform in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T008 Implement execute() function that calls queryConflictHistory when source='history' in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T009 Integrate pglogicalConflictsQueryModule into PollingService data cycle in src/services/polling/PollingService.ts
 
 **Checkpoint**: Foundation ready - conflict data flows from database to store
 
@@ -52,17 +52,17 @@
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Create useConflicts hook with basic items aggregation (flatten conflicts Map, sort by recordedAt DESC) in src/hooks/useConflicts.ts
-- [ ] T011 [US1] Add ConflictListItem derivation (nodeName, qualifiedTable, formattedTime) to useConflicts in src/hooks/useConflicts.ts
-- [ ] T012 [US1] Compute summary statistics (total, byType, lastHour, last24h) in useConflicts in src/hooks/useConflicts.ts
-- [ ] T013 [P] [US1] Create ConflictTypeBadge atom component in src/components/atoms/ConflictTypeBadge.tsx
-- [ ] T014 [P] [US1] Create ResolutionBadge atom component in src/components/atoms/ResolutionBadge.tsx
-- [ ] T015 [P] [US1] Create SourceBadge atom component (HISTORY/LOG) in src/components/atoms/SourceBadge.tsx
-- [ ] T016 [US1] Create ConflictRow component with type badge, table name, resolution, timestamp, node in src/components/panels/ConflictsPanel.tsx
-- [ ] T017 [US1] Create SummaryHeader component with conflict counts and type breakdown in src/components/panels/ConflictsPanel.tsx
-- [ ] T018 [US1] Create ConflictsPanel component with SummaryHeader and ConflictRow list in src/components/panels/ConflictsPanel.tsx
-- [ ] T019 [US1] Create EmptyState component for zero conflicts case in src/components/panels/ConflictsPanel.tsx
-- [ ] T020 [US1] Register ConflictsPanel in MainLayout and add 'c' keyboard shortcut for panel focus in src/components/layout/MainLayout.tsx
+- [X] T010 [US1] Create useConflicts hook with basic items aggregation (flatten conflicts Map, sort by recordedAt DESC) in src/hooks/useConflicts.ts
+- [X] T011 [US1] Add ConflictListItem derivation (nodeName, qualifiedTable, formattedTime) to useConflicts in src/hooks/useConflicts.ts
+- [X] T012 [US1] Compute summary statistics (total, byType, lastHour, last24h) in useConflicts in src/hooks/useConflicts.ts
+- [X] T013 [P] [US1] Create ConflictTypeBadge atom component in src/components/atoms/ConflictTypeBadge.tsx
+- [X] T014 [P] [US1] Create ResolutionBadge atom component in src/components/atoms/ResolutionBadge.tsx
+- [X] T015 [P] [US1] Create SourceBadge atom component (HISTORY/LOG) in src/components/atoms/SourceBadge.tsx
+- [X] T016 [US1] Create ConflictRow component with type badge, table name, resolution, timestamp, node in src/components/panels/ConflictsPanel.tsx
+- [X] T017 [US1] Create SummaryHeader component with conflict counts and type breakdown in src/components/panels/ConflictsPanel.tsx
+- [X] T018 [US1] Create ConflictsPanel component with SummaryHeader and ConflictRow list in src/components/panels/ConflictsPanel.tsx
+- [X] T019 [US1] Create EmptyState component for zero conflicts case in src/components/panels/ConflictsPanel.tsx
+- [X] T020 [US1] Register ConflictsPanel in MainLayout and add 'c' keyboard shortcut for panel focus in src/components/layout/MainLayout.tsx
 
 **Checkpoint**: User Story 1 complete - conflicts visible in panel from history source
 
@@ -76,13 +76,13 @@
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Create ConflictDetailModal component structure with header, metadata section in src/components/modals/ConflictDetailModal.tsx
-- [ ] T022 [US2] Add TupleSection to ConflictDetailModal for local/remote tuple JSONB display in src/components/modals/ConflictDetailModal.tsx
-- [ ] T023 [US2] Add LSNSection to ConflictDetailModal for remote LSN and commit timestamps in src/components/modals/ConflictDetailModal.tsx
-- [ ] T024 [US2] Add conditional rendering for unavailable tuple data (log source or disabled storage) in src/components/modals/ConflictDetailModal.tsx
-- [ ] T025 [US2] Add selectedConflictId state and openDetailModal action to UI store in src/store/ui.ts
-- [ ] T026 [US2] Wire Enter key handler in ConflictsPanel to open detail modal in src/components/panels/ConflictsPanel.tsx
-- [ ] T027 [US2] Wire Escape key handler in ConflictDetailModal to close modal in src/components/modals/ConflictDetailModal.tsx
+- [X] T021 [US2] Create ConflictDetailModal component structure with header, metadata section in src/components/layout/Modal.tsx
+- [X] T022 [US2] Add TupleSection to ConflictDetailModal for local/remote tuple JSONB display in src/components/layout/Modal.tsx
+- [X] T023 [US2] Add LSNSection to ConflictDetailModal for remote LSN and commit timestamps in src/components/layout/Modal.tsx
+- [X] T024 [US2] Add conditional rendering for unavailable tuple data (log source or disabled storage) in src/components/layout/Modal.tsx
+- [X] T025 [US2] Add selectedConflictId state and openDetailModal action to UI store (using existing modal system)
+- [X] T026 [US2] Wire Enter key handler in ConflictsPanel to open detail modal in src/components/layout/MainLayout.tsx
+- [X] T027 [US2] Wire Escape key handler in ConflictDetailModal to close modal in src/components/layout/Modal.tsx
 
 **Checkpoint**: User Story 2 complete - conflict details viewable in modal
 
@@ -96,13 +96,13 @@
 
 ### Implementation for User Story 3
 
-- [ ] T028 [US3] Add LogFileConfig type and logConfig to node configuration in src/types/config.ts
-- [ ] T029 [US3] Implement parseConflictLog() function with regex extraction in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T030 [US3] Implement readLogFile() for local filesystem access in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T031 [US3] Implement readLogFileRemote() using pg_read_file() in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T032 [US3] Extend execute() to call log parsing when source='log' in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T033 [US3] Implement log position persistence (read on init, write after parse) at .replmon/log-positions.json in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T034 [US3] Create UnavailableState component with setup instructions in src/components/panels/ConflictsPanel.tsx
+- [X] T028 [US3] Add LogFileConfig type and logConfig to node configuration in src/types/connection.ts
+- [X] T029 [US3] Implement parseConflictLog() function with regex extraction in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T030 [US3] Implement readLogFile() for local filesystem access in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T031 [US3] Implement readLogFileRemote() using pg_read_file() in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T032 [US3] Extend execute() to call log parsing when source='log' in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T033 [US3] Implement log position persistence (read on init, write after parse) at .replmon/log-positions.json in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T034 [US3] Create UnavailableState component with setup instructions in src/components/panels/ConflictsPanel.tsx
 
 **Checkpoint**: User Story 3 complete - fallback log parsing works when history unavailable
 
@@ -116,11 +116,11 @@
 
 ### Implementation for User Story 4
 
-- [ ] T035 [US4] Add selection state (selectedIndex) tracking to useConflicts hook in src/hooks/useConflicts.ts
-- [ ] T036 [US4] Implement j/k keyboard handlers for list navigation in src/components/panels/ConflictsPanel.tsx
-- [ ] T037 [US4] Add selection indicator (>) to ConflictRow component in src/components/panels/ConflictsPanel.tsx
-- [ ] T038 [US4] Add isSelected prop derivation in useConflicts for each ConflictListItem in src/hooks/useConflicts.ts
-- [ ] T039 [US4] Add source counts (historyCount, logCount) to SummaryHeader in src/components/panels/ConflictsPanel.tsx
+- [X] T035 [US4] Add selection state (selectedIndex) tracking to useConflicts hook in src/hooks/useConflicts.ts
+- [X] T036 [US4] Implement j/k keyboard handlers for list navigation in src/components/layout/MainLayout.tsx
+- [X] T037 [US4] Add selection indicator (>) to ConflictRow component in src/components/panels/ConflictsPanel.tsx
+- [X] T038 [US4] Add isSelected prop derivation in useConflicts for each ConflictListItem in src/hooks/useConflicts.ts
+- [X] T039 [US4] Add source counts (historyCount, logCount) to SummaryHeader in src/components/panels/ConflictsPanel.tsx
 
 **Checkpoint**: User Story 4 complete - keyboard navigation and summary statistics work
 
@@ -134,10 +134,10 @@
 
 ### Implementation for User Story 5
 
-- [ ] T040 [US5] Import detectSource from pglogical-conflicts.ts and call on node connection in src/services/ConnectionManager.ts
-- [ ] T041 [US5] Store detected source per node and emit to store in src/services/ConnectionManager.ts
-- [ ] T042 [US5] Add re-detection on polling cycle when source changes (conflict_history enabled/disabled) in src/services/polling/PollingService.ts
-- [ ] T043 [US5] Display per-node source badges in SummaryHeader showing source distribution in src/components/panels/ConflictsPanel.tsx
+- [X] T040 [US5] Import detectSource from pglogical-conflicts.ts and call on node connection in src/services/polling/index.ts
+- [X] T041 [US5] Store detected source per node and emit to store in src/store/replication.ts
+- [X] T042 [US5] Add re-detection on polling cycle when source changes (conflict_history enabled/disabled) in src/services/polling/index.ts
+- [X] T043 [US5] Display per-node source badges in SummaryHeader showing source distribution in src/components/panels/ConflictsPanel.tsx
 
 **Checkpoint**: User Story 5 complete - automatic source detection works across all nodes
 
@@ -147,13 +147,13 @@
 
 **Purpose**: Edge cases, error handling, and refinements
 
-- [ ] T044 [P] Handle node disconnect gracefully - mark conflicts as stale in useConflicts in src/hooks/useConflicts.ts
-- [ ] T045 [P] Add stale indicator styling to ConflictRow for disconnected nodes in src/components/panels/ConflictsPanel.tsx
-- [ ] T046 Handle log file rotation by detecting path changes in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T047 Handle malformed log entries gracefully (skip and continue) in src/services/polling/queries/pglogical-conflicts.ts
-- [ ] T048 Add truncation detection for tuple data >1KB with indicator label in ConflictDetailModal in src/components/modals/ConflictDetailModal.tsx
-- [ ] T049 Add scrollable Box wrapper for TupleSection to enable viewing full JSONB content in src/components/modals/ConflictDetailModal.tsx
-- [ ] T050 Run quickstart.md validation scenarios and fix any issues
+- [X] T044 [P] Handle node disconnect gracefully - mark conflicts as stale in useConflicts in src/hooks/useConflicts.ts
+- [X] T045 [P] Add stale indicator styling to ConflictRow for disconnected nodes in src/components/panels/ConflictsPanel.tsx
+- [X] T046 Handle log file rotation by detecting path changes in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T047 Handle malformed log entries gracefully (skip and continue) in src/services/polling/queries/pglogical-conflicts.ts
+- [X] T048 Add truncation detection for tuple data >1KB with indicator label in ConflictDetailModal in src/components/layout/Modal.tsx
+- [X] T049 Add scrollable Box wrapper for TupleSection to enable viewing full JSONB content in src/components/layout/Modal.tsx
+- [X] T050 Run quickstart.md validation scenarios and fix any issues
 
 ---
 

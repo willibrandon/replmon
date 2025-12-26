@@ -25,6 +25,11 @@ import type {
 } from '../services/polling/types.js';
 
 import type {
+  ConflictEvent as _ConflictEvent,
+  ConflictSource as _ConflictEventSource,
+} from '../types/conflicts.js';
+
+import type {
   HealthStatus as _HealthStatus,
   PoolStats as _PoolStats,
 } from '../services/connection-manager/types.js';
@@ -44,6 +49,8 @@ export type WalStatus = _WalStatus;
 export type SubscriptionStatus = _SubscriptionStatus;
 export type SubscriptionSource = _SubscriptionSource;
 export type ConflictSource = _ConflictSource;
+export type ConflictEvent = _ConflictEvent;
+export type ConflictEventSource = _ConflictEventSource;
 export type HealthStatus = _HealthStatus;
 export type PoolStats = _PoolStats;
 
@@ -158,8 +165,12 @@ export interface ReplicationSliceState {
   subscriptions: Map<string, SubscriptionData[]>;
   /** Slots per node (key: nodeId) */
   slots: Map<string, SlotData[]>;
-  /** Conflicts per node (key: nodeId) */
+  /** Conflicts per node (key: nodeId) - aggregate statistics */
   conflicts: Map<string, ConflictData[]>;
+  /** Conflict events per node (key: nodeId) - individual conflict records */
+  conflictEvents: Map<string, ConflictEvent[]>;
+  /** Conflict data source per node (key: nodeId) */
+  conflictSources: Map<string, ConflictEventSource>;
   /** Lag history per subscription (key: `${nodeId}:${subscriptionName}`) */
   lagHistory: Map<string, LagSample[]>;
   /** Nodes with stale data (disconnected) */
@@ -220,6 +231,12 @@ export interface ReplicationSliceActions {
 
   /** Update conflicts for a node from polling data */
   setConflicts: (nodeId: string, data: ConflictData[]) => void;
+
+  /** Update conflict events for a node (individual conflict records) */
+  setConflictEvents: (nodeId: string, events: ConflictEvent[]) => void;
+
+  /** Update conflict data source for a node */
+  setConflictSource: (nodeId: string, source: ConflictEventSource) => void;
 
   /** Append lag sample for a subscription */
   appendLagSample: (

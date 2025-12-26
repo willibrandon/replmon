@@ -17,6 +17,8 @@ import type {
   SubscriptionData,
   SlotData,
   ConflictData,
+  ConflictEvent,
+  ConflictEventSource,
   PollingCycleResult,
 } from './types.js';
 import { MAX_LAG_HISTORY_SAMPLES } from './types.js';
@@ -40,6 +42,8 @@ export const createReplicationSlice: StateCreator<
   subscriptions: new Map(),
   slots: new Map(),
   conflicts: new Map(),
+  conflictEvents: new Map(),
+  conflictSources: new Map(),
   lagHistory: new Map(),
   staleNodes: new Set(),
   lastUpdated: new Map(),
@@ -90,6 +94,28 @@ export const createReplicationSlice: StateCreator<
       },
       undefined,
       'replication/setConflicts'
+    ),
+
+  setConflictEvents: (nodeId: string, events: ConflictEvent[]) =>
+    set(
+      (state) => {
+        const conflictEvents = new Map(state.conflictEvents);
+        conflictEvents.set(nodeId, events);
+        return { conflictEvents };
+      },
+      undefined,
+      'replication/setConflictEvents'
+    ),
+
+  setConflictSource: (nodeId: string, source: ConflictEventSource) =>
+    set(
+      (state) => {
+        const conflictSources = new Map(state.conflictSources);
+        conflictSources.set(nodeId, source);
+        return { conflictSources };
+      },
+      undefined,
+      'replication/setConflictSource'
     ),
 
   appendLagSample: (
@@ -247,10 +273,40 @@ export const createReplicationSlice: StateCreator<
           }
         }
 
-        // Process conflicts
+        // Process conflicts (aggregate stats)
         for (const nodeData of result.conflicts) {
           if (nodeData.success && nodeData.data) {
             conflicts.set(nodeData.nodeId, nodeData.data);
+            staleNodes.delete(nodeData.nodeId);
+            lastUpdated.set(nodeData.nodeId, result.completedAt);
+          }
+        }
+
+        // Process conflict events (individual records from pglogical)
+        const conflictEvents = new Map(state.conflictEvents);
+        const conflictSources = new Map(state.conflictSources);
+        for (const nodeData of result.conflictEvents) {
+          if (nodeData.success && nodeData.data) {
+            // Convert ConflictEventRecord[] to ConflictEvent[]
+            const events: ConflictEvent[] = nodeData.data.events.map((record) => ({
+              id: record.id,
+              nodeId: record.nodeId,
+              recordedAt: record.recordedAt,
+              subscriptionName: record.subscriptionName,
+              conflictType: record.conflictType as ConflictEvent['conflictType'],
+              resolution: record.resolution as ConflictEvent['resolution'],
+              schemaName: record.schemaName,
+              tableName: record.tableName,
+              indexName: record.indexName,
+              localTuple: record.localTuple,
+              remoteTuple: record.remoteTuple,
+              localCommitTs: record.localCommitTs,
+              remoteCommitTs: record.remoteCommitTs,
+              remoteLsn: record.remoteLsn,
+              source: record.source,
+            }));
+            conflictEvents.set(nodeData.nodeId, events);
+            conflictSources.set(nodeData.nodeId, nodeData.data.source);
             staleNodes.delete(nodeData.nodeId);
             lastUpdated.set(nodeData.nodeId, result.completedAt);
           }
@@ -295,6 +351,8 @@ export const createReplicationSlice: StateCreator<
           subscriptions,
           slots,
           conflicts,
+          conflictEvents,
+          conflictSources,
           lagHistory,
           staleNodes,
           lastUpdated,
@@ -312,6 +370,8 @@ export const createReplicationSlice: StateCreator<
         subscriptions: new Map(),
         slots: new Map(),
         conflicts: new Map(),
+        conflictEvents: new Map(),
+        conflictSources: new Map(),
         lagHistory: new Map(),
         staleNodes: new Set(),
         lastUpdated: new Map(),

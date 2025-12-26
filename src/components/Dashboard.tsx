@@ -6,6 +6,7 @@ import { Panel } from './layout/Panel.js';
 import { TopologyPanel } from './panels/TopologyPanel.js';
 import { SubscriptionsPanel } from './panels/SubscriptionsPanel.js';
 import { SlotsPanel } from './panels/SlotsPanel.js';
+import { ConflictsPanel } from './panels/ConflictsPanel.js';
 
 interface DashboardProps {
   config: Configuration;
@@ -13,7 +14,7 @@ interface DashboardProps {
 
 /**
  * Main dashboard view using the new layout system.
- * Shows topology, subscriptions, and slots panels.
+ * Shows topology, subscriptions, slots, and conflicts panels.
  */
 export function Dashboard({ config }: DashboardProps): React.ReactElement {
   return (
@@ -27,6 +28,9 @@ export function Dashboard({ config }: DashboardProps): React.ReactElement {
         </Panel>
         <Panel title="Slots" panelId="slots">
           <SlotsPanel config={config} />
+        </Panel>
+        <Panel title="Conflicts" panelId="conflicts">
+          <ConflictsPanel config={config} />
         </Panel>
       </Box>
     </MainLayout>

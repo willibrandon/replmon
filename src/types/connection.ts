@@ -1,3 +1,5 @@
+import type { LogFileConfig } from './conflicts.js';
+
 /**
  * PostgreSQL connection configuration for a single node.
  */
@@ -19,7 +21,13 @@ export interface ConnectionConfig {
 
   /** Node display name (derived from config key if not set) */
   name?: string;
+
+  /** Log file configuration for conflict parsing fallback */
+  logConfig?: LogFileConfig;
 }
+
+// Re-export LogFileConfig for convenience
+export type { LogFileConfig };
 
 // Re-export SSL types from connection-manager for convenience
 export type {

@@ -55,8 +55,11 @@ export type SubscriptionStatus =
 /** Source of subscription data */
 export type SubscriptionSource = 'native' | 'pglogical';
 
-/** Source of conflict data */
+/** Source of conflict data (aggregate stats) */
 export type ConflictSource = 'native' | 'pglogical_log' | 'unavailable';
+
+/** Source of conflict event data (individual records) */
+export type ConflictEventSource = 'history' | 'log' | 'unavailable';
 
 // =============================================================================
 // Data Types
@@ -189,6 +192,54 @@ export interface ConflictData {
 }
 
 /**
+ * Conflict event data result with source tracking.
+ * Contains individual conflict records from pglogical conflict_history.
+ */
+export interface ConflictEventResult {
+  /** Conflict events from this node */
+  events: ConflictEventRecord[];
+  /** Data source used for this node */
+  source: ConflictEventSource;
+}
+
+/**
+ * Individual conflict event record.
+ * Matches ConflictEvent from types/conflicts.ts but simplified for polling.
+ */
+export interface ConflictEventRecord {
+  /** Unique identifier */
+  id: string;
+  /** Node identifier */
+  nodeId: string;
+  /** When conflict was recorded */
+  recordedAt: Date;
+  /** Subscription name */
+  subscriptionName: string | null;
+  /** Conflict type */
+  conflictType: string;
+  /** Resolution applied */
+  resolution: string;
+  /** Schema name */
+  schemaName: string;
+  /** Table name */
+  tableName: string;
+  /** Index name */
+  indexName: string | null;
+  /** Local tuple data */
+  localTuple: Record<string, unknown> | null;
+  /** Remote tuple data */
+  remoteTuple: Record<string, unknown> | null;
+  /** Local commit timestamp */
+  localCommitTs: Date | null;
+  /** Remote commit timestamp */
+  remoteCommitTs: Date | null;
+  /** Remote LSN */
+  remoteLsn: string | null;
+  /** Data source */
+  source: ConflictEventSource;
+}
+
+/**
  * Generic wrapper for per-node query results.
  */
 export interface NodeData<T> {
@@ -226,8 +277,10 @@ export interface PollingCycleResult {
   subscriptions: NodeData<SubscriptionData[]>[];
   /** Per-node slots */
   slots: NodeData<SlotData[]>[];
-  /** Per-node conflicts */
+  /** Per-node conflicts (aggregate stats from PG16+) */
   conflicts: NodeData<ConflictData[]>[];
+  /** Per-node conflict events (individual records from pglogical) */
+  conflictEvents: NodeData<ConflictEventResult>[];
 }
 
 /**
@@ -260,8 +313,10 @@ export interface PollingEvents {
   subscriptions: NodeData<SubscriptionData[]>[];
   /** Slot data only */
   slots: NodeData<SlotData[]>[];
-  /** Conflict data only */
+  /** Conflict data only (aggregate stats) */
   conflicts: NodeData<ConflictData[]>[];
+  /** Conflict events only (individual records) */
+  conflictEvents: NodeData<ConflictEventResult>[];
   /** Polling cycle failure */
   error: PollingError;
   /** Polling service started */

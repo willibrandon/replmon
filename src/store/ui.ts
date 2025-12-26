@@ -236,9 +236,9 @@ function getSelectableItemsForPanel(state: ReplmonStore, panel: Panel): string[]
 
     case 'conflicts': {
       const allConflicts: string[] = [];
-      for (const conflicts of state.conflicts.values()) {
-        for (const conflict of conflicts) {
-          allConflicts.push(`${conflict.nodeId}:${conflict.subscriptionName}`);
+      for (const events of state.conflictEvents.values()) {
+        for (const event of events) {
+          allConflicts.push(event.id);
         }
       }
       return allConflicts;

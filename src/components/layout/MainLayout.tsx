@@ -10,6 +10,7 @@ import { useStore } from '../../store/index.js';
 import { useSubscriptions } from '../../hooks/useSubscriptions.js';
 import { useSlots } from '../../hooks/useSlots.js';
 import { useTopology } from '../../hooks/useTopology.js';
+import { useConflicts } from '../../hooks/useConflicts.js';
 import { PANEL_SHORTCUTS } from '../../store/types.js';
 import type { Panel } from '../../store/types.js';
 import { exitApp } from '../../index.js';
@@ -40,6 +41,7 @@ export function MainLayout({ header, footer, children }: MainLayoutProps): React
   const { selectedItem: selectedSlot } = useSlots();
   const { nodes, selectedNodeId } = useTopology();
   const selectedNode = nodes.find((n) => n.nodeId === selectedNodeId);
+  const { selectedItem: selectedConflict } = useConflicts();
 
   useInput((input, key) => {
     if (activeModal !== null) { if (key.escape) closeModal(); return; }
@@ -69,6 +71,12 @@ export function MainLayout({ header, footer, children }: MainLayoutProps): React
           type: 'details',
           title: selectedSlot.slotName,
           data: selectedSlot,
+        });
+      } else if (focusedPanel === 'conflicts' && selectedConflict) {
+        openModal({
+          type: 'details',
+          title: `${selectedConflict.qualifiedTable}`,
+          data: selectedConflict,
         });
       }
     }
