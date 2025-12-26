@@ -8,6 +8,7 @@ import { Sparkline } from '../charts/Sparkline.js';
 import { ConflictTypeBadge } from '../atoms/ConflictTypeBadge.js';
 import { ResolutionBadge } from '../atoms/ResolutionBadge.js';
 import { SourceBadge } from '../atoms/SourceBadge.js';
+import { OperationsModal } from '../modals/OperationsModal.js';
 import type { ModalConfig } from '../../store/types.js';
 import type { SubscriptionListItem } from '../../hooks/useSubscriptions.js';
 import type { SlotListItem } from '../../hooks/useSlots.js';
@@ -480,6 +481,11 @@ export function Modal({ config, onClose, children }: ModalProps): React.ReactEle
   const colors = useTheme();
   useInput((_input, key) => { if (key.escape) onClose(); });
   const title = config.title ?? config.type.charAt(0).toUpperCase() + config.type.slice(1);
+
+  // Operations modal has its own UI and handles its own keyboard input
+  if (config.type === 'operations') {
+    return <OperationsModal onClose={onClose} />;
+  }
 
   // Render content based on modal type
   const renderContent = (): React.ReactNode => {

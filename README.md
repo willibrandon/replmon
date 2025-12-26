@@ -21,7 +21,13 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 - Sparkline lag charts in subscription detail modals (Unicode block characters, 5-minute rolling window)
 - Conflicts panel with pglogical conflict_history support (2.5.0+) and csvlog fallback
 - Conflict detail modal showing local/remote tuple data, resolution, and LSN info
-- Operations: pause/resume subscriptions, resync tables, manage slots
+- Operations modal with DBA actions (press `o`):
+  - Pause/Resume subscriptions (pglogical + native)
+  - Resync tables with type-to-confirm safety (pglogical only)
+  - Create/Drop replication slots with active slot detection
+  - Clear conflict history (pglogical only)
+  - Export Prometheus metrics (copy or save to file)
+  - Operation history with detail view
 - Multi-cluster configuration with easy switching
 - Keyboard-driven interface (mouse optional)
 - Multi-node connection pooling with health monitoring
@@ -126,13 +132,24 @@ See `configs/example.yaml` for all options.
 | `s` | Subscriptions panel |
 | `l` | Slots panel |
 | `c` | Conflicts panel |
-| `o` | Operations panel |
+| `o` | Operations modal (DBA actions) |
 | `Tab` | Next panel |
 | `j/k` | Navigate lists |
-| `Enter` | View details for selected item |
+| `Enter` | View details / Execute operation |
 | `?` | Help modal |
-| `Esc` | Close modal |
+| `Esc` | Close modal / Cancel operation |
 | `q` | Quit |
+
+### Operations Modal
+
+| Key | Action |
+|-----|--------|
+| `j/k` | Navigate operations list |
+| `Enter` | Select operation / Confirm |
+| `Tab` | Switch between Operations and History tabs |
+| `Esc` | Cancel / Close modal |
+
+**Danger operations** (resync table, drop slot, clear conflicts) require typing the resource name to confirm.
 
 ## Tech Stack
 

@@ -46,8 +46,10 @@ export function MainLayout({ header, footer, children }: MainLayoutProps): React
   useInput((input, key) => {
     if (activeModal !== null) { if (key.escape) closeModal(); return; }
     if (input === 'q' || (key.ctrl && input === 'c')) { exitApp(0); return; }
+    // 'o' opens operations modal instead of focusing operations panel
+    if (input === 'o') { openModal({ type: 'operations', title: 'Operations' }); return; }
     const targetPanel = PANEL_SHORTCUTS[input] as Panel | undefined;
-    if (targetPanel) { setFocusedPanel(targetPanel); return; }
+    if (targetPanel && targetPanel !== 'operations') { setFocusedPanel(targetPanel); return; }
     if (key.tab) { key.shift ? focusPreviousPanel() : focusNextPanel(); return; }
     if (input === 'j' || key.downArrow) { selectNext(); return; }
     if (input === 'k' || key.upArrow) { selectPrevious(); return; }

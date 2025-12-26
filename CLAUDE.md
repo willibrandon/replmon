@@ -25,10 +25,11 @@ src/
 │   ├── panels/         # TopologyPanel, SubscriptionsPanel, SlotsPanel, ConflictsPanel
 │   ├── topology/       # TopologyNode, ConnectionLine, TopologyRow, TopologyLayout
 │   ├── charts/         # Sparkline, TopologyGraph
-│   └── modals/         # OperationsModal, HelpModal
-├── hooks/              # useTheme, useTerminalSize, useBreakpoint, usePolling, useTopology, useTopologyLayout, useSubscriptions, useSlots, useConflicts
-├── services/           # ConnectionManager, PollingService, queries
-├── store/              # Zustand store (connection, replication, ui slices)
+│   ├── modals/         # OperationsModal, HelpModal
+│   └── operations/     # OperationsList, OperationConfirm, OperationResult, OperationHistory, TableSelector, PrometheusExport, SlotNameInput
+├── hooks/              # useTheme, useTerminalSize, useBreakpoint, usePolling, useTopology, useTopologyLayout, useSubscriptions, useSlots, useConflicts, useOperations
+├── services/           # ConnectionManager, PollingService, queries, operations (subscription-ops, slot-ops, conflict-ops, prometheus)
+├── store/              # Zustand store (connection, replication, ui, operations slices)
 │   └── selectors/      # Aggregation, filter, and computed selectors
 ├── theme/              # Color schemes and theming
 └── types/              # TypeScript interfaces
@@ -96,6 +97,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
-- 013-operations-modal: Added TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x, pg (^8.x), pg-pool (^3.x)
+- 013-operations-modal: Implemented OperationsModal with full DBA operations support. Press 'o' to open operations modal. Supports: Pause/Resume subscriptions (pglogical + native), Resync table (pglogical only with type-to-confirm), Create/Drop replication slots (with active slot check), Clear conflict history (pglogical only), Export Prometheus metrics. Features confirmation dialogs (simple and type-to-confirm), operation history tab, severity color coding, disconnected node detection, and 30s timeout handling. Components: OperationsModal, OperationsList, OperationConfirm, OperationResult, OperationHistory, TableSelector, PrometheusExport, SlotNameInput. Services: subscription-ops, slot-ops, conflict-ops, prometheus metrics collection.
 - 012-conflicts-panel: Implemented ConflictsPanel with useConflicts hook. Queries pglogical.conflict_history table (pglogical 2.5.0+) with fallback to PostgreSQL csvlog parsing. Shows conflict type badges (INSERT/UPDATE/DELETE), resolution badges (REMOTE/LOCAL/SKIP), source badges (HISTORY/LOG/N/A), affected tables, timestamps, and node names. Detail modal displays local/remote tuple data for debugging. Incremental log parsing with position persistence in ~/.replmon/log-positions.json. Auto-detects best available source per node.
 - 011-lag-visualization: Implemented Sparkline component with Unicode block characters (▁▂▃▄▅▆▇█) for lag trend visualization. Added to subscription detail modals via lagHistory in useSubscriptions. 5-minute rolling window (300 samples). Linear scaling with dynamic max indicator and time axis labels. Refactored PollingService to emit unified 'data' event for cross-node lag calculation. Added origins query for pg_replication_origin_status. Includes generate-lag.sh test script.

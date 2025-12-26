@@ -23,9 +23,9 @@
 
 **Purpose**: Type contracts and project structure for operations modal
 
-- [ ] T001 Copy type contracts from specs/013-operations-modal/contracts/operations.ts to src/types/operations.ts
-- [ ] T002 [P] Create src/components/operations/ directory structure
-- [ ] T003 [P] Create src/services/operations/ directory structure
+- [X] T001 Copy type contracts from specs/013-operations-modal/contracts/operations.ts to src/types/operations.ts
+- [X] T002 [P] Create src/components/operations/ directory structure
+- [X] T003 [P] Create src/services/operations/ directory structure
 
 ---
 
@@ -35,13 +35,13 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Create operations Zustand slice with OperationsSliceState and OperationsSliceActions in src/store/operations.ts
-- [ ] T005 Update src/store/types.ts to include OperationsSliceState in RootState
-- [ ] T006 Update src/store/index.ts to integrate operations slice into root store
-- [ ] T006a Add isExecuting guard in executeOperation to reject concurrent calls with "Operation in progress" error in src/store/operations.ts
-- [ ] T007 Create useOperations hook with availableOperations, history, confirmationState in src/hooks/useOperations.ts
-- [ ] T008 Create OperationsModal container component shell in src/components/modals/OperationsModal.tsx
-- [ ] T009 Integrate 'o' keyboard shortcut to open OperationsModal in src/components/layout/MainLayout.tsx
+- [X] T004 Create operations Zustand slice with OperationsSliceState and OperationsSliceActions in src/store/operations.ts
+- [X] T005 Update src/store/types.ts to include OperationsSliceState in RootState
+- [X] T006 Update src/store/index.ts to integrate operations slice into root store
+- [X] T006a Add isExecuting guard in executeOperation to reject concurrent calls with "Operation in progress" error in src/store/operations.ts
+- [X] T007 Create useOperations hook with availableOperations, history, confirmationState in src/hooks/useOperations.ts
+- [X] T008 Create OperationsModal container component shell in src/components/modals/OperationsModal.tsx
+- [X] T009 Integrate 'o' keyboard shortcut to open OperationsModal in src/components/layout/MainLayout.tsx
 
 **Checkpoint**: Foundation ready - operations modal opens with 'o' key, useOperations hook available
 
@@ -55,14 +55,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Implement pauseSubscription function (pglogical.alter_subscription_disable) in src/services/operations/subscription-ops.ts
-- [ ] T011 [US1] Implement resumeSubscription function (pglogical.alter_subscription_enable) in src/services/operations/subscription-ops.ts
-- [ ] T012 [US1] Create OperationsList presentational component with j/k navigation in src/components/operations/OperationsList.tsx
-- [ ] T013 [US1] Create OperationConfirm component for simple yes/no confirmations in src/components/operations/OperationConfirm.tsx
-- [ ] T014 [US1] Create OperationResult display component for success/failure messages in src/components/operations/OperationResult.tsx
-- [ ] T015 [US1] Wire pause/resume operations into useOperations hook execution flow in src/hooks/useOperations.ts
-- [ ] T016 [US1] Add subscription context detection (focused panel, selected subscription) to useOperations in src/hooks/useOperations.ts
-- [ ] T017 [US1] Handle pglogical vs native subscription differences (ALTER SUBSCRIPTION DISABLE for native) in src/services/operations/subscription-ops.ts
+- [X] T010 [US1] Implement pauseSubscription function (pglogical.alter_subscription_disable) in src/services/operations/subscription-ops.ts
+- [X] T011 [US1] Implement resumeSubscription function (pglogical.alter_subscription_enable) in src/services/operations/subscription-ops.ts
+- [X] T012 [US1] Create OperationsList presentational component with j/k navigation in src/components/operations/OperationsList.tsx
+- [X] T013 [US1] Create OperationConfirm component for simple yes/no confirmations in src/components/operations/OperationConfirm.tsx
+- [X] T014 [US1] Create OperationResult display component for success/failure messages in src/components/operations/OperationResult.tsx
+- [X] T015 [US1] Wire pause/resume operations into useOperations hook execution flow in src/hooks/useOperations.ts
+- [X] T016 [US1] Add subscription context detection (focused panel, selected subscription) to useOperations in src/hooks/useOperations.ts
+- [X] T017 [US1] Handle pglogical vs native subscription differences (ALTER SUBSCRIPTION DISABLE for native) in src/services/operations/subscription-ops.ts
 
 **Checkpoint**: User Story 1 complete - can pause and resume subscriptions from operations modal
 
@@ -76,12 +76,12 @@
 
 ### Implementation for User Story 2
 
-- [ ] T018 [US2] Implement resyncTable function (pglogical.alter_subscription_resynchronize_table) in src/services/operations/subscription-ops.ts
-- [ ] T019 [US2] Create TableSelector component for choosing table within subscription in src/components/operations/TableSelector.tsx
-- [ ] T020 [US2] Add type-to-confirm functionality to OperationConfirm for danger operations in src/components/operations/OperationConfirm.tsx
-- [ ] T021 [US2] Add resync table query to fetch replicated tables for subscription in src/services/operations/subscription-ops.ts
-- [ ] T022 [US2] Wire resync operation into useOperations with table selection flow in src/hooks/useOperations.ts
-- [ ] T023 [US2] Add pglogical-only availability check (resync not available for native LR) in src/hooks/useOperations.ts
+- [X] T018 [US2] Implement resyncTable function (pglogical.alter_subscription_resynchronize_table) in src/services/operations/subscription-ops.ts
+- [X] T019 [US2] Create TableSelector component for choosing table within subscription in src/components/operations/TableSelector.tsx
+- [X] T020 [US2] Add type-to-confirm functionality to OperationConfirm for danger operations in src/components/operations/OperationConfirm.tsx
+- [X] T021 [US2] Add resync table query to fetch replicated tables for subscription in src/services/operations/subscription-ops.ts
+- [X] T022 [US2] Wire resync operation into useOperations with table selection flow in src/hooks/useOperations.ts
+- [X] T023 [US2] Add pglogical-only availability check (resync not available for native LR) in src/hooks/useOperations.ts
 
 **Checkpoint**: User Story 2 complete - can resync specific tables with type-to-confirm
 
@@ -95,11 +95,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T024 [P] [US3] Implement createSlot function (pg_create_logical/physical_replication_slot) in src/services/operations/slot-ops.ts
-- [ ] T025 [P] [US3] Implement dropSlot function (pg_drop_replication_slot) with active slot check in src/services/operations/slot-ops.ts
-- [ ] T026 [US3] Add slot context detection (focused panel, selected slot) to useOperations in src/hooks/useOperations.ts
-- [ ] T027 [US3] Add slot name input field to OperationConfirm for create slot operation in src/components/operations/OperationConfirm.tsx
-- [ ] T028 [US3] Wire slot operations into useOperations execution flow in src/hooks/useOperations.ts
+- [X] T024 [P] [US3] Implement createSlot function (pg_create_logical/physical_replication_slot) in src/services/operations/slot-ops.ts
+- [X] T025 [P] [US3] Implement dropSlot function (pg_drop_replication_slot) with active slot check in src/services/operations/slot-ops.ts
+- [X] T026 [US3] Add slot context detection (focused panel, selected slot) to useOperations in src/hooks/useOperations.ts
+- [X] T027 [US3] Add slot name input field to OperationConfirm for create slot operation in src/components/operations/SlotNameInput.tsx
+- [X] T028 [US3] Wire slot operations into useOperations execution flow in src/hooks/useOperations.ts
 
 **Checkpoint**: User Story 3 complete - can create and drop replication slots
 
@@ -113,11 +113,11 @@
 
 ### Implementation for User Story 4
 
-- [ ] T029 [US4] Implement clearConflicts function (TRUNCATE pglogical.conflict_history) in src/services/operations/conflict-ops.ts
-- [ ] T030 [US4] Add conflict count pre-check query for confirmation display in src/services/operations/conflict-ops.ts
-- [ ] T031 [US4] Add conflict context detection (focused panel) to useOperations in src/hooks/useOperations.ts
-- [ ] T032 [US4] Add log-based conflict detection handling (show "cannot clear" message) in src/hooks/useOperations.ts
-- [ ] T033 [US4] Wire clear conflicts operation into useOperations with type-to-confirm (type node name to confirm) in src/hooks/useOperations.ts
+- [X] T029 [US4] Implement clearConflicts function (TRUNCATE pglogical.conflict_history) in src/services/operations/conflict-ops.ts
+- [X] T030 [US4] Add conflict count pre-check query for confirmation display in src/services/operations/conflict-ops.ts
+- [X] T031 [US4] Add conflict context detection (focused panel) to useOperations in src/hooks/useOperations.ts
+- [X] T032 [US4] Add log-based conflict detection handling (show "cannot clear" message) in src/hooks/useOperations.ts
+- [X] T033 [US4] Wire clear conflicts operation into useOperations with type-to-confirm (type node name to confirm) in src/hooks/useOperations.ts
 
 **Checkpoint**: User Story 4 complete - can clear pglogical conflict history
 
@@ -131,13 +131,13 @@
 
 ### Implementation for User Story 5
 
-- [ ] T034 [P] [US5] Implement collectMetrics function to gather metrics from Zustand store in src/services/operations/prometheus.ts
-- [ ] T035 [P] [US5] Implement formatAsPrometheus function for text exposition format in src/services/operations/prometheus.ts
-- [ ] T036 [US5] Create PrometheusExport scrollable modal component in src/components/operations/PrometheusExport.tsx
-- [ ] T037 [US5] Add exportMetrics function to useOperations hook in src/hooks/useOperations.ts
-- [ ] T038 [US5] Wire export metrics operation (no confirmation needed) in src/hooks/useOperations.ts
-- [ ] T038a [US5] Add file output option with path input to PrometheusExport in src/components/operations/PrometheusExport.tsx
-- [ ] T038b [US5] Implement writeMetricsToFile function using Node.js fs.writeFile in src/services/operations/prometheus.ts
+- [X] T034 [P] [US5] Implement collectMetrics function to gather metrics from Zustand store in src/services/operations/prometheus.ts
+- [X] T035 [P] [US5] Implement formatAsPrometheus function for text exposition format in src/services/operations/prometheus.ts
+- [X] T036 [US5] Create PrometheusExport scrollable modal component in src/components/operations/PrometheusExport.tsx
+- [X] T037 [US5] Add exportMetrics function to useOperations hook in src/hooks/useOperations.ts
+- [X] T038 [US5] Wire export metrics operation (no confirmation needed) in src/hooks/useOperations.ts
+- [X] T038a [US5] Add file output option with path input to PrometheusExport in src/components/operations/PrometheusExport.tsx
+- [X] T038b [US5] Implement writeMetricsToFile function using Node.js fs.writeFile in src/services/operations/prometheus.ts
 
 **Checkpoint**: User Story 5 complete - can export Prometheus metrics in scrollable modal or to file
 
@@ -147,16 +147,16 @@
 
 **Purpose**: History tab, error handling, and final integration
 
-- [ ] T039 [P] Create OperationHistory component for session history display in src/components/operations/OperationHistory.tsx
-- [ ] T040 Add Tab switching between Operations and History tabs in OperationsModal in src/components/modals/OperationsModal.tsx
-- [ ] T041 Implement history entry selection and detail view in OperationHistory in src/components/operations/OperationHistory.tsx
-- [ ] T042 Add comprehensive error handling with remediation hints per research.md in src/services/operations/index.ts
-- [ ] T043 Add disconnected node detection and "Node Unavailable" error state in src/hooks/useOperations.ts
-- [ ] T044 Add operation timeout handling (30 second default) in src/services/operations/index.ts
-- [ ] T045 Implement severity color coding (info=green, warning=yellow, danger=red) in OperationsList in src/components/operations/OperationsList.tsx
-- [ ] T046 Add operation separators (divider lines) between categories in OperationsList in src/components/operations/OperationsList.tsx
-- [ ] T047 Create OperationExecutor service index for unified operation dispatch in src/services/operations/index.ts
-- [ ] T048 Run quickstart.md validation - verify all keyboard flows work as documented
+- [X] T039 [P] Create OperationHistory component for session history display in src/components/operations/OperationHistory.tsx
+- [X] T040 Add Tab switching between Operations and History tabs in OperationsModal in src/components/modals/OperationsModal.tsx
+- [X] T041 Implement history entry selection and detail view in OperationHistory in src/components/operations/OperationHistory.tsx
+- [X] T042 Add comprehensive error handling with remediation hints per research.md in src/services/operations/index.ts
+- [X] T043 Add disconnected node detection and "Node Unavailable" error state in src/hooks/useOperations.ts
+- [X] T044 Add operation timeout handling (30 second default) in src/services/operations/index.ts
+- [X] T045 Implement severity color coding (info=green, warning=yellow, danger=red) in OperationsList in src/components/operations/OperationsList.tsx
+- [X] T046 Add operation separators (divider lines) between categories in OperationsList in src/components/operations/OperationsList.tsx
+- [X] T047 Create OperationExecutor service index for unified operation dispatch in src/services/operations/index.ts
+- [X] T048 Run quickstart.md validation - verify all keyboard flows work as documented
 
 ---
 

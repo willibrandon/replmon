@@ -34,6 +34,11 @@ import type {
   PoolStats as _PoolStats,
 } from '../services/connection-manager/types.js';
 
+import type {
+  OperationsSliceState as _OperationsSliceState,
+  OperationsSliceActions as _OperationsSliceActions,
+} from '../types/operations.js';
+
 // Re-export types for use in store
 export type ReplicationStats = _ReplicationStats;
 export type SlotData = _SlotData;
@@ -53,6 +58,8 @@ export type ConflictEvent = _ConflictEvent;
 export type ConflictEventSource = _ConflictEventSource;
 export type HealthStatus = _HealthStatus;
 export type PoolStats = _PoolStats;
+export type OperationsSliceState = _OperationsSliceState;
+export type OperationsSliceActions = _OperationsSliceActions;
 
 // =============================================================================
 // UI Types
@@ -305,14 +312,16 @@ export interface UISliceActions {
  */
 export type ReplmonStoreState = ConnectionSliceState &
   ReplicationSliceState &
-  UISliceState;
+  UISliceState &
+  OperationsSliceState;
 
 /**
  * Combined store actions.
  */
 export type ReplmonStoreActions = ConnectionSliceActions &
   ReplicationSliceActions &
-  UISliceActions;
+  UISliceActions &
+  OperationsSliceActions;
 
 /**
  * Complete store type (state + actions).
@@ -428,7 +437,15 @@ export type ActionName =
   | 'ui/setSelection'
   | 'ui/selectPrevious'
   | 'ui/selectNext'
-  | 'ui/resetUIState';
+  | 'ui/resetUIState'
+  | 'operations/startConfirmation'
+  | 'operations/updateConfirmationInput'
+  | 'operations/cancelConfirmation'
+  | 'operations/executeOperation/start'
+  | 'operations/executeOperation/success'
+  | 'operations/executeOperation/failure'
+  | 'operations/addToHistory'
+  | 'operations/clearHistory';
 
 // =============================================================================
 // Constants

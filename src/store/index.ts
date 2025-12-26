@@ -19,6 +19,7 @@ import type {
 } from './types.js';
 import { createReplicationSlice } from './replication.js';
 import { createUISlice } from './ui.js';
+import { createOperationsSlice } from './operations.js';
 
 // Re-export types for convenience
 export * from './types.js';
@@ -159,6 +160,9 @@ export const useStore = create<ReplmonStore>()(
 
       // === UI Slice ===
       ...createUISlice(...a),
+
+      // === Operations Slice ===
+      ...createOperationsSlice(...a),
     })),
     {
       name: 'replmon-store',
