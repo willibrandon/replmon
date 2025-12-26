@@ -50,7 +50,7 @@
 
 2. **No Real-time Visibility**: Existing tools provide point-in-time snapshots, not live streaming updates
 
-3. **Conflict Blindness**: pglogical conflicts are logged but not surfaced proactively; operators discover issues after data divergence
+3. **Conflict Visibility**: pglogical conflicts are difficult to track—historically only available via server logs. pglogical 2.5.0+ (fork) introduces `pglogical.conflict_history` table for queryable conflict data with full tuple details when enabled
 
 4. **Multi-node Complexity**: Bidirectional replication topologies are hard to visualize and reason about
 
@@ -115,7 +115,7 @@
 
 1. **Live Streaming**: WebSocket-like polling with configurable intervals (default 1s)
 2. **Topology Visualization**: ASCII-art node graphs showing replication relationships
-3. **Conflict Alerting**: Parse pglogical conflict logs and surface them prominently
+3. **Conflict History**: Query `pglogical.conflict_history` table directly for real-time conflict visibility with full tuple data
 4. **Operational Commands**: Built-in actions for common DBA tasks
 5. **Multi-cluster Support**: Switch between different replication clusters easily
 
@@ -334,12 +334,27 @@ export interface SlotData {
 }
 
 export interface ConflictData {
-  timestamp: Date;
+  id: number;
+  recorded_at: Date;
   nodeId: string;
-  type: 'update_update' | 'insert_insert' | 'update_delete' | 'delete_update';
-  table: string;
-  resolution: string;
-  details: Record<string, unknown>;
+  sub_name: string;
+  conflict_type: 'insert_insert' | 'update_update' | 'update_delete' | 'delete_delete';
+  resolution: 'apply_remote' | 'keep_local' | 'skip';
+  schema_name: string;
+  table_name: string;
+  index_name: string | null;
+  // Fields available from conflict_history table (source: 'history')
+  local_tuple: Record<string, unknown> | null;
+  local_xid: string | null;
+  local_origin: number | null;
+  local_commit_ts: Date | null;
+  remote_tuple: Record<string, unknown> | null;
+  remote_origin: number | null;
+  remote_commit_ts: Date | null;
+  remote_commit_lsn: string | null;
+  has_before_triggers: boolean;
+  // Source indicator
+  source: 'history' | 'log';  // 'history' = pglogical.conflict_history, 'log' = parsed from server logs
 }
 
 export interface LagSample {
@@ -511,22 +526,69 @@ export const QUERIES = {
     FROM pglogical.replication_set
   `,
 
-  // Conflict detection (requires custom logging setup)
-  RECENT_CONFLICTS: `
-    SELECT 
-      conflict_time,
+  // Check if pglogical conflict_history feature is available and enabled
+  // Returns true if table exists and GUC is enabled
+  CONFLICT_HISTORY_AVAILABLE: `
+    SELECT EXISTS (
+      SELECT 1 FROM pg_catalog.pg_tables
+      WHERE schemaname = 'pglogical' AND tablename = 'conflict_history'
+    ) AND current_setting('pglogical.conflict_history_enabled', true)::boolean AS available
+  `,
+
+  // Conflict history (pglogical 2.5.0+ with conflict_history_enabled = on)
+  // Primary source when available - provides full tuple data
+  RECENT_CONFLICTS_HISTORY: `
+    SELECT
+      id,
+      recorded_at,
+      sub_name,
       conflict_type,
-      conflict_resolution,
-      local_origin,
+      resolution,
+      schema_name,
+      table_name,
+      index_name,
       local_tuple,
-      remote_origin,
+      local_xid,
+      local_origin,
+      local_commit_ts,
       remote_tuple,
-      table_schema,
-      table_name
-    FROM pglogical.conflict_log
-    WHERE conflict_time > NOW() - INTERVAL '1 hour'
-    ORDER BY conflict_time DESC
-    LIMIT 50
+      remote_origin,
+      remote_commit_ts,
+      remote_commit_lsn,
+      has_before_triggers,
+      'history' AS source
+    FROM pglogical.conflict_history
+    WHERE recorded_at > NOW() - INTERVAL '1 hour'
+    ORDER BY recorded_at DESC
+    LIMIT 100
+  `,
+
+  // Fallback: Parse conflicts from PostgreSQL csvlog
+  // Requires: log_destination includes 'csvlog', log_directory accessible
+  // Conflicts are logged with pattern: "CONFLICT: %s on relation %s.%s"
+  // This query reads from pg_catalog.pg_file_settings or requires log file access
+  // Note: Log parsing is done client-side, this query just fetches log settings
+  CONFLICT_LOG_SETTINGS: `
+    SELECT
+      current_setting('log_destination') AS log_destination,
+      current_setting('log_directory') AS log_directory,
+      current_setting('data_directory') AS data_directory,
+      current_setting('log_filename') AS log_filename
+  `,
+
+  // Conflict summary by table (pglogical 2.5.0+, only when conflict_history available)
+  CONFLICT_SUMMARY: `
+    SELECT * FROM pglogical.conflict_summary
+  `,
+
+  // Conflict statistics (pglogical 2.5.0+, only when conflict_history available)
+  CONFLICT_STATS: `
+    SELECT * FROM pglogical.conflict_stats()
+  `,
+
+  // Conflicts for a specific subscription (pglogical 2.5.0+, only when conflict_history available)
+  SUBSCRIPTION_CONFLICTS: `
+    SELECT * FROM pglogical.show_subscription_conflicts($1, $2, $3)
   `,
 
   // WAL status and disk usage
