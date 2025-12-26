@@ -86,6 +86,7 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - In-memory Zustand store (existing `lagHistory` Map) (011-lag-visualization)
 - TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x, pg (^8.x), pg-pool (^3.x) (012-conflicts-panel)
 - N/A (queries PostgreSQL nodes via ConnectionManager; optional log file access) (012-conflicts-panel)
+- In-memory only (operation history lost on exit); queries PostgreSQL nodes via ConnectionManager (013-operations-modal)
 
 ## Development Environment
 
@@ -95,6 +96,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
+- 013-operations-modal: Added TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x, pg (^8.x), pg-pool (^3.x)
 - 012-conflicts-panel: Implemented ConflictsPanel with useConflicts hook. Queries pglogical.conflict_history table (pglogical 2.5.0+) with fallback to PostgreSQL csvlog parsing. Shows conflict type badges (INSERT/UPDATE/DELETE), resolution badges (REMOTE/LOCAL/SKIP), source badges (HISTORY/LOG/N/A), affected tables, timestamps, and node names. Detail modal displays local/remote tuple data for debugging. Incremental log parsing with position persistence in ~/.replmon/log-positions.json. Auto-detects best available source per node.
 - 011-lag-visualization: Implemented Sparkline component with Unicode block characters (▁▂▃▄▅▆▇█) for lag trend visualization. Added to subscription detail modals via lagHistory in useSubscriptions. 5-minute rolling window (300 samples). Linear scaling with dynamic max indicator and time axis labels. Refactored PollingService to emit unified 'data' event for cross-node lag calculation. Added origins query for pg_replication_origin_status. Includes generate-lag.sh test script.
-- 010-slots-panel: Implemented SlotsPanel with useSlots hook. Shows all replication slots across nodes with active/inactive status indicators, WAL retention progress bars with severity coloring (healthy/warning/critical), WAL status badges (reserved/extended/unreserved/lost for PG13+), slot type badges (logical/physical). Summary header with counts and total retention. Keyboard selection (j/k) with Enter for detail modal showing slot configuration and WAL status.
