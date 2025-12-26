@@ -6,7 +6,7 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 
 - **Fragmented Monitoring**: No more querying `pg_stat_replication`, `pg_stat_subscription`, and `pglogical.show_subscription_status()` separately
 - **Real-time Visibility**: Live streaming updates instead of point-in-time snapshots
-- **Conflict Awareness**: pglogical conflicts surfaced proactively, not buried in logs
+- **Conflict Awareness**: pglogical conflicts surfaced with full tuple data, not buried in logs
 - **Multi-node Clarity**: Visualize bidirectional replication topologies
 - **Operational Speed**: Common DBA tasks without remembering SQL incantations
 
@@ -16,10 +16,11 @@ Terminal UI for monitoring PostgreSQL logical replication with first-class pglog
 - Subscriptions panel with status indicators, lag metrics, and detail drill-down
 - Slots panel with WAL retention progress bars, severity coloring, and WAL status badges (PG13+)
 - ASCII topology visualization with node status and connection lines
-- Detail modals for nodes, subscriptions, and slots (Enter to view)
+- Detail modals for nodes, subscriptions, slots, and conflicts (Enter to view)
 - Auto-discovery of pglogical bidirectional replication relationships
 - Sparkline lag charts in subscription detail modals (Unicode block characters, 5-minute rolling window)
-- pglogical conflict detection and display
+- Conflicts panel with pglogical conflict_history support (2.5.0+) and csvlog fallback
+- Conflict detail modal showing local/remote tuple data, resolution, and LSN info
 - Operations: pause/resume subscriptions, resync tables, manage slots
 - Multi-cluster configuration with easy switching
 - Keyboard-driven interface (mouse optional)
