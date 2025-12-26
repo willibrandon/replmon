@@ -84,6 +84,8 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - N/A (UI-only feature, reads from existing Zustand store) (008-topology-panel)
 - N/A (reads from existing Zustand store, populated by PollingService) (010-slots-panel)
 - In-memory Zustand store (existing `lagHistory` Map) (011-lag-visualization)
+- TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x, pg (^8.x), pg-pool (^3.x) (012-conflicts-panel)
+- N/A (queries PostgreSQL nodes via ConnectionManager; optional log file access) (012-conflicts-panel)
 
 ## Development Environment
 
@@ -93,6 +95,6 @@ Feature prompts are in `docs/features/`. Implementation order in `docs/features/
 - User has extensive PostgreSQL/replication expertise - skip basic DB setup explanations
 
 ## Recent Changes
+- 012-conflicts-panel: Added TypeScript 5.7 (strict mode) + React 18.3.x, Ink 5.0.x, Zustand 5.x, pg (^8.x), pg-pool (^3.x)
 - 011-lag-visualization: Implemented Sparkline component with Unicode block characters (▁▂▃▄▅▆▇█) for lag trend visualization. Added to subscription detail modals via lagHistory in useSubscriptions. 5-minute rolling window (300 samples). Linear scaling with dynamic max indicator and time axis labels. Refactored PollingService to emit unified 'data' event for cross-node lag calculation. Added origins query for pg_replication_origin_status. Includes generate-lag.sh test script.
 - 010-slots-panel: Implemented SlotsPanel with useSlots hook. Shows all replication slots across nodes with active/inactive status indicators, WAL retention progress bars with severity coloring (healthy/warning/critical), WAL status badges (reserved/extended/unreserved/lost for PG13+), slot type badges (logical/physical). Summary header with counts and total retention. Keyboard selection (j/k) with Enter for detail modal showing slot configuration and WAL status.
-- 009-subscriptions-panel: Implemented SubscriptionsPanel with useSubscriptions hook. Shows all subscriptions across nodes with status indicators (replicating/catchup/down/disabled), lag metrics with severity coloring, source badges (native/pglogical). Keyboard selection (j/k) with Enter to open detail modal. Added detail modals for both subscriptions and topology nodes showing connection info, replication edges, and lag data.
