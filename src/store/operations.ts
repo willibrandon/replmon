@@ -15,7 +15,7 @@ import type {
   OperationsSliceState,
   OperationsSliceActions,
 } from '../types/operations.js';
-import { MAX_HISTORY_ENTRIES, OPERATION_TIMEOUT_MS } from '../types/operations.js';
+import { MAX_HISTORY_ENTRIES } from '../types/operations.js';
 
 /**
  * Operations slice type (state + actions).
@@ -30,7 +30,7 @@ export const createOperationsSlice: StateCreator<
   [['zustand/subscribeWithSelector', never], ['zustand/devtools', never]],
   [],
   OperationsSlice
-> = (set, get) => ({
+> = (set, _get) => ({
   // Initial state
   history: [],
   currentOperation: null,
@@ -94,107 +94,32 @@ export const createOperationsSlice: StateCreator<
       'operations/cancelConfirmation'
     ),
 
+  /**
+   * Execute an operation.
+   *
+   * Note: Actual operation execution is handled by the useOperations hook
+   * which has access to the ConnectionManager. This action is deprecated
+   * and returns a failure result. Use the hook's executeOperation instead.
+   */
   executeOperation: async (
     operation: Operation,
     context: OperationContext
   ): Promise<OperationResult> => {
-    const state = get();
-
-    // Guard against concurrent operations
-    if (state.isExecuting) {
-      const errorResult: OperationResult = {
-        id: crypto.randomUUID(),
-        operationId: operation.id,
-        context,
-        status: 'failure',
-        message: 'Cannot execute operation',
-        error: 'Operation in progress',
-        remediationHint: 'Wait for the current operation to complete before starting a new one.',
-        timestamp: new Date(),
-        durationMs: 0,
-      };
-      return errorResult;
-    }
-
-    // Set executing state
-    set(
-      () => ({
-        isExecuting: true,
-        currentOperation: operation,
-        confirmationState: null,
-      }),
-      undefined,
-      'operations/executeOperation/start'
-    );
-
-    const startTime = Date.now();
-
-    try {
-      // The actual operation execution will be handled by the service layer
-      // This is a placeholder that will be wired up in the useOperations hook
-      // For now, simulate a successful operation
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      const result: OperationResult = {
-        id: crypto.randomUUID(),
-        operationId: operation.id,
-        context,
-        status: 'success',
-        message: `${operation.name} completed successfully`,
-        error: null,
-        remediationHint: null,
-        timestamp: new Date(),
-        durationMs: Date.now() - startTime,
-      };
-
-      // Add to history
-      set(
-        (state) => {
-          const newHistory = [result, ...state.history];
-          return {
-            history: newHistory.slice(0, MAX_HISTORY_ENTRIES),
-            isExecuting: false,
-            currentOperation: null,
-          };
-        },
-        undefined,
-        'operations/executeOperation/success'
-      );
-
-      return result;
-    } catch (err) {
-      const durationMs = Date.now() - startTime;
-      const isTimeout = durationMs >= OPERATION_TIMEOUT_MS;
-      const errorMessage = err instanceof Error ? err.message : String(err);
-
-      const result: OperationResult = {
-        id: crypto.randomUUID(),
-        operationId: operation.id,
-        context,
-        status: isTimeout ? 'timeout' : 'failure',
-        message: `${operation.name} failed`,
-        error: errorMessage,
-        remediationHint: getRemediationHint(errorMessage),
-        timestamp: new Date(),
-        durationMs,
-      };
-
-      // Add to history
-      set(
-        (state) => {
-          const newHistory = [result, ...state.history];
-          return {
-            history: newHistory.slice(0, MAX_HISTORY_ENTRIES),
-            isExecuting: false,
-            currentOperation: null,
-          };
-        },
-        undefined,
-        'operations/executeOperation/failure'
-      );
-
-      return result;
-    }
+    // This action is deprecated - execution is now handled by useOperations hook
+    // which has access to the ConnectionManager for database operations.
+    // Return an error to surface any incorrect usage.
+    const errorResult: OperationResult = {
+      id: crypto.randomUUID(),
+      operationId: operation.id,
+      context,
+      status: 'failure',
+      message: 'Cannot execute operation',
+      error: 'Use useOperations hook for operation execution',
+      remediationHint: 'This is an internal error. Please report it.',
+      timestamp: new Date(),
+      durationMs: 0,
+    };
+    return errorResult;
   },
 
   addToHistory: (result: OperationResult) =>
@@ -214,36 +139,3 @@ export const createOperationsSlice: StateCreator<
       'operations/clearHistory'
     ),
 });
-
-/**
- * Get remediation hint based on error message patterns.
- */
-function getRemediationHint(errorMessage: string): string | null {
-  const lowerError = errorMessage.toLowerCase();
-
-  if (lowerError.includes('permission denied')) {
-    return 'Check that the PostgreSQL role has sufficient privileges (SUPERUSER or replication).';
-  }
-
-  if (lowerError.includes('connection refused') || lowerError.includes('could not connect')) {
-    return 'Verify the node is reachable and PostgreSQL is running.';
-  }
-
-  if (lowerError.includes('does not exist')) {
-    return 'The resource may have been dropped. Refresh the view to update.';
-  }
-
-  if (lowerError.includes('timeout') || lowerError.includes('statement timeout')) {
-    return 'The operation took too long. Retry or consider increasing the timeout.';
-  }
-
-  if (lowerError.includes('is active') || lowerError.includes('slot is active')) {
-    return 'Terminate active connections using this slot before dropping it.';
-  }
-
-  if (lowerError.includes('already exists')) {
-    return 'A resource with this name already exists. Choose a different name.';
-  }
-
-  return null;
-}

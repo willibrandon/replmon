@@ -33,7 +33,7 @@ export * from './types.js';
  */
 export const useStore = create<ReplmonStore>()(
   devtools(
-    subscribeWithSelector((...a) => ({
+    subscribeWithSelector((set, get, api) => ({
       // === Connection Slice State ===
       currentScreen: 'connection-status' as AppScreen,
       nodeStatus: new Map<string, NodeConnectionStatus>(),
@@ -44,7 +44,7 @@ export const useStore = create<ReplmonStore>()(
 
       // === Connection Slice Actions ===
       setNodeStatus: (nodeId: string, status: NodeConnectionStatus) =>
-        a[0](
+        set(
           (state) => {
             const nodeStatus = new Map(state.nodeStatus);
             nodeStatus.set(nodeId, status);
@@ -55,7 +55,7 @@ export const useStore = create<ReplmonStore>()(
         ),
 
       setConnectionError: (nodeId: string, error: string) =>
-        a[0](
+        set(
           (state) => {
             const connectionErrors = new Map(state.connectionErrors);
             connectionErrors.set(nodeId, error);
@@ -66,7 +66,7 @@ export const useStore = create<ReplmonStore>()(
         ),
 
       clearConnectionError: (nodeId: string) =>
-        a[0](
+        set(
           (state) => {
             const connectionErrors = new Map(state.connectionErrors);
             connectionErrors.delete(nodeId);
@@ -77,13 +77,13 @@ export const useStore = create<ReplmonStore>()(
         ),
 
       setCurrentScreen: (screen: AppScreen) =>
-        a[0]({ currentScreen: screen }, undefined, 'connection/setCurrentScreen'),
+        set({ currentScreen: screen }, undefined, 'connection/setCurrentScreen'),
 
       setPglogicalMode: (enabled: boolean) =>
-        a[0]({ pglogicalMode: enabled }, undefined, 'connection/setPglogicalMode'),
+        set({ pglogicalMode: enabled }, undefined, 'connection/setPglogicalMode'),
 
       resetConnectionStates: () =>
-        a[0](
+        set(
           (state) => {
             const nodeStatus = new Map(state.nodeStatus);
             for (const nodeId of nodeStatus.keys()) {
@@ -99,7 +99,7 @@ export const useStore = create<ReplmonStore>()(
         ),
 
       initializeNodes: (nodeIds: string[]) =>
-        a[0](
+        set(
           () => {
             const nodeStatus = new Map<string, NodeConnectionStatus>();
             for (const nodeId of nodeIds) {
@@ -112,7 +112,7 @@ export const useStore = create<ReplmonStore>()(
         ),
 
       setHealth: (nodeId: string, status: HealthStatus) =>
-        a[0](
+        set(
           (state) => {
             const healthStatus = new Map(state.healthStatus);
             healthStatus.set(nodeId, status);
@@ -123,7 +123,7 @@ export const useStore = create<ReplmonStore>()(
         ),
 
       setPoolStats: (nodeId: string, stats: PoolStats) =>
-        a[0](
+        set(
           (state) => {
             const poolStats = new Map(state.poolStats);
             poolStats.set(nodeId, stats);
@@ -134,7 +134,7 @@ export const useStore = create<ReplmonStore>()(
         ),
 
       clearHealth: (nodeId: string) =>
-        a[0](
+        set(
           (state) => {
             const healthStatus = new Map(state.healthStatus);
             healthStatus.delete(nodeId);
@@ -145,7 +145,7 @@ export const useStore = create<ReplmonStore>()(
         ),
 
       clearPoolStats: (nodeId: string) =>
-        a[0](
+        set(
           (state) => {
             const poolStats = new Map(state.poolStats);
             poolStats.delete(nodeId);
@@ -156,13 +156,13 @@ export const useStore = create<ReplmonStore>()(
         ),
 
       // === Replication Slice ===
-      ...createReplicationSlice(...a),
+      ...createReplicationSlice(set, get, api),
 
       // === UI Slice ===
-      ...createUISlice(...a),
+      ...createUISlice(set, get, api),
 
       // === Operations Slice ===
-      ...createOperationsSlice(...a),
+      ...createOperationsSlice(set, get, api),
     })),
     {
       name: 'replmon-store',

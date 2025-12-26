@@ -13,13 +13,17 @@ import { useConnectionStore } from '../store/connection.js';
 import { useSubscriptions } from './useSubscriptions.js';
 import { useSlots } from './useSlots.js';
 import { useConflicts } from './useConflicts.js';
+import { getConnectionManager } from '../components/ConnectionStatus.js';
+import { executeOperation as serviceExecuteOperation } from '../services/operations/index.js';
 import type {
   Operation,
   OperationContext,
+  OperationResult,
   UseOperationsResult,
   ReplicationType,
+  QueryFn,
 } from '../types/operations.js';
-import { OPERATIONS } from '../types/operations.js';
+import { OPERATIONS, OPERATION_TIMEOUT_MS } from '../types/operations.js';
 import type { Panel } from '../store/types.js';
 
 // =============================================================================
@@ -110,7 +114,6 @@ export function useOperations(): UseOperationsResult {
   const startConfirmation = useStore((s) => s.startConfirmation);
   const updateConfirmationInput = useStore((s) => s.updateConfirmationInput);
   const cancelConfirmation = useStore((s) => s.cancelConfirmation);
-  const storeExecuteOperation = useStore((s) => s.executeOperation);
 
   // Panel-specific selections
   const { selectedItem: selectedSubscription } = useSubscriptions();
@@ -204,6 +207,83 @@ export function useOperations(): UseOperationsResult {
     [staleNodes, nodeStatus]
   );
 
+  // Execute operation directly (for operations that don't require confirmation)
+  const executeOperationDirect = useCallback(
+    async (operation: Operation, context: OperationContext): Promise<void> => {
+      // Get ConnectionManager and create queryFn
+      const connectionManager = getConnectionManager();
+      if (!connectionManager) {
+        const errorResult: OperationResult = {
+          id: crypto.randomUUID(),
+          operationId: operation.id,
+          context,
+          status: 'failure',
+          message: 'Cannot execute operation',
+          error: 'ConnectionManager not available',
+          remediationHint: 'Wait for connections to be established before executing operations.',
+          timestamp: new Date(),
+          durationMs: 0,
+        };
+        useStore.getState().addToHistory(errorResult);
+        return;
+      }
+
+      // Create queryFn that binds to ConnectionManager
+      const queryFn: QueryFn = async <T>(
+        nodeId: string,
+        queryText: string,
+        params?: unknown[]
+      ): Promise<T[]> => {
+        return connectionManager.query<T>(nodeId, queryText, params);
+      };
+
+      // Set executing state
+      useStore.setState({
+        isExecuting: true,
+        currentOperation: operation,
+      });
+
+      const startTime = Date.now();
+
+      try {
+        const result = await serviceExecuteOperation(operation, context, queryFn);
+
+        // Add to history
+        const state = useStore.getState();
+        const newHistory = [result, ...state.history].slice(0, 100);
+        useStore.setState({
+          history: newHistory,
+          isExecuting: false,
+          currentOperation: null,
+        });
+      } catch (err) {
+        const durationMs = Date.now() - startTime;
+        const errorMessage = err instanceof Error ? err.message : String(err);
+
+        const errorResult: OperationResult = {
+          id: crypto.randomUUID(),
+          operationId: operation.id,
+          context,
+          status: 'failure',
+          message: `${operation.name} failed`,
+          error: errorMessage,
+          remediationHint: null,
+          timestamp: new Date(),
+          durationMs,
+        };
+
+        const state = useStore.getState();
+        const newHistory = [errorResult, ...state.history].slice(0, 100);
+        useStore.setState({
+          history: newHistory,
+          isExecuting: false,
+          currentOperation: null,
+        });
+      }
+    },
+    []
+  );
+
   // Start an operation (may show confirmation first)
   const startOperation = useCallback(
     (operation: Operation) => {
@@ -212,11 +292,11 @@ export function useOperations(): UseOperationsResult {
       // Check if target node is available (except for metrics export which reads from local state)
       if (operation.id !== 'export-metrics' && !isNodeAvailable(currentContext.nodeId)) {
         // Add unavailable error to history
-        const errorResult = {
+        const errorResult: OperationResult = {
           id: crypto.randomUUID(),
           operationId: operation.id,
           context: currentContext,
-          status: 'failure' as const,
+          status: 'failure',
           message: 'Node Unavailable',
           error: `Cannot execute operation: node "${currentContext.nodeName}" is disconnected or stale`,
           remediationHint: 'Wait for the node to reconnect and refresh before trying again.',
@@ -231,10 +311,10 @@ export function useOperations(): UseOperationsResult {
         startConfirmation(operation, currentContext);
       } else {
         // Execute immediately for operations that don't require confirmation
-        storeExecuteOperation(operation, currentContext);
+        void executeOperationDirect(operation, currentContext);
       }
     },
-    [currentContext, startConfirmation, storeExecuteOperation, isNodeAvailable]
+    [currentContext, startConfirmation, executeOperationDirect, isNodeAvailable]
   );
 
   // Execute operation (after confirmation)
@@ -248,8 +328,91 @@ export function useOperations(): UseOperationsResult {
       return;
     }
 
-    await storeExecuteOperation(operation, context);
-  }, [confirmationState, storeExecuteOperation]);
+    // Get ConnectionManager and create queryFn
+    const connectionManager = getConnectionManager();
+    if (!connectionManager) {
+      const errorResult: OperationResult = {
+        id: crypto.randomUUID(),
+        operationId: operation.id,
+        context,
+        status: 'failure',
+        message: 'Cannot execute operation',
+        error: 'ConnectionManager not available',
+        remediationHint: 'Wait for connections to be established before executing operations.',
+        timestamp: new Date(),
+        durationMs: 0,
+      };
+      useStore.getState().addToHistory(errorResult);
+      useStore.getState().cancelConfirmation();
+      return;
+    }
+
+    // Create queryFn that binds to ConnectionManager
+    const queryFn: QueryFn = async <T>(
+      nodeId: string,
+      queryText: string,
+      params?: unknown[]
+    ): Promise<T[]> => {
+      return connectionManager.query<T>(nodeId, queryText, params);
+    };
+
+    // Set executing state
+    useStore.setState({
+      isExecuting: true,
+      currentOperation: operation,
+      confirmationState: null,
+    });
+
+    const startTime = Date.now();
+
+    try {
+      // Execute with timeout
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Operation timeout')), OPERATION_TIMEOUT_MS);
+      });
+
+      const result = await Promise.race([
+        serviceExecuteOperation(operation, context, queryFn),
+        timeoutPromise,
+      ]);
+
+      // Add to history
+      const state = useStore.getState();
+      const newHistory = [result, ...state.history].slice(0, 100);
+      useStore.setState({
+        history: newHistory,
+        isExecuting: false,
+        currentOperation: null,
+      });
+    } catch (err) {
+      const durationMs = Date.now() - startTime;
+      const isTimeout = durationMs >= OPERATION_TIMEOUT_MS;
+      const errorMessage = err instanceof Error ? err.message : String(err);
+
+      const errorResult: OperationResult = {
+        id: crypto.randomUUID(),
+        operationId: operation.id,
+        context,
+        status: isTimeout ? 'timeout' : 'failure',
+        message: `${operation.name} failed`,
+        error: errorMessage,
+        remediationHint: isTimeout
+          ? 'The operation took too long. Retry or consider increasing the timeout.'
+          : null,
+        timestamp: new Date(),
+        durationMs,
+      };
+
+      // Add to history
+      const state = useStore.getState();
+      const newHistory = [errorResult, ...state.history].slice(0, 100);
+      useStore.setState({
+        history: newHistory,
+        isExecuting: false,
+        currentOperation: null,
+      });
+    }
+  }, [confirmationState]);
 
   // Update confirmation input
   const updateConfirmInput = useCallback(

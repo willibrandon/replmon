@@ -321,8 +321,14 @@ export class PollingService {
     // Start the poll (async, don't await)
     this.poll().catch((err) => {
       // Unexpected error in poll - should not happen as poll() handles its own errors
-      // This is a safety net
-      console.error('Unexpected polling error:', err);
+      // This is a safety net - emit error event so UI can display it
+      const pollingError: PollingError = {
+        message: err instanceof Error ? err.message : String(err),
+        cycleId: null,
+        nodeErrors: [],
+        timestamp: new Date(),
+      };
+      this.events.emit('error', pollingError);
     });
   }
 

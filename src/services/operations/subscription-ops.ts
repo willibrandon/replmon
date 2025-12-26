@@ -11,82 +11,14 @@ import type {
   SubscriptionOperationParams,
   ResyncTableParams,
   QueryFn,
-  OperationResult,
   OperationContext,
+  OperationResult,
 } from '../../types/operations.js';
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-/**
- * Create a successful operation result.
- */
-function createSuccessResult(
-  operationId: string,
-  context: OperationContext,
-  message: string,
-  durationMs: number
-): OperationResult {
-  return {
-    id: crypto.randomUUID(),
-    operationId,
-    context,
-    status: 'success',
-    message,
-    error: null,
-    remediationHint: null,
-    timestamp: new Date(),
-    durationMs,
-  };
-}
-
-/**
- * Create a failure operation result with remediation hint.
- */
-function createFailureResult(
-  operationId: string,
-  context: OperationContext,
-  error: string,
-  durationMs: number
-): OperationResult {
-  return {
-    id: crypto.randomUUID(),
-    operationId,
-    context,
-    status: 'failure',
-    message: `Operation failed`,
-    error,
-    remediationHint: getRemediationHint(error),
-    timestamp: new Date(),
-    durationMs,
-  };
-}
-
-/**
- * Get remediation hint based on error message.
- */
-function getRemediationHint(errorMessage: string): string | null {
-  const lowerError = errorMessage.toLowerCase();
-
-  if (lowerError.includes('permission denied')) {
-    return 'Check that the PostgreSQL role has SUPERUSER or replication privileges.';
-  }
-
-  if (lowerError.includes('does not exist')) {
-    return 'The subscription may have been dropped. Refresh the view to update.';
-  }
-
-  if (lowerError.includes('already enabled') || lowerError.includes('already disabled')) {
-    return 'The subscription is already in the requested state.';
-  }
-
-  if (lowerError.includes('relation') && lowerError.includes('does not exist')) {
-    return 'The table does not exist or is not part of this subscription.';
-  }
-
-  return null;
-}
+import {
+  createSuccessResult,
+  createFailureResult,
+  quoteIdent,
+} from './utils.js';
 
 /**
  * Detect if a node has pglogical installed.
@@ -337,19 +269,3 @@ export async function getReplicatedTables(
   }
 }
 
-// =============================================================================
-// SQL Utilities
-// =============================================================================
-
-/**
- * Quote an identifier for safe use in SQL.
- * Simple implementation - PostgreSQL's quote_ident would be better.
- */
-function quoteIdent(identifier: string): string {
-  // Check if identifier needs quoting
-  if (/^[a-z_][a-z0-9_]*$/.test(identifier)) {
-    return identifier;
-  }
-  // Escape double quotes and wrap in double quotes
-  return `"${identifier.replace(/"/g, '""')}"`;
-}

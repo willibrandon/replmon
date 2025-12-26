@@ -11,86 +11,10 @@ import type {
   SlotOperationParams,
   CreateSlotParams,
   QueryFn,
-  OperationResult,
   OperationContext,
+  OperationResult,
 } from '../../types/operations.js';
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-/**
- * Create a successful operation result.
- */
-function createSuccessResult(
-  operationId: string,
-  context: OperationContext,
-  message: string,
-  durationMs: number
-): OperationResult {
-  return {
-    id: crypto.randomUUID(),
-    operationId,
-    context,
-    status: 'success',
-    message,
-    error: null,
-    remediationHint: null,
-    timestamp: new Date(),
-    durationMs,
-  };
-}
-
-/**
- * Create a failure operation result with remediation hint.
- */
-function createFailureResult(
-  operationId: string,
-  context: OperationContext,
-  error: string,
-  durationMs: number
-): OperationResult {
-  return {
-    id: crypto.randomUUID(),
-    operationId,
-    context,
-    status: 'failure',
-    message: `Operation failed`,
-    error,
-    remediationHint: getRemediationHint(error),
-    timestamp: new Date(),
-    durationMs,
-  };
-}
-
-/**
- * Get remediation hint based on error message.
- */
-function getRemediationHint(errorMessage: string): string | null {
-  const lowerError = errorMessage.toLowerCase();
-
-  if (lowerError.includes('permission denied')) {
-    return 'Check that the PostgreSQL role has SUPERUSER or replication privileges.';
-  }
-
-  if (lowerError.includes('already exists')) {
-    return 'A slot with this name already exists. Choose a different name.';
-  }
-
-  if (lowerError.includes('does not exist')) {
-    return 'The slot may have already been dropped. Refresh the view to update.';
-  }
-
-  if (lowerError.includes('is active') || lowerError.includes('slot is active')) {
-    return 'Terminate active connections using this slot before dropping it.';
-  }
-
-  if (lowerError.includes('invalid slot name')) {
-    return 'Slot names must contain only lowercase letters, numbers, and underscores.';
-  }
-
-  return null;
-}
+import { createSuccessResult, createFailureResult } from './utils.js';
 
 // =============================================================================
 // Create Slot

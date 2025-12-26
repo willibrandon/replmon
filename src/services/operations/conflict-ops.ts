@@ -9,78 +9,10 @@
 import type {
   ClearConflictsParams,
   QueryFn,
-  OperationResult,
   OperationContext,
+  OperationResult,
 } from '../../types/operations.js';
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-/**
- * Create a successful operation result.
- */
-function createSuccessResult(
-  operationId: string,
-  context: OperationContext,
-  message: string,
-  durationMs: number
-): OperationResult {
-  return {
-    id: crypto.randomUUID(),
-    operationId,
-    context,
-    status: 'success',
-    message,
-    error: null,
-    remediationHint: null,
-    timestamp: new Date(),
-    durationMs,
-  };
-}
-
-/**
- * Create a failure operation result with remediation hint.
- */
-function createFailureResult(
-  operationId: string,
-  context: OperationContext,
-  error: string,
-  durationMs: number
-): OperationResult {
-  return {
-    id: crypto.randomUUID(),
-    operationId,
-    context,
-    status: 'failure',
-    message: `Operation failed`,
-    error,
-    remediationHint: getRemediationHint(error),
-    timestamp: new Date(),
-    durationMs,
-  };
-}
-
-/**
- * Get remediation hint based on error message.
- */
-function getRemediationHint(errorMessage: string): string | null {
-  const lowerError = errorMessage.toLowerCase();
-
-  if (lowerError.includes('permission denied')) {
-    return 'Check that the PostgreSQL role has TRUNCATE permission on pglogical.conflict_history.';
-  }
-
-  if (lowerError.includes('does not exist')) {
-    return 'The pglogical.conflict_history table does not exist. This may not be a pglogical node.';
-  }
-
-  if (lowerError.includes('not available')) {
-    return 'Conflict clearing is only available for nodes using pglogical with conflict_history table.';
-  }
-
-  return null;
-}
+import { createSuccessResult, createFailureResult } from './utils.js';
 
 /**
  * Detect if a node has pglogical conflict history table.
