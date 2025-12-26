@@ -58,3 +58,7 @@ The panel displays a source indicator showing where conflict data originates:
 - **LOG** badge: Data parsed from server logs (limited details)
 
 When using log-based conflicts, the detail view shows a notice that tuple data is unavailable.
+
+## Implementation Scope
+
+**BOTH data sources are in scope for this feature.** The conflict_history table query AND the log file parsing fallback must be implemented together. Do not defer either to a follow-up feature.
