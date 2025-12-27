@@ -42,43 +42,12 @@ function isOperationAvailable(operation: Operation, isPglogical: boolean): boole
 }
 
 /**
- * Get operations available for a specific panel.
+ * Get operations available for the current replication mode.
+ * All operations are shown regardless of panel - the panel context
+ * determines the target, not which operations are visible.
  */
-function getOperationsForPanel(panel: Panel, isPglogical: boolean): readonly Operation[] {
-  switch (panel) {
-    case 'subscriptions':
-      return OPERATIONS.filter(
-        (op) =>
-          op.category === 'subscription' &&
-          isOperationAvailable(op, isPglogical)
-      );
-
-    case 'slots':
-      return OPERATIONS.filter(
-        (op) =>
-          op.category === 'slot' &&
-          isOperationAvailable(op, isPglogical)
-      );
-
-    case 'conflicts':
-      return OPERATIONS.filter(
-        (op) =>
-          op.category === 'conflict' &&
-          isOperationAvailable(op, isPglogical)
-      );
-
-    case 'topology':
-      // Topology panel shows all available operations
-      return OPERATIONS.filter((op) => isOperationAvailable(op, isPglogical));
-
-    case 'operations':
-      // Operations panel shows all available operations
-      return OPERATIONS.filter((op) => isOperationAvailable(op, isPglogical));
-
-    default:
-      // Default: show only metrics export (always available)
-      return OPERATIONS.filter((op) => op.id === 'export-metrics');
-  }
+function getAvailableOperations(isPglogical: boolean): readonly Operation[] {
+  return OPERATIONS.filter((op) => isOperationAvailable(op, isPglogical));
 }
 
 // =============================================================================
@@ -124,10 +93,11 @@ export function useOperations(): UseOperationsResult {
   // This allows context-sensitive operations even when modal is open
   const contextPanel = previousFocusedPanel ?? focusedPanel;
 
-  // Derive available operations based on context panel
+  // Derive available operations based on replication mode
+  // All operations shown regardless of panel - panel determines target, not visibility
   const availableOperations = useMemo(() => {
-    return getOperationsForPanel(contextPanel, pglogicalMode);
-  }, [contextPanel, pglogicalMode]);
+    return getAvailableOperations(pglogicalMode);
+  }, [pglogicalMode]);
 
   // Derive current context based on panel and selection
   const currentContext = useMemo((): OperationContext | null => {
