@@ -225,23 +225,42 @@ function getSelectableItemsForPanel(state: ReplmonStore, panel: Panel): string[]
     }
 
     case 'slots': {
-      const allSlots: string[] = [];
+      // Collect all slots with node info for sorting
+      const allSlots: { id: string; nodeName: string; slotName: string }[] = [];
       for (const slots of state.slots.values()) {
         for (const slot of slots) {
-          allSlots.push(`${slot.nodeId}:${slot.slotName}`);
+          const nodeInfo = state.nodes.get(slot.nodeId);
+          const nodeName = nodeInfo?.name ?? slot.nodeId;
+          allSlots.push({
+            id: `${slot.nodeId}:${slot.slotName}`,
+            nodeName,
+            slotName: slot.slotName,
+          });
         }
       }
-      return allSlots;
+      // Sort by nodeName, then slotName (alphabetical) to match visual display
+      allSlots.sort((a, b) => {
+        const nodeCompare = a.nodeName.localeCompare(b.nodeName);
+        if (nodeCompare !== 0) return nodeCompare;
+        return a.slotName.localeCompare(b.slotName);
+      });
+      return allSlots.map((s) => s.id);
     }
 
     case 'conflicts': {
-      const allConflicts: string[] = [];
+      // Collect all conflicts with their timestamps
+      const allConflicts: { id: string; time: number }[] = [];
       for (const events of state.conflictEvents.values()) {
         for (const event of events) {
-          allConflicts.push(event.id);
+          const time = event.recordedAt instanceof Date
+            ? event.recordedAt.getTime()
+            : new Date(event.recordedAt).getTime();
+          allConflicts.push({ id: event.id, time });
         }
       }
-      return allConflicts;
+      // Sort by time descending (most recent first) to match visual display
+      allConflicts.sort((a, b) => b.time - a.time);
+      return allConflicts.map((c) => c.id);
     }
 
     case 'operations':

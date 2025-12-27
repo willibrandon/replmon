@@ -461,7 +461,28 @@ export function OperationsModal({ onClose }: OperationsModalProps): React.ReactE
       }
       if (key.return) {
         if (!confirmationState.operation.requiresTypeToConfirm || confirmationState.isValid) {
-          void executeOperation();
+          executeOperation()
+            .then((result) => {
+              if (result) {
+                setShowingResult({
+                  status: result.status,
+                  message: result.message,
+                  error: result.error ?? null,
+                  remediationHint: result.remediationHint ?? null,
+                  durationMs: result.durationMs,
+                });
+              }
+            })
+            .catch((error: unknown) => {
+              const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+              setShowingResult({
+                status: 'failure',
+                message: 'Operation failed unexpectedly',
+                error: errorMessage,
+                remediationHint: null,
+                durationMs: 0,
+              });
+            });
         }
         return;
       }

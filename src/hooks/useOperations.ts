@@ -318,14 +318,14 @@ export function useOperations(): UseOperationsResult {
   );
 
   // Execute operation (after confirmation)
-  const executeOperation = useCallback(async (): Promise<void> => {
-    if (!confirmationState) return;
+  const executeOperation = useCallback(async (): Promise<OperationResult | null> => {
+    if (!confirmationState) return null;
 
     const { operation, context, isValid } = confirmationState;
 
     // For type-to-confirm operations, validate input
     if (operation.requiresTypeToConfirm && !isValid) {
-      return;
+      return null;
     }
 
     // Get ConnectionManager and create queryFn
@@ -344,7 +344,7 @@ export function useOperations(): UseOperationsResult {
       };
       useStore.getState().addToHistory(errorResult);
       useStore.getState().cancelConfirmation();
-      return;
+      return errorResult;
     }
 
     // Create queryFn that binds to ConnectionManager
@@ -384,6 +384,8 @@ export function useOperations(): UseOperationsResult {
         isExecuting: false,
         currentOperation: null,
       });
+
+      return result;
     } catch (err) {
       const durationMs = Date.now() - startTime;
       const isTimeout = durationMs >= OPERATION_TIMEOUT_MS;
@@ -411,6 +413,8 @@ export function useOperations(): UseOperationsResult {
         isExecuting: false,
         currentOperation: null,
       });
+
+      return errorResult;
     }
   }, [confirmationState]);
 

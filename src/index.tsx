@@ -111,8 +111,13 @@ function parseCliFlags(): CLIArguments {
  * Exit handler for cleanup.
  */
 let fullScreenApp: ReturnType<typeof withFullScreen> | null = null;
+let isExiting = false;
 
 export function exitApp(code: number): void {
+  // Prevent multiple exit attempts
+  if (isExiting) return;
+  isExiting = true;
+
   if (fullScreenApp?.instance) {
     fullScreenApp.instance.unmount();
   }
@@ -122,7 +127,7 @@ export function exitApp(code: number): void {
 /**
  * Main entry point.
  */
-function main(): void {
+async function main(): Promise<void> {
   const args = parseCliFlags();
 
   let config: Configuration;
@@ -144,9 +149,30 @@ function main(): void {
     process.exit(1);
   }
 
+  // Handle signals for graceful shutdown
+  const handleSignal = (signal: string) => {
+    // eslint-disable-next-line no-console
+    console.log(`\nReceived ${signal}, shutting down...`);
+    exitApp(0);
+  };
+
+  process.on('SIGINT', () => handleSignal('SIGINT'));
+  process.on('SIGTERM', () => handleSignal('SIGTERM'));
+
   // Render the application with fullscreen support (alternate screen buffer)
   fullScreenApp = withFullScreen(createElement(App, { config }));
   fullScreenApp.start();
+
+  // Wait for the application to exit and then clean up
+  try {
+    await fullScreenApp.instance.waitUntilExit();
+  } finally {
+    // Ensure process exits after Ink unmounts
+    exitApp(0);
+  }
 }
 
-main();
+main().catch((error: unknown) => {
+  console.error('Fatal error:', error);
+  process.exit(1);
+});

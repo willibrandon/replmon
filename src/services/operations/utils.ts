@@ -189,28 +189,130 @@ export function quoteIdent(identifier: string): string {
 }
 
 /**
+ * Complete list of PostgreSQL reserved words from PostgreSQL 17 documentation.
+ * Includes all reserved words (reserved, reserved for type/function names,
+ * and can be function/type names but requires AS for column labels).
+ *
+ * Source: https://www.postgresql.org/docs/17/sql-keywords-appendix.html
+ *
+ * These words cannot be used as unquoted identifiers in PostgreSQL and
+ * must be quoted with double quotes when used as identifiers.
+ */
+const POSTGRESQL_RESERVED_WORDS = new Set([
+  // A
+  'abort', 'absolute', 'access', 'action', 'add', 'admin', 'after', 'aggregate',
+  'all', 'also', 'alter', 'always', 'analyse', 'analyze', 'and', 'any', 'array',
+  'as', 'asc', 'asensitive', 'assertion', 'assignment', 'asymmetric', 'at',
+  'atomic', 'attach', 'attribute', 'authorization',
+  // B
+  'backward', 'before', 'begin', 'between', 'bigint', 'binary', 'bit', 'boolean',
+  'both', 'breadth', 'by',
+  // C
+  'cache', 'call', 'called', 'cascade', 'cascaded', 'case', 'cast', 'catalog',
+  'chain', 'char', 'character', 'characteristics', 'check', 'checkpoint', 'class',
+  'close', 'cluster', 'coalesce', 'collate', 'collation', 'column', 'columns',
+  'comment', 'comments', 'commit', 'committed', 'compression', 'concurrently',
+  'condition', 'configuration', 'conflict', 'connect', 'connection', 'constraint',
+  'constraints', 'content', 'continue', 'conversion', 'copy', 'cost', 'create',
+  'cross', 'csv', 'cube', 'current', 'current_catalog', 'current_date',
+  'current_role', 'current_schema', 'current_time', 'current_timestamp',
+  'current_user', 'cursor', 'cycle',
+  // D
+  'data', 'database', 'day', 'deallocate', 'dec', 'decimal', 'declare', 'default',
+  'defaults', 'deferrable', 'deferred', 'definer', 'delete', 'delimiter',
+  'delimiters', 'depends', 'depth', 'desc', 'detach', 'dictionary', 'disable',
+  'discard', 'distinct', 'do', 'document', 'domain', 'double', 'drop',
+  // E
+  'each', 'else', 'enable', 'encoding', 'encrypted', 'end', 'enum', 'escape',
+  'event', 'except', 'exclude', 'excluding', 'exclusive', 'execute', 'exists',
+  'explain', 'expression', 'extension', 'external', 'extract',
+  // F
+  'false', 'family', 'fetch', 'filter', 'finalize', 'first', 'float', 'following',
+  'for', 'force', 'foreign', 'format', 'forward', 'freeze', 'from', 'full',
+  'function', 'functions',
+  // G
+  'generated', 'global', 'grant', 'granted', 'greatest', 'group', 'grouping',
+  'groups',
+  // H
+  'handler', 'having', 'header', 'hold', 'hour',
+  // I
+  'identity', 'if', 'ilike', 'immediate', 'immutable', 'implicit', 'import', 'in',
+  'include', 'including', 'increment', 'indent', 'index', 'indexes', 'inherit',
+  'inherits', 'initially', 'inline', 'inner', 'inout', 'input', 'insensitive',
+  'insert', 'instead', 'int', 'integer', 'intersect', 'interval', 'into',
+  'invoker', 'is', 'isnull', 'isolation',
+  // J
+  'join', 'json', 'json_array', 'json_arrayagg', 'json_exists', 'json_object',
+  'json_objectagg', 'json_query', 'json_scalar', 'json_serialize', 'json_table',
+  'json_value',
+  // K
+  'key', 'keys',
+  // L
+  'label', 'language', 'large', 'last', 'lateral', 'leading', 'leakproof', 'least',
+  'left', 'level', 'like', 'limit', 'listen', 'load', 'local', 'localtime',
+  'localtimestamp', 'location', 'lock', 'locked', 'logged',
+  // M
+  'mapping', 'match', 'matched', 'materialized', 'maxvalue', 'merge', 'method',
+  'minute', 'minvalue', 'mode', 'modifies', 'month', 'move',
+  // N
+  'name', 'names', 'national', 'natural', 'nchar', 'nested', 'new', 'next', 'nfc',
+  'nfd', 'nfkc', 'nfkd', 'no', 'none', 'normalize', 'normalized', 'not', 'nothing',
+  'notify', 'notnull', 'nowait', 'null', 'nullif', 'nulls', 'numeric',
+  // O
+  'object', 'of', 'off', 'offset', 'oids', 'old', 'on', 'only', 'operator',
+  'option', 'options', 'or', 'order', 'ordinality', 'others', 'out', 'outer',
+  'over', 'overlaps', 'overlay', 'overriding', 'owned', 'owner',
+  // P
+  'parallel', 'parameter', 'parser', 'partial', 'partition', 'passing', 'password',
+  'path', 'placing', 'plan', 'plans', 'policy', 'position', 'preceding', 'precision',
+  'prepare', 'prepared', 'preserve', 'primary', 'prior', 'privileges', 'procedural',
+  'procedure', 'procedures', 'program', 'publication',
+  // Q
+  'quote', 'quotes',
+  // R
+  'range', 'read', 'reads', 'real', 'reassign', 'recheck', 'recursive', 'ref',
+  'references', 'referencing', 'refresh', 'reindex', 'relative', 'release',
+  'rename', 'repeatable', 'replace', 'replica', 'reset', 'restart', 'restrict',
+  'return', 'returning', 'returns', 'revoke', 'right', 'role', 'rollback', 'rollup',
+  'routine', 'routines', 'row', 'rows', 'rule',
+  // S
+  'savepoint', 'scalar', 'schema', 'schemas', 'scroll', 'search', 'second',
+  'security', 'select', 'sequence', 'sequences', 'serializable', 'server',
+  'session', 'session_user', 'set', 'setof', 'sets', 'share', 'show', 'similar',
+  'simple', 'skip', 'smallint', 'snapshot', 'some', 'source', 'sql', 'stable',
+  'standalone', 'start', 'statement', 'statistics', 'stdin', 'stdout', 'storage',
+  'stored', 'strict', 'string', 'strip', 'subscription', 'substring', 'support',
+  'symmetric', 'sysid', 'system', 'system_user',
+  // T
+  'table', 'tables', 'tablesample', 'tablespace', 'target', 'temp', 'template',
+  'temporary', 'text', 'then', 'ties', 'time', 'timestamp', 'to', 'trailing',
+  'transaction', 'transform', 'treat', 'trigger', 'trim', 'true', 'truncate',
+  'trusted', 'type', 'types',
+  // U
+  'uescape', 'unbounded', 'uncommitted', 'unconditional', 'unencrypted', 'union',
+  'unique', 'unknown', 'unlisten', 'unlogged', 'until', 'update', 'user', 'using',
+  // V
+  'vacuum', 'valid', 'validate', 'validator', 'value', 'values', 'varchar',
+  'variadic', 'varying', 'verbose', 'version', 'view', 'views', 'volatile',
+  // W
+  'when', 'where', 'whitespace', 'window', 'with', 'within', 'without', 'work',
+  'wrapper', 'write',
+  // X
+  'xml', 'xmlagg', 'xmlattributes', 'xmlconcat', 'xmlelement', 'xmlexists',
+  'xmlforest', 'xmlnamespaces', 'xmlparse', 'xmlpi', 'xmlroot', 'xmlserialize',
+  'xmltable',
+  // Y
+  'year', 'yes',
+  // Z
+  'zone',
+]);
+
+/**
  * Check if an identifier is a PostgreSQL reserved word.
- * This is a subset of the most commonly conflicting reserved words.
+ * Uses the complete PostgreSQL 17 reserved word list.
  */
 function isReservedWord(word: string): boolean {
-  const reservedWords = new Set([
-    'all', 'analyse', 'analyze', 'and', 'any', 'array', 'as', 'asc',
-    'asymmetric', 'authorization', 'binary', 'both', 'case', 'cast',
-    'check', 'collate', 'collation', 'column', 'concurrently', 'constraint',
-    'create', 'cross', 'current_catalog', 'current_date', 'current_role',
-    'current_schema', 'current_time', 'current_timestamp', 'current_user',
-    'default', 'deferrable', 'desc', 'distinct', 'do', 'else', 'end',
-    'except', 'false', 'fetch', 'for', 'foreign', 'freeze', 'from', 'full',
-    'grant', 'group', 'having', 'ilike', 'in', 'initially', 'inner', 'intersect',
-    'into', 'is', 'isnull', 'join', 'lateral', 'leading', 'left', 'like',
-    'limit', 'localtime', 'localtimestamp', 'natural', 'not', 'notnull',
-    'null', 'offset', 'on', 'only', 'or', 'order', 'outer', 'overlaps',
-    'placing', 'primary', 'references', 'returning', 'right', 'select',
-    'session_user', 'similar', 'some', 'symmetric', 'table', 'tablesample',
-    'then', 'to', 'trailing', 'true', 'union', 'unique', 'user', 'using',
-    'variadic', 'verbose', 'when', 'where', 'window', 'with',
-  ]);
-  return reservedWords.has(word.toLowerCase());
+  return POSTGRESQL_RESERVED_WORDS.has(word.toLowerCase());
 }
 
 // =============================================================================

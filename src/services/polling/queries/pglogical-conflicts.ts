@@ -27,8 +27,8 @@ import type {
 /** Default conflict limit per query */
 const DEFAULT_CONFLICT_LIMIT = 500;
 
-/** Time window for conflicts (24 hours) */
-const CONFLICT_WINDOW_HOURS = 24;
+/** Time window for conflicts (7 days) - long enough to investigate patterns */
+const CONFLICT_WINDOW_HOURS = 24 * 7;
 
 /** Log position persistence file */
 const LOG_POSITIONS_FILE = join(homedir(), '.replmon', 'log-positions.json');
@@ -225,41 +225,85 @@ function transformHistoryRow(
 /** In-memory cache of log positions */
 let logPositionsCache: LogPositions | null = null;
 
+/** Lock to prevent concurrent save operations */
+let saveInProgress: Promise<void> | null = null;
+
+/** Flag indicating cache is being loaded from disk */
+let loadInProgress: Promise<LogPositions> | null = null;
+
 /**
  * Load log positions from disk.
+ * Uses a loading lock to prevent duplicate reads.
  */
 async function loadLogPositions(): Promise<LogPositions> {
+  // Return cached value if available
   if (logPositionsCache !== null) {
     return logPositionsCache;
   }
 
-  try {
-    if (existsSync(LOG_POSITIONS_FILE)) {
-      const content = await readFile(LOG_POSITIONS_FILE, 'utf-8');
-      logPositionsCache = JSON.parse(content);
-      return logPositionsCache ?? {};
-    }
-  } catch {
-    // Ignore read errors, start fresh
+  // If already loading, wait for that to complete
+  if (loadInProgress !== null) {
+    return loadInProgress;
   }
 
-  logPositionsCache = {};
-  return logPositionsCache;
+  // Start loading with lock
+  loadInProgress = (async (): Promise<LogPositions> => {
+    try {
+      if (existsSync(LOG_POSITIONS_FILE)) {
+        const content = await readFile(LOG_POSITIONS_FILE, 'utf-8');
+        const parsed = JSON.parse(content) as LogPositions;
+        logPositionsCache = parsed;
+        return parsed;
+      }
+    } catch {
+      // Ignore read errors, start fresh
+    }
+
+    logPositionsCache = {};
+    return logPositionsCache;
+  })();
+
+  try {
+    const result = await loadInProgress;
+    return result;
+  } finally {
+    loadInProgress = null;
+  }
 }
 
 /**
  * Save log positions to disk.
+ * Uses a lock to prevent concurrent writes and ensures
+ * the latest cache state is always written.
  */
 async function saveLogPositions(positions: LogPositions): Promise<void> {
+  // Always update cache immediately (synchronous)
   logPositionsCache = positions;
-  try {
-    const dir = dirname(LOG_POSITIONS_FILE);
-    if (!existsSync(dir)) {
-      await mkdir(dir, { recursive: true });
+
+  // If a save is in progress, wait for it to complete
+  // then the latest cache state will be saved
+  if (saveInProgress !== null) {
+    await saveInProgress;
+  }
+
+  // Start new save operation with lock
+  saveInProgress = (async () => {
+    try {
+      const dir = dirname(LOG_POSITIONS_FILE);
+      if (!existsSync(dir)) {
+        await mkdir(dir, { recursive: true });
+      }
+      // Always write the current cache state (may include updates from other calls)
+      await writeFile(LOG_POSITIONS_FILE, JSON.stringify(logPositionsCache, null, 2));
+    } catch {
+      // Ignore write errors
     }
-    await writeFile(LOG_POSITIONS_FILE, JSON.stringify(positions, null, 2));
-  } catch {
-    // Ignore write errors
+  })();
+
+  try {
+    await saveInProgress;
+  } finally {
+    saveInProgress = null;
   }
 }
 
@@ -293,11 +337,25 @@ async function updateLogPosition(nodeId: string, filePath: string, offset: numbe
 /**
  * Regex pattern for pglogical conflict log entries.
  *
- * Example log line:
- * 2024-01-15 10:30:45.123 UTC,"postgres","testdb",12345,"[local]",67890,..."LOG","00000",
- * "CONFLICT: remote INSERT on relation public.users; local tuple version (1,2) update_update apply_remote"
+ * Supports both quoted and unquoted identifiers:
+ * - Unquoted: public.users
+ * - Quoted: "my-schema"."my-table"
+ * - Mixed: public."my-table"
+ *
+ * Example log lines:
+ * "CONFLICT: remote INSERT on relation public.users; ... update_update apply_remote"
+ * "CONFLICT: remote UPDATE on relation "my-schema"."users"; ... insert_insert keep_local"
+ *
+ * Capture groups:
+ * 1: operation (INSERT/UPDATE/DELETE)
+ * 2: quoted schema name (if quoted) or undefined
+ * 3: unquoted schema name (if unquoted) or undefined
+ * 4: quoted table name (if quoted) or undefined
+ * 5: unquoted table name (if unquoted) or undefined
+ * 6: conflict type (insert_insert, update_update, etc.)
+ * 7: resolution (apply_remote, keep_local, skip)
  */
-const CONFLICT_LOG_PATTERN = /CONFLICT:\s+remote\s+(\w+)\s+on\s+relation\s+(\w+)\.(\w+).*?(\w+_\w+)\s+(apply_remote|keep_local|skip)/gi;
+const CONFLICT_LOG_PATTERN = /CONFLICT:\s+remote\s+(\w+)\s+on\s+relation\s+(?:"([^"]+)"|([a-zA-Z_][a-zA-Z0-9_$]*))\s*\.\s*(?:"([^"]+)"|([a-zA-Z_][a-zA-Z0-9_$]*)).*?(\w+_\w+)\s+(apply_remote|keep_local|skip)/gi;
 
 /**
  * Parse conflict entries from PostgreSQL csvlog content.
@@ -334,7 +392,12 @@ export function parseConflictLog(
     CONFLICT_LOG_PATTERN.lastIndex = 0;
 
     while ((match = CONFLICT_LOG_PATTERN.exec(line)) !== null) {
-      const [, operation, schemaName, tableName, conflictTypeStr, resolutionStr] = match;
+      // Extract capture groups (see pattern documentation above)
+      const [, operation, quotedSchema, unquotedSchema, quotedTable, unquotedTable, conflictTypeStr, resolutionStr] = match;
+
+      // Use quoted name if available, otherwise unquoted
+      const schemaName = quotedSchema ?? unquotedSchema ?? 'unknown';
+      const tableName = quotedTable ?? unquotedTable ?? 'unknown';
 
       // Map operation to conflict type
       let conflictType: ConflictType;
@@ -368,8 +431,8 @@ export function parseConflictLog(
         subscriptionName: null, // Not available in log
         conflictType,
         resolution,
-        schemaName: schemaName ?? 'unknown',
-        tableName: tableName ?? 'unknown',
+        schemaName,
+        tableName,
         indexName: null,
         localTuple: null, // Not available in log
         remoteTuple: null, // Not available in log

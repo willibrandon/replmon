@@ -376,7 +376,7 @@ export interface UseOperationsResult {
   /** Start an operation (shows confirmation if needed) */
   readonly startOperation: (operation: Operation) => void;
   /** Execute operation (after confirmation) */
-  readonly executeOperation: () => Promise<void>;
+  readonly executeOperation: () => Promise<OperationResult | null>;
   /** Update confirmation input */
   readonly updateConfirmInput: (input: string) => void;
   /** Cancel current operation/confirmation */
